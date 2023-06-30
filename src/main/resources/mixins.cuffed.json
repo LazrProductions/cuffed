@@ -1,0 +1,14 @@
+{
+    "required": true,
+    "package": "com.lazrproductions.cuffed.mixin",
+    "compatibilityLevel": "JAVA_17",
+    "refmap": "mixin.cuffed.refmap.json",
+    "server": [
+    ],
+    "mixins": [
+        "PlayerMixin"
+    ],
+    "client": [
+    ],
+    "minVersion": "0.8"
+}

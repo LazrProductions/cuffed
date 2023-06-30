@@ -1,0 +1,16 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+      "P P",
+      "PPP"
+    ],
+    "key": {
+      "P": {
+        "item": "minecraft:paper"
+      }
+    },
+    "result": {
+      "item": "cuffed:possessions_box",
+      "count": 1
+    }
+  }

@@ -1,0 +1,16 @@
+{
+    "itemGroup.cuffed": "Cuffed",
+
+    "item.cuffed.cell_key": "Cell Key",
+    "item.cuffed.cell_key_ring": "Cell Key Ring",
+    "item.cuffed.handcuffs_key": "Handcuffs Key",
+    "item.cuffed.handcuffs": "Handcuffs",
+    "item.cuffed.possessions_box.empty": "Empty Box",
+    "item.cuffed.possessions_box.full": "Box of Possessions",
+
+    "block.cuffed.cell_door": "Cell Door",
+
+
+    "death.attack.hang": "%1$s fell victim to capital punishment",
+    "death.attack.bramble.player": "%1$s couldn't live in the same world as %2$s"
+}

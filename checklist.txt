@@ -1,0 +1,8 @@
+CHECKLIST
+
+[*] - Keys and Doors
+[ ] - Unbreakable Paintable Blocks
+[*] - Handcuffing
+[-] - Item Seizure
+[*] - Chaining
+[ ] - Handcuffed Animation and Pose

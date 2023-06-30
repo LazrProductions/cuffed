@@ -1,0 +1,27 @@
+modLoader="javafml" #mandatory
+loaderVersion="${loader_version_range}" #mandatory 
+license="${mod_license}"
+
+[[mods]] #mandatory
+modId="${mod_id}" #mandatory
+version="${mod_version}" #mandatory
+displayName="${mod_name}" #mandatory
+authors="${mod_authors}" #optional
+description='''${mod_description}'''
+
+
+[[dependencies.${mod_id}]] #optional
+
+    modId="forge" #mandatory
+    mandatory=true #mandatory
+    versionRange="${forge_version_range}" #mandatory
+    ordering="NONE"
+    side="BOTH"
+
+# Here's another dependency
+[[dependencies.${mod_id}]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="BOTH"

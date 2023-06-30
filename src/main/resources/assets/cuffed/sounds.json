@@ -1,0 +1,10 @@
+{
+    "apply_handcuffs": {
+        "category": "player",
+        "sounds": [
+            {
+                "name": "cuffed:apply_handcuffs"
+            }
+        ]
+    }
+}

@@ -1,0 +1,23 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "gradle",
+			"id": "c:\\Users\\Gabe Trim\\Desktop\\MInecraft Mods\\cuffedrunClientcuffed",
+			"script": "runClient",
+			"description": "",
+			"group": "forgegradle runs",
+			"project": "cuffed",
+			"buildFile": "C:\\Users\\Gabe Trim\\Desktop\\MInecraft Mods\\cuffed\\build.gradle",
+			"rootProject": "cuffed",
+			"projectFolder": "c:\\Users\\Gabe Trim\\Desktop\\MInecraft Mods\\cuffed",
+			"workspaceFolder": "c:\\Users\\Gabe Trim\\Desktop\\MInecraft Mods\\cuffed",
+			"args": "",
+			"javaDebug": false,
+			"problemMatcher": [
+				"$gradle"
+			],
+			"label": "gradle: runClient"
+		}
+	]
+}

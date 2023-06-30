@@ -1,0 +1,9 @@
+{
+    "parent": "minecraft:item/generated",
+    "textures": {
+      "layer0": "cuffed:item/empty_box"
+    },
+    "overrides": [
+        { "predicate": { "cuffed:filled": 1 }, "model": "cuffed:item/possessions_box_1" }
+    ]
+}

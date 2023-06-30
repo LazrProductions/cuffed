@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "cuffed:cell_key"
+    }
+  ],
+  "result": {
+    "item": "cuffed:cell_key",
+    "count": 1
+  }
+}
