@@ -1,11 +1,9 @@
 
 <p style="text-align:center;">
     <img src="https://github.com/LazrProductions/cuffed/blob/main/readme/handcuffs_large.png?raw=true" alt="cuffed logo" width = "128"/>
-
-<p style="text-align:center;font-size:400%">Cuffed</p>
 </p>
 
-#
+# Cuffed
 
 A simple mod that adds handcuffs, keys, and more.
 
