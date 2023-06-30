@@ -1,6 +1,6 @@
 
 <p style="text-align:center;">
-    <img src="https://raw.githubusercontent.com/LazrProductions/cuffed/main/readme/handcuffs_large.png?token=GHSAT0AAAAAACD6IBDSQ3IU6XLZYO5GRMY2ZE6ONQA" alt="cuffed logo" width = "128"/>
+    <img src="https://github.com/LazrProductions/cuffed/blob/main/readme/handcuffs_large.png?raw=true" alt="cuffed logo" width = "128"/>
 
 <p style="text-align:center;font-size:400%">Cuffed</p>
 </p>
