@@ -3,7 +3,7 @@ package com.lazrproductions.cuffed.blocks;
 import javax.annotation.Nullable;
 
 import com.lazrproductions.cuffed.init.ModItems;
-import com.lazrproductions.cuffed.items.CellKeyRing;
+import com.lazrproductions.cuffed.items.KeyRing;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -20,7 +20,6 @@ import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
-import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.properties.DoorHingeSide;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -29,8 +28,6 @@ import net.minecraft.world.phys.BlockHitResult;
 public class CellDoor extends DoorBlock {
 
     private final BlockSetType type;
-
-    public static final IntegerProperty KEYID = IntegerProperty.create("keyid", 0, 128);
 
     public CellDoor(Properties p, BlockSetType setType) {
         super(p, setType);
@@ -41,8 +38,7 @@ public class CellDoor extends DoorBlock {
                         .setValue(OPEN, Boolean.valueOf(false))
                         .setValue(HINGE, DoorHingeSide.LEFT)
                         .setValue(POWERED, Boolean.valueOf(false))
-                        .setValue(HALF, DoubleBlockHalf.LOWER)
-                        .setValue(KEYID, 0));
+                        .setValue(HALF, DoubleBlockHalf.LOWER));
     }
 
     @Override
@@ -60,7 +56,7 @@ public class CellDoor extends DoorBlock {
         if (level.getBlockState(pos.below()).getBlock() instanceof CellDoor)
             bottomPos = pos.below();
 
-        if (stack.is((ModItems.CELL_KEY.get())) && stack.getTagElement("BoundDoor") != null) {
+        if (stack.is((ModItems.KEY.get())) && stack.getTagElement("BoundDoor") != null) {
             CompoundTag doorTag = stack.getTagElement("BoundDoor");
             if (doorTag != null) {
                 int[] boundPos = doorTag.getIntArray("Position");
@@ -79,7 +75,7 @@ public class CellDoor extends DoorBlock {
             
         }
 
-        if (stack.is((ModItems.CELL_KEY_RING.get())) && CellKeyRing.HasBoundDoorAt(stack, bottomPos)) {
+        if (stack.is((ModItems.KEY_RING.get())) && KeyRing.HasBoundDoorAt(stack, bottomPos)) {
             state = state.cycle(OPEN);
             level.setBlock(pos, state, 10);
             this.playSound(player, level, pos, state.getValue(OPEN));
@@ -98,7 +94,7 @@ public class CellDoor extends DoorBlock {
 
     @Override
     protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {
-        builder.add(KEYID, HALF, FACING, OPEN, HINGE, POWERED);
+        builder.add(HALF, FACING, OPEN, HINGE, POWERED);
     }
 
     @Override

@@ -1,0 +1,32 @@
+{
+    "parent": "minecraft:item/generated",
+    "textures": {
+      "layer0": "cuffed:item/key_ring_0"
+    },
+    "overrides": [
+      {
+        "predicate": {
+          "cuffed:keys": 1
+        },
+        "model": "cuffed:item/key_ring_1"
+      },
+      {
+        "predicate": {
+          "cuffed:keys": 2
+        },
+        "model": "cuffed:item/key_ring_2"
+      },
+      {
+        "predicate": {
+          "cuffed:keys": 3
+        },
+        "model": "cuffed:item/key_ring_3"
+      },
+      {
+        "predicate": {
+          "cuffed:keys": 4
+        },
+        "model": "cuffed:item/key_ring_4"
+      }
+    ]
+}

@@ -1,0 +1,19 @@
+{
+    "replace": false,
+    "values": [
+        "#forge:fence_gates",
+        "#forge:chests",
+        "#forge:barrels",
+        "#minecraft:trapdoors",
+        "#minecraft:doors",
+        "#minecraft:anvil",
+        "#minecraft:impermeable",
+        "#forge:storage_blocks",
+        "cuffed:cell_door",
+        "minecraft:furnace",
+        "minecraft:crafting_table",
+        "minecraft:enchanting_table",
+        "minecraft:blast_furnace",
+        "minecraft:smoker"
+    ]
+}

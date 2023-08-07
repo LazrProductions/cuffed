@@ -2,12 +2,14 @@ package com.lazrproductions.cuffed.server;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.UUID;
 
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.api.IHandcuffed;
 import com.lazrproductions.cuffed.api.event.PlayerUncuffedEvent;
 import com.lazrproductions.cuffed.cap.Handcuffed;
 import com.lazrproductions.cuffed.packet.CuffedUpdatePacket;
+import com.lazrproductions.cuffed.packet.LockpickPacket;
 import com.lazrproductions.cuffed.packet.UpdateChainedPacket;
 import com.mojang.datafixers.util.Pair;
 
@@ -76,7 +78,6 @@ public class CuffedServer {
         return c;
     }
 
-    // #region Chained Players Handling
 
     public static ArrayList<Pair<Player, Entity>> chainedPlayers = new ArrayList<Pair<Player, Entity>>();
 
@@ -85,10 +86,11 @@ public class CuffedServer {
 
         Pair<Player, Entity> p = new Pair<Player, Entity>(player, entity);
         if (index < 0) {
-            //CuffedMod.LOGGER.info("Adding chained pair " + player + " and " + entity);
+            // CuffedMod.LOGGER.info("Adding chained pair " + player + " and " + entity);
             chainedPlayers.add(p);
         } else {
-            //CuffedMod.LOGGER.info("Setting chained pair at index " + index + " to " + player + " and " + entity);
+            // CuffedMod.LOGGER.info("Setting chained pair at index " + index + " to " +
+            // player + " and " + entity);
             chainedPlayers.set(index, p);
         }
         sendChainedUpdateToAll(player.level());
@@ -146,10 +148,44 @@ public class CuffedServer {
 
         sendChainedUpdateToAll(player.level());
     }
+    
+
+    public static ArrayList<Player> handcuffedPlayers = new ArrayList<Player>();
+
+    public static void addHandcuffed(Player player) {
+        if (player == null) {
+            CuffedMod.LOGGER.warn("Cannot add a null player to the handcuffed list!");
+            return;
+        }
+        int index = getChainedFor(player);
+
+        if (index < 0) {
+            // CuffedMod.LOGGER.info("Adding chained pair " + player + " and " + entity);
+            handcuffedPlayers.add(player);
+        } else {
+            // CuffedMod.LOGGER.info("Setting chained pair at index " + index + " to " +
+            // player + " and " + entity);
+            handcuffedPlayers.set(index, player);
+        }
+        sendChainedUpdateToAll(player.level());
+    }
+
+    public static void removeHandcuffed(Player player) {
+        if(handcuffedPlayers.indexOf(player) <= -1)
+            return;
+        handcuffedPlayers.remove(handcuffedPlayers.indexOf(player));
+        sendChainedUpdateToAll(player.level());
+    }
+
+    public static int getHandcuffedFor(Player player) {
+        for (int i = 0; i < handcuffedPlayers.size(); i++) {
+            if (handcuffedPlayers.get(i).getId() == player.getId())
+                return i;
+        }
+        return -1;
+    }
 
     public static void sendChainedUpdateToAll(Level level) {
-        //CuffedMod.LOGGER.info("[Server] - Sending chained update to 'erybody with size " + chainedPlayers.size());
-
         MinecraftServer server = level.getServer();
         if (server != null)
             for (Iterator<ServerPlayer> iterator = server.getPlayerList().getPlayers().iterator(); iterator
@@ -159,10 +195,31 @@ public class CuffedServer {
                 int[] a = UpdateChainedPacket.ListToGeneric(l, true);
                 int[] b = UpdateChainedPacket.ListToGeneric(l, false);
 
-                CuffedMod.LOGGER.info("Getting list, a: " + a.length + " - b: " + b.length);
-                CuffedMod.NETWORK.sendToClient(new UpdateChainedPacket(a, b), member);
+                CuffedMod.NETWORK.sendToClient(
+                        new UpdateChainedPacket(a, b, UpdateChainedPacket.ListToGeneric(handcuffedPlayers)), member);
             }
     }
 
-    // #endregion
+
+    /**
+     * Send a lockpicking packet to update the client's gui screen.
+     * @param player (Player) The player to send to
+     * @param tick (int) The ticks the player has been lockpicking
+     */
+    public static void sendLockpickUpdate(Player player, int lockId, int slot, int phases) {
+        LockpickPacket packet = new LockpickPacket(0, lockId, slot, phases, player.getId());
+        CuffedMod.NETWORK.sendToClientTracking(packet, player);
+        CuffedMod.NETWORK.sendToClient(packet, (ServerPlayer) player);
+    }
+
+
+    /**
+     * Send a lockpicking packet to finish lockpicking FROM a client TO the server.
+     * @param code (int) The exit code of the lockpicking, 0 = timeExpire  1 = missedSweetSpot  2 = success
+     * @param lockId (int) The id of the entity being lockpicked
+     */
+    public static void sendLockpickFinish(int code, int lockId, int playerId, UUID playerUUID) {
+        LockpickPacket packet = new LockpickPacket(code, lockId, playerId, playerUUID.toString());
+        CuffedMod.NETWORK.sendToServer(packet);
+    }
 }

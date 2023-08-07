@@ -36,7 +36,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.block.Blocks;
 
 public class ChainKnotEntity extends HangingEntity {
-
     public ChainKnotEntity(EntityType<? extends HangingEntity> type, Level level) {
         super(type, level);
     }
@@ -181,8 +180,8 @@ public class ChainKnotEntity extends HangingEntity {
     }
 
     @Override
-    public boolean shouldRenderAtSqrDistance(double p_31835_) {
-        return p_31835_ < 1024.0D;
+    public boolean shouldRenderAtSqrDistance(double distance) {
+        return distance < 1024.0D;
     }
 
     public void syncAdditionalSaveData(CompoundTag tag) {

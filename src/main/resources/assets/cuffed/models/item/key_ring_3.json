@@ -1,0 +1,6 @@
+{
+    "parent": "cuffed:item/key_ring",
+    "textures": {
+      "layer0": "cuffed:item/key_ring_3"
+    }
+}

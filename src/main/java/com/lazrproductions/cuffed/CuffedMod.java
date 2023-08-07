@@ -9,15 +9,20 @@ import org.apache.logging.log4j.Logger;
 import com.lazrproductions.cuffed.api.IHandcuffed;
 import com.lazrproductions.cuffed.client.CuffedEventClient;
 import com.lazrproductions.cuffed.client.render.entity.ChainKnotEntityRenderer;
+import com.lazrproductions.cuffed.client.render.entity.PadlockEntityRenderer;
 import com.lazrproductions.cuffed.client.render.entity.model.ChainKnotEntityModel;
+import com.lazrproductions.cuffed.client.render.entity.model.PadlockEntityModel;
+import com.lazrproductions.cuffed.config.ModCommonConfigs;
 import com.lazrproductions.cuffed.init.ModBlocks;
 import com.lazrproductions.cuffed.init.ModEntityTypes;
 import com.lazrproductions.cuffed.init.ModItems;
 import com.lazrproductions.cuffed.inventory.tooltip.PossessionsBoxTooltip;
 import com.lazrproductions.cuffed.packet.CuffedUpdatePacket;
 import com.lazrproductions.cuffed.packet.HandcuffingPacket;
+import com.lazrproductions.cuffed.packet.LockpickPacket;
 import com.lazrproductions.cuffed.packet.UpdateChainedPacket;
-import com.lazrproductions.cuffed.recipes.CellKeyRingAddRecipe;
+import com.lazrproductions.cuffed.recipes.KeyRingAddRecipe;
+import com.lazrproductions.cuffed.recipes.KeyRingDisassembleRecipe;
 import com.lazrproductions.cuffed.server.CuffedEventServer;
 import com.lazrproductions.cuffed.server.CuffedServer;
 
@@ -29,7 +34,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -51,7 +55,9 @@ import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig.Type;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -84,8 +90,10 @@ public class CuffedMod {
     // #endregion
 
     // #region Recipes
-    public static final RegistryObject<RecipeSerializer<CellKeyRingAddRecipe>> CELL_KEY_RING_ADD = RECIPE_SERIALIZERS
-            .register("cell_key_ring_add", () -> new SimpleCraftingRecipeSerializer<>(CellKeyRingAddRecipe::new));
+    public static final RegistryObject<RecipeSerializer<KeyRingAddRecipe>> KEY_RING_ADD = RECIPE_SERIALIZERS
+            .register("key_ring_add", () -> new SimpleCraftingRecipeSerializer<>(KeyRingAddRecipe::new));
+    public static final RegistryObject<RecipeSerializer<KeyRingDisassembleRecipe>> KEY_RING_DISASSEMBLE = RECIPE_SERIALIZERS
+            .register("key_ring_disassemble", () -> new SimpleCraftingRecipeSerializer<>(KeyRingDisassembleRecipe::new));
     // #endregion
 
     // #region Creative Mode Tabs
@@ -96,11 +104,19 @@ public class CuffedMod {
                     .icon(() -> ModItems.HANDCUFFS.get().getDefaultInstance())
                     .displayItems((parameters, output) -> {
                         output.accept(ModItems.CELL_DOOR_ITEM.get());
-                        output.accept(ModItems.CELL_KEY.get());
-                        output.accept(ModItems.CELL_KEY_RING.get());
-                        output.accept(ModItems.HANDCUFFS_KEY.get());
+                        output.accept(ModItems.PADLOCK.get());
+
+                        output.accept(ModItems.KEY.get());
+                        output.accept(ModItems.KEY_RING.get());
+
                         output.accept(ModItems.HANDCUFFS.get());
+                        output.accept(ModItems.HANDCUFFS_KEY.get());
                         output.accept(ModItems.POSSESSIONSBOX.get());
+
+                        output.accept(ModItems.REINFORCED_STONE_ITEM.get());
+                        output.accept(ModItems.REINFORCED_STONE_CHISELED_ITEM.get());
+                        output.accept(ModItems.REINFORCED_STONE_SLAB_ITEM.get());
+                        output.accept(ModItems.REINFORCED_STONE_STAIRS_ITEM.get());
                     }).build());
     // #endregion
 
@@ -112,6 +128,9 @@ public class CuffedMod {
 
     // #region Resources
     public static ResourceLocation[] BREAKCUFFS_GUI;
+    public static ResourceLocation[] PICKLOCK_GUI;
+    public static ResourceLocation CHAINED_OVERLAY_TEXTURE = new ResourceLocation(MODID,
+            "textures/entity/chained_overlay.png");
     // #endregion
 
     // #region Sounds
@@ -123,6 +142,10 @@ public class CuffedMod {
     public static final AttributeModifier HANDCUFFED_ATTIRBUTE = new AttributeModifier("handcuffed", -1,
             AttributeModifier.Operation.MULTIPLY_BASE);
     // #endregion
+
+    // #region Configs
+
+    //#endregion
 
     public CuffedMod() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -144,11 +167,19 @@ public class CuffedMod {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerCaps);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerSounds);
 
+        ModLoadingContext.get().registerConfig(Type.COMMON, ModCommonConfigs.SPEC, "cuffed-common.toml");
+
         // initialize the resource array for the breaking cuffs GUI
         BREAKCUFFS_GUI = new ResourceLocation[21];
         for (int i = 0; i < 21; i++) {
             BREAKCUFFS_GUI[i] = new ResourceLocation("cuffed",
                     "textures/gui/interuptbar/interuptbar" + (i + 1) + ".png");
+        }
+        // initialize the resource array for the lockpicking progress GUI
+        PICKLOCK_GUI = new ResourceLocation[31];
+        for (int i = 0; i < 31; i++) {
+            PICKLOCK_GUI[i] = new ResourceLocation("cuffed",
+                    "textures/gui/interuptbar/pickprogressbar" + (i + 1) + ".png");
         }
     }
 
@@ -158,7 +189,9 @@ public class CuffedMod {
         NETWORK.registerType(CuffedUpdatePacket.class, CuffedUpdatePacket::new);
         NETWORK.registerType(HandcuffingPacket.class, HandcuffingPacket::new);
         NETWORK.registerType(UpdateChainedPacket.class, UpdateChainedPacket::new);
+        NETWORK.registerType(LockpickPacket.class, LockpickPacket::new);
 
+        LOGGER.info("Got to here :)");
         MinecraftForge.EVENT_BUS.register(new CuffedEventServer());
     }
 
@@ -300,31 +333,15 @@ public class CuffedMod {
                                                 }
                                             return 0;
                                         }))));
-
-        // TODO: [DEBUG] Remove with build.
-        event.getServer().getCommands().getDispatcher()
-                .register(
-                        Commands.literal("handcuff").requires(x -> x.hasPermission(2))
-                                .then(Commands.literal("debug")
-                                        .then(Commands.literal("getAttributeUUID")
-                                                .executes(x -> {
-                                                    x.getSource().source.sendSystemMessage(
-                                                            Component.literal("The UUID of HANDCUFFS_ATTRIBUTE is ")
-                                                                    .append(ComponentUtils.copyOnClickText(
-                                                                            "" + HANDCUFFED_ATTIRBUTE.getId())));
-                                                    return 1;
-                                                }))));
     }
 
     @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents {
-        protected static ChainKnotEntityRenderer chainKnotEntityRenderer;
-
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
             LOGGER.info("Running client setup for Cuffed");
 
-            ItemProperties.register(ModItems.CELL_KEY_RING.get(),
+            ItemProperties.register(ModItems.KEY_RING.get(),
                     new ResourceLocation(MODID, "keys"), (stack, level, living, id) -> {
                         var tag = stack.getTag();
                         if (tag != null && tag.contains("Keys"))
@@ -344,6 +361,7 @@ public class CuffedMod {
             MinecraftForge.EVENT_BUS.register(new CuffedEventClient());
 
             EntityRenderers.register(ModEntityTypes.CHAIN_KNOT.get(), ChainKnotEntityRenderer::new);
+            EntityRenderers.register(ModEntityTypes.PADLOCK.get(), PadlockEntityRenderer::new);
 
         }
 
@@ -355,6 +373,7 @@ public class CuffedMod {
         @SubscribeEvent
         public static void onRegisterLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
             event.registerLayerDefinition(ChainKnotEntityModel.LAYER_LOCATION, ChainKnotEntityModel::getModelData);
+            event.registerLayerDefinition(PadlockEntityModel.LAYER_LOCATION, PadlockEntityModel::getModelData);
         }
     }
 }

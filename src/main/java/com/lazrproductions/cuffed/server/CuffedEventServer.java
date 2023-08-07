@@ -2,18 +2,25 @@ package com.lazrproductions.cuffed.server;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.UUID;
 
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.api.IHandcuffed;
 import com.lazrproductions.cuffed.cap.Handcuffed;
+import com.lazrproductions.cuffed.config.ModCommonConfigs;
 import com.lazrproductions.cuffed.entity.ChainKnotEntity;
+import com.lazrproductions.cuffed.entity.PadlockEntity;
 import com.lazrproductions.cuffed.init.ModBlocks;
 import com.lazrproductions.cuffed.init.ModItems;
+import com.lazrproductions.cuffed.init.ModTags;
 import com.lazrproductions.cuffed.items.PossessionsBox;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -24,6 +31,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.Tags.Blocks;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -38,6 +47,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 public class CuffedEventServer {
 
@@ -82,6 +92,7 @@ public class CuffedEventServer {
                 wasHanging = false;
             }
         }
+
     }
 
     @SubscribeEvent
@@ -109,11 +120,6 @@ public class CuffedEventServer {
 
     int hadJustSofted = 0;
 
-    /*
-     * -- DEBUG IN SINGLEPLAYER --
-     * Used to handcuff self
-     * Change to EntityInteractin build
-     */
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void playerInteractBlock(PlayerInteractEvent.RightClickBlock event) {
         Level level = event.getEntity().level();
@@ -134,7 +140,6 @@ public class CuffedEventServer {
                     IHandcuffed cuffed = CuffedServer.getHandcuffed(member);
                     if (cuffed.isChained() && cuffed.getAnchor().getUUID() == interacting.getUUID())
                         isAnchorTo.add(cuffed);
-                    ;
                 }
 
             if ((level.getBlockState(event.getPos()).is(Blocks.FENCES)
@@ -175,6 +180,14 @@ public class CuffedEventServer {
                         } else if (interacting.getMainHandItem().is(ModItems.POSSESSIONSBOX.get())) {
                             ((PossessionsBox) interacting.getMainHandItem().getItem())
                                     .FillFromInventory(interacting.getMainHandItem(), target.getInventory(), true);
+                        } else if (event.getEntity().getItemInHand(event.getHand()).is(ModItems.LOCKPICK.get())) {
+                            if (!event.getEntity().getCooldowns().isOnCooldown(ModItems.LOCKPICK.get())) {
+                                // can lockpick so begin lockpick
+                                event.getEntity().getCooldowns().addCooldown(ModItems.LOCKPICK.get(), 4 * 20);
+                                CuffedServer.sendLockpickUpdate(event.getEntity(), target.getId(),
+                                        event.getEntity().getInventory().selected,
+                                        ModCommonConfigs.BREAK_HANDCUFFS_PHASES.get());
+                            }
                         } else if (interacting.getMainHandItem().isEmpty()) {
                             if (interacting.isCrouching()) {
                                 if (hadJustSofted <= 0) {
@@ -190,6 +203,18 @@ public class CuffedEventServer {
                     if (interacting.getMainHandItem().is(ModItems.HANDCUFFS.get())
                             && interacting.getCooldowns().getCooldownPercent(ModItems.HANDCUFFS.get(), 20) <= 0) {
                         handcuffed.setCuffingPlayer(interacting);
+                    }
+                }
+            } else if (event.getTarget() instanceof PadlockEntity entity) {
+                if (event.getEntity().getItemInHand(event.getHand()).is(ModItems.LOCKPICK.get())) {
+                    if (!event.getEntity().getCooldowns().isOnCooldown(ModItems.LOCKPICK.get())) {
+                        event.getEntity().getCooldowns().addCooldown(ModItems.LOCKPICK.get(),
+                                (20 * (entity.isReinforced() ? ModCommonConfigs.BREAK_REINFORCED_PADLOCK_PHASES.get()
+                                        : ModCommonConfigs.BREAK_PADLOCK_PHASES.get())));
+                        CuffedServer.sendLockpickUpdate(event.getEntity(), entity.getId(),
+                                event.getEntity().getInventory().selected,
+                                entity.isReinforced() ? ModCommonConfigs.BREAK_REINFORCED_PADLOCK_PHASES.get()
+                                        : ModCommonConfigs.BREAK_PADLOCK_PHASES.get());
                     }
                 }
             }
@@ -236,7 +261,71 @@ public class CuffedEventServer {
     @SubscribeEvent
     public void playerMineBlock(BreakEvent event) {
         if (event.getState().is(ModBlocks.CELL_DOOR.get()))
-            if (!event.getPlayer().getItemInHand(InteractionHand.MAIN_HAND).is(ItemTags.PICKAXES))
+            if (!event.getPlayer().isCreative()
+                    && !event.getPlayer().getItemInHand(InteractionHand.MAIN_HAND).is(ItemTags.PICKAXES))
                 event.setCanceled(true);
+
+        Level level = (Level) event.getLevel();
+        BlockPos pickpos = event.getPos();
+        BlockState pickresult = event.getState();
+        PadlockEntity padlock = PadlockEntity.getLockAt(level, pickpos);
+
+        boolean isLockedBlock = false;
+        if (pickresult.is(ModTags.Blocks.LOCKABLE_BLOCKS)) {
+            if (padlock != null && padlock.isLocked())
+                isLockedBlock = true;
+            else if (pickresult.getBlock() instanceof DoorBlock door) {
+                PadlockEntity eB = PadlockEntity.getLockAt(level, pickpos.below());
+                PadlockEntity eA = PadlockEntity.getLockAt(level, pickpos.above());
+                if (level.getBlockState(pickpos.below()).is(door) && eB != null && eB.isLocked())
+                    isLockedBlock = true;
+                else if (level.getBlockState(pickpos.above()).is(door) && eA != null && eA.isLocked())
+                    isLockedBlock = true;
+            }
+        }
+
+        if (isLockedBlock)
+            event.setCanceled(true);
+    }
+
+    public static void FinishLockpicking(int code, int lockId, int playerId, UUID playerUUID) {
+        ServerPlayer pl = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(playerUUID);
+        if(pl != null) {
+            Level l = pl.level();
+            if (l != null) {
+                Player player = (Player) l.getEntity(playerId);
+                if (player != null) {
+                    Level level = player.level();
+                    if (level != null) {
+                        if (!level.isClientSide) {
+                            ItemStack itemstack = player.getItemInHand(InteractionHand.MAIN_HAND);
+                            player.getCooldowns().addCooldown(ModItems.LOCKPICK.get(), 20);
+                            if (code <= 1) {
+                                // has failed lockpicking
+                                itemstack.hurtAndBreak(1, player, (p) -> {
+                                    p.broadcastBreakEvent(InteractionHand.MAIN_HAND);
+                                });
+                            } else {
+                                // has completed lockpicking
+                                level.playLocalSound((float) player.position().x, (float) player.position().y,
+                                        (float) player.position().z, SoundEvents.CHAIN_BREAK, SoundSource.PLAYERS, 1, 1,
+                                        true);
+
+                                itemstack.hurtAndBreak(1, player, (p) -> {
+                                    p.broadcastBreakEvent(InteractionHand.MAIN_HAND);
+                                });
+                                if (level.getEntity(lockId) instanceof PadlockEntity e)
+                                    e.RemoveLock();
+                                else if (level.getEntity(lockId) instanceof Player e) {
+                                    IHandcuffed cuffed = CuffedServer.getHandcuffed(e);
+                                    if (cuffed.isHandcuffed())
+                                        cuffed.removeHandcuffs();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

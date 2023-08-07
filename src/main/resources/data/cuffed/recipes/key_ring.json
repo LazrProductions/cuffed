@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "cuffed:key"
+    },
+    {
+      "item": "cuffed:key"
+      
+    }
+  ],
+  "result": {
+    "item": "cuffed:key_ring",
+    "count": 1,
+    "nbt": {
+      "Keys" : 2
+    }
+  }
+}

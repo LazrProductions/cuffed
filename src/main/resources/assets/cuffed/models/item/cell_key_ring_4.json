@@ -1,6 +1,0 @@
-{
-    "parent": "cuffed:item/cell_key_ring",
-    "textures": {
-      "layer0": "cuffed:item/cell_key_ring_4"
-    }
-}

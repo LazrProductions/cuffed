@@ -124,7 +124,7 @@ processResources {
 }
 
 jar {
-    archiveFileName.set(project.mod_name +"_v"+ project.mod_version + "_mc" + project.minecraft_version + ".jar")
+    archiveFileName.set(project.mod_name +"-" + project.minecraft_version + "-" + project.mod_version + ".jar")
     manifest {
         attributes([
                 "Specification-Title"     : mod_id,

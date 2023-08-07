@@ -1,0 +1,13 @@
+{
+    "variants": {
+      "type=bottom": {
+        "model": "cuffed:block/reinforced_stone_slab"
+      },
+      "type=double": {
+        "model": "cuffed:block/reinforced_stone"
+      },
+      "type=top": {
+        "model": "cuffed:block/reinforced_stone_slab_top"
+      }
+    }
+  }

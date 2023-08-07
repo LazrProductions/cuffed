@@ -1,8 +1,13 @@
 CHECKLIST
 
 [*] - Keys and Doors
-[ ] - Unbreakable Paintable Blocks
+[*] - Unbreakable Cell Wall Blocks
 [*] - Handcuffing
-[-] - Item Seizure
+[*] - Item Seizure
 [*] - Chaining
-[ ] - Handcuffed Animation and Pose
+[*] - Handcuffed Animation and Pose
+[*] - padlocks for locking chests
+[*] - lockpicking handcuffed people, cell doors, and padlocks.
+[ ] - config options
+
+[?] - error in server when handcuffed -1 or something

@@ -2,7 +2,6 @@ package com.lazrproductions.cuffed.packet;
 
 import java.util.ArrayList;
 
-//import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.client.CuffedEventClient;
 import com.mojang.datafixers.util.Pair;
 
@@ -16,10 +15,12 @@ public class UpdateChainedPacket extends CreativePacket {
     public int[] listA = new int[0];
     public int[] listB = new int[0];
 
-    public UpdateChainedPacket(int[] a, int[] b) {
-        //CuffedMod.LOGGER.info("Creating packet with size: " + a.length);
+    public int[] handcuffedPlayers = new int[0];
+
+    public UpdateChainedPacket(int[] a, int[] b, int[] c) {
         this.listA = a;
         this.listB = b;
+        this.handcuffedPlayers = c;
     }
 
     public UpdateChainedPacket() {
@@ -27,8 +28,8 @@ public class UpdateChainedPacket extends CreativePacket {
 
     @Override
     public void executeClient(Player arg0) {
-        //CuffedMod.LOGGER.info("[Server] - Receiving chained update packey\n-> with size: " + this.listA.length);
         CuffedEventClient.allChainedPlayers = GenericToList(listA, listB);
+        CuffedEventClient.SetHandcuffedPlayers(ArrayToList(handcuffedPlayers));
     }
 
     @Override
@@ -44,28 +45,45 @@ public class UpdateChainedPacket extends CreativePacket {
             Pair<Integer, Integer> p = new Pair<Integer, Integer>(a[i], b[i]);
             l.add(p);
         }
-        //CuffedMod.LOGGER.info("Converting simple arrays to list, length at start " + a.length + ", length at end " + l.size());
+        // CuffedMod.LOGGER.info("Converting simple arrays to list, length at start " +
+        // a.length + ", length at end " + l.size());
         return l;
     }
 
     public static int[] ListToGeneric(ArrayList<Pair<Integer, Integer>> list, boolean getFirst) {
         int[] a = new int[list.size()];
-        for (int i = 0; i < a.length; i++) 
+        for (int i = 0; i < a.length; i++)
             if (getFirst)
                 a[i] = list.get(i).getFirst();
             else
                 a[i] = list.get(i).getSecond();
-        //CuffedMod.LOGGER.info("Converting List to simple array(s), length at start " + list.size() + ", length at end " + a.length);
+        // CuffedMod.LOGGER.info("Converting List to simple array(s), length at start "
+        // + list.size() + ", length at end " + a.length);
         return a;
     }
 
-    public static ArrayList<Pair<Integer, Integer>> ComplexToSimple(ArrayList<Pair<Player, Entity>> list){
+    public static int[] ListToGeneric(ArrayList<Player> list) {
+        int[] a = new int[list.size()];
+        for (int i = 0; i < a.length; i++)
+            a[i] = list.get(i).getId();
+        return a;
+    }
+
+    public static ArrayList<Pair<Integer, Integer>> ComplexToSimple(ArrayList<Pair<Player, Entity>> list) {
         ArrayList<Pair<Integer, Integer>> a = new ArrayList<Pair<Integer, Integer>>();
         for (int i = 0; i < list.size(); i++) {
-            Pair<Integer,Integer> p = new Pair<Integer,Integer>(list.get(i).getFirst().getId(), list.get(i).getSecond().getId());
+            Pair<Integer, Integer> p = new Pair<Integer, Integer>(list.get(i).getFirst().getId(),
+                    list.get(i).getSecond().getId());
             a.add(p);
         }
-        //CuffedMod.LOGGER.info("Converting complex array to simple, length at start " + list.size() + ", length at end " + a.size());
         return a;
+    }
+
+    public static ArrayList<Integer> ArrayToList(int[] array) {
+        ArrayList<Integer> list = new ArrayList<Integer>();
+        for (int i = 0; i < array.length; i++) {
+            list.add(array[i]);
+        }
+        return list;
     }
 }

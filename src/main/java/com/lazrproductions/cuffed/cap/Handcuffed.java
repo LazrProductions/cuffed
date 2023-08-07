@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.api.IHandcuffed;
+import com.lazrproductions.cuffed.config.ModCommonConfigs;
 import com.lazrproductions.cuffed.entity.ChainKnotEntity;
 import com.lazrproductions.cuffed.init.ModDamageTypes;
 import com.lazrproductions.cuffed.init.ModItems;
@@ -77,7 +78,7 @@ public class Handcuffed implements IHandcuffed {
         }
 
         if (anchor != null) {
-            double maxDist = 5.0; // TODO: make config value for maximum chain length.
+            double maxDist = ModCommonConfigs.MAX_CHAIN_LENGTH.get();
 
             if (self.distanceTo(anchor) > maxDist - 2 && self.getY() < anchor.getY() - 1.5F
                     && !self.onGround()) {
@@ -111,8 +112,8 @@ public class Handcuffed implements IHandcuffed {
 
         } else if (applyingHandcuffs()) {
             shouldShowGraphic = true;
-            progress += 4; // increase progress over time, untill the player is completely handcuffed.
-                           // TODO: make config setting for speed.
+            progress += ModCommonConfigs.INTERUPT_PHASE_SPEED.get(); // increase progress over time, untill the player is completely handcuffed.
+            
             if (player.swinging)
                 interupt(player);
         } else {
@@ -157,7 +158,7 @@ public class Handcuffed implements IHandcuffed {
         if (!applyingHandcuffs() || hasBrokenCuffs)
             return;
 
-        int maxProgress = 42; // TODO: make config option for interupt
+        int maxProgress = 42;
 
         // within interuption interval
         if (progress > 0 && progress < maxProgress) {
@@ -247,6 +248,9 @@ public class Handcuffed implements IHandcuffed {
         this.handcuffed = true;
         this.progress = 42;
 
+        self = player;
+        CuffedServer.addHandcuffed(player);
+
         SendUpdatePacket();
     }
 
@@ -262,6 +266,8 @@ public class Handcuffed implements IHandcuffed {
         setAnchor(null);
         this.softCuffed = false;
         this.progress = 0;
+
+        CuffedServer.removeHandcuffed(self);
 
         SendUpdatePacket();
     }
@@ -407,10 +413,7 @@ public class Handcuffed implements IHandcuffed {
 
     @Override
     public boolean isChained() {
-        return (anchor != null/* &&(anchor instanceof Player || anchor instanceof LeashFenceKnotEntity) */); // TODO:
-                                                                                                             // change
-                                                                                                             // to
-                                                                                                             // ChainFenceKnotEntity
+        return (anchor != null);
     }
 
     @Override

@@ -5,6 +5,7 @@ import java.util.Random;
 import org.joml.Math;
 import org.joml.Matrix4f;
 
+import com.lazrproductions.cuffed.config.ModCommonConfigs;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.LightTexture;
@@ -20,9 +21,12 @@ public class ChainRenderHelper {
 	public static void renderChainTo(Entity entity, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, Entity entityFrom) {
 		if(entityFrom == null)
 			return;
-		float distance = entity.distanceTo(entityFrom) / 5.0f; //TODO: add config value for max distance chain thing
-		if(distance>5.0f)
-			distance = 5.0f;
+
+		float maxLength = ModCommonConfigs.MAX_CHAIN_LENGTH.get();
+
+		float distance = entity.distanceTo(entityFrom) / maxLength;
+		if(distance>maxLength)
+			distance = maxLength;
 
 		renderVerticalTo(entity, partialTicks, poseStack, bufferSource, entityFrom, distance);
 		renderHorizontalTo(entity, partialTicks, poseStack, bufferSource, entityFrom, distance);
@@ -31,9 +35,10 @@ public class ChainRenderHelper {
 	public static void renderChainFrom(Entity entity, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, Entity entityTo) {
 		if(entityTo == null)
 			return;
-		float distance = entity.distanceTo(entityTo) / 5.0f; //TODO: add config value for max distance chain thing
-			if(distance>5.0f)
-				distance = 5.0f;
+		float maxLength = ModCommonConfigs.MAX_CHAIN_LENGTH.get();
+		float distance = entity.distanceTo(entityTo) / maxLength;
+			if(distance>maxLength)
+				distance = maxLength;
 
 		renderVerticalFrom(entity, partialTicks, poseStack, bufferSource, entityTo, distance);
 		renderHorizontalFrom(entity, partialTicks, poseStack, bufferSource, entityTo, distance);
