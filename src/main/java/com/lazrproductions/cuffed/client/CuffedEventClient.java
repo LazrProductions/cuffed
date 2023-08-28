@@ -20,7 +20,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.model.PlayerModel;
-import net.minecraft.client.model.HumanoidModel.ArmPose;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
@@ -47,6 +46,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.ComputeFovModifierEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
@@ -55,7 +55,6 @@ import net.minecraftforge.client.event.InputEvent.InteractionKeyMappingTriggered
 import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.client.event.ScreenEvent.Opening;
 
@@ -265,7 +264,10 @@ public class CuffedEventClient {
 
                     if (curPhase > pickProgress) {
                         isLockpicking = false;
-                        CuffedServer.sendLockpickFinish(0, pickingLock,player.getId(), player.getUUID()); // Missed a phase and didnt click.
+                        CuffedServer.sendLockpickFinish(0, pickingLock, player.getId(), player.getUUID()); // Missed a
+                                                                                                           // phase and
+                                                                                                           // didnt
+                                                                                                           // click.
                         player.playSound(SoundEvents.ITEM_BREAK);
                     }
 
@@ -273,8 +275,12 @@ public class CuffedEventClient {
 
                     if (lockpickTick > (20 * maxPhases)) {
                         isLockpicking = false;
-                        CuffedServer.sendLockpickFinish(0, pickingLock,player.getId(), player.getUUID()); // Time ran out (or didnt get make complete
-                                                                         // enough phases)
+                        CuffedServer.sendLockpickFinish(0, pickingLock, player.getId(), player.getUUID()); // Time ran
+                                                                                                           // out (or
+                                                                                                           // didnt get
+                                                                                                           // make
+                                                                                                           // complete
+                        // enough phases)
                         player.playSound(SoundEvents.ITEM_BREAK);
                     }
                 } else {
@@ -374,10 +380,11 @@ public class CuffedEventClient {
             if (isLockpicking) {
                 if (pickPhaseTick <= 16 && pickPhaseTick >= 10) {
                     pickProgress++;
-                    pickSpeed += ((float)ModCommonConfigs.LOCKPICK_SPEED_INCREASE_PER_PHASE.get())/100f;
+                    pickSpeed += ((float) ModCommonConfigs.LOCKPICK_SPEED_INCREASE_PER_PHASE.get()) / 100f;
                     player.playSound(SoundEvents.IRON_TRAPDOOR_OPEN);
                 } else {
-                    CuffedServer.sendLockpickFinish(1, pickingLock,player.getId(), player.getUUID()); // missed sweet spot
+                    CuffedServer.sendLockpickFinish(1, pickingLock, player.getId(), player.getUUID()); // missed sweet
+                                                                                                       // spot
                     player.playSound(SoundEvents.ITEM_BREAK);
                     isLockpicking = false;
                 }
@@ -453,27 +460,28 @@ public class CuffedEventClient {
         }
     }
 
-    @SubscribeEvent
-    public void renderHandcuffedAnimationPre(RenderPlayerEvent.Pre event) {
-        Player player = event.getEntity();
-        PlayerRenderer render = event.getRenderer();
-        PlayerModel<AbstractClientPlayer> model = render.getModel();
+    // @SubscribeEvent
+    // public void renderHandcuffedAnimationPre(RenderPlayerEvent.Pre event) {
+    // Player player = event.getEntity();
+    // PlayerRenderer render = event.getRenderer();
+    // PlayerModel<AbstractClientPlayer> model = render.getModel();
 
-        if (player != null) {
-            if (allHandcuffedPlayers.contains(player.getId())) {
-                model.rightArmPose = ArmPose.CROSSBOW_CHARGE;
-                model.rightSleeve.copyFrom(model.rightArm);
+    // if (player != null) {
+    // if (allHandcuffedPlayers.contains(player.getId())) {
+    // model.rightArmPose = ArmPose.CROSSBOW_CHARGE;
+    // model.rightSleeve.copyFrom(model.rightArm);
 
-                model.leftArmPose = ArmPose.CROSSBOW_CHARGE;
-                model.leftSleeve.copyFrom(model.leftArm);
-                model.attackTime = 0;
-            }
+    // model.leftArmPose = ArmPose.CROSSBOW_CHARGE;
+    // model.leftSleeve.copyFrom(model.leftArm);
+    // model.attackTime = 0;
+    // }
 
-            model.body.visible = true;
-            defaultScale = new Vec3(model.body.xScale, model.body.yScale, model.body.zScale);
+    // model.body.visible = true;
+    // defaultScale = new Vec3(model.body.xScale, model.body.yScale,
+    // model.body.zScale);
 
-        }
-    }
+    // }
+    // }
 
     @SubscribeEvent
     public void renderHandcuffedAnimationPost(RenderPlayerEvent.Post event) {
@@ -592,7 +600,7 @@ public class CuffedEventClient {
     }
 
     @SubscribeEvent
-    public void clientLeave(PlayerLoggedOutEvent event) {
+    public void reset(ClientPlayerNetworkEvent.LoggingOut event) {
         handcuffer = null;
         showGraphic = false;
         isCuffed = false;
@@ -600,10 +608,11 @@ public class CuffedEventClient {
         isSoftCuffed = false;
         isChained = false;
         anchor = -1;
-        _anchor = null;
         progress = 0;
-        _player = null;
         isLockpicking = false;
+
+        allChainedPlayers.clear();
+        allHandcuffedPlayers.clear();
     }
 
     public static BlockState GetSelectedBlock(Player player, boolean isFluid) {

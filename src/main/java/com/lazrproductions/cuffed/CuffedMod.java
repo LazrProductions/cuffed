@@ -99,7 +99,6 @@ public class CuffedMod {
     // #region Creative Mode Tabs
     public static final RegistryObject<CreativeModeTab> CUFFED_TAB = CREATIVE_MODE_TABS.register("cuffed_tab",
             () -> CreativeModeTab.builder()
-                    .withTabsBefore(CreativeModeTabs.COMBAT)
                     .title(Component.translatable("itemGroup.cuffed"))
                     .icon(() -> ModItems.HANDCUFFS.get().getDefaultInstance())
                     .displayItems((parameters, output) -> {
@@ -375,5 +374,6 @@ public class CuffedMod {
             event.registerLayerDefinition(ChainKnotEntityModel.LAYER_LOCATION, ChainKnotEntityModel::getModelData);
             event.registerLayerDefinition(PadlockEntityModel.LAYER_LOCATION, PadlockEntityModel::getModelData);
         }
+
     }
 }

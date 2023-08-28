@@ -223,22 +223,24 @@ public class CuffedEventServer {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void playerDied(LivingDeathEvent event) {
-        if (event.getEntity() instanceof Player player && isCuffedActive(event.getEntity())) {
-            Level level = event.getEntity().level();
+        if (event.getEntity() instanceof Player player) {
+            IHandcuffed handcuffed = CuffedServer.getHandcuffed(player);
+            if (isCuffedActive(event.getEntity()) && handcuffed.isGettingOrCurrentlyCuffed()) {
+                CuffedServer.removeHandcuffs(player);
 
-            CuffedServer.removeHandcuffs(player);
-
-            if (!level.isClientSide) {
-                CuffedServer.removePlayerAsHelper(player);
-
-                AttributeInstance playerAtt = player.getAttribute(Attributes.MOVEMENT_SPEED);
-                if (playerAtt != null && playerAtt.hasModifier(CuffedMod.HANDCUFFED_ATTIRBUTE))
-                    playerAtt.removeModifier(CuffedMod.HANDCUFFED_ATTIRBUTE);
+                Level level = event.getEntity().level();
 
                 ItemEntity itementity = new ItemEntity(level, player.getX(), player.getY(), player.getZ(),
                         new ItemStack(ModItems.HANDCUFFS.get()));
                 itementity.setDefaultPickUpDelay();
                 level.addFreshEntity(itementity);
+
+                if (!level.isClientSide)
+                    CuffedServer.removePlayerAsHelper(player);
+
+                AttributeInstance playerAtt = player.getAttribute(Attributes.MOVEMENT_SPEED);
+                if (playerAtt != null && playerAtt.hasModifier(CuffedMod.HANDCUFFED_ATTIRBUTE))
+                    playerAtt.removeModifier(CuffedMod.HANDCUFFED_ATTIRBUTE);
             }
         }
     }
@@ -290,7 +292,7 @@ public class CuffedEventServer {
 
     public static void FinishLockpicking(int code, int lockId, int playerId, UUID playerUUID) {
         ServerPlayer pl = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(playerUUID);
-        if(pl != null) {
+        if (pl != null) {
             Level l = pl.level();
             if (l != null) {
                 Player player = (Player) l.getEntity(playerId);

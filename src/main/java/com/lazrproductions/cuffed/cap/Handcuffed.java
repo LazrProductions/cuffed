@@ -70,10 +70,7 @@ public class Handcuffed implements IHandcuffed {
             if (hasBrokenCuffs)
                 cuffingPlayer = null;
             else if (progress >= 42) {
-                cuffingPlayer.getItemInHand(InteractionHand.MAIN_HAND).shrink(1);
-                ((ServerLevel) player.level()).playSound(null, player.blockPosition(), CuffedMod.HANDCUFFED_SOUND,
-                        SoundSource.PLAYERS, 1f, 1f);
-                cuffingPlayer = null;
+                GetHandcuffedByPlayer(player);
             }
         }
 
@@ -112,8 +109,9 @@ public class Handcuffed implements IHandcuffed {
 
         } else if (applyingHandcuffs()) {
             shouldShowGraphic = true;
-            progress += ModCommonConfigs.INTERUPT_PHASE_SPEED.get(); // increase progress over time, untill the player is completely handcuffed.
-            
+            progress += ModCommonConfigs.INTERUPT_PHASE_SPEED.get(); // increase progress over time, untill the player
+                                                                     // is completely handcuffed.
+
             if (player.swinging)
                 interupt(player);
         } else {
@@ -172,10 +170,7 @@ public class Handcuffed implements IHandcuffed {
                 removeHandcuffs();
 
             } else {
-                cuffingPlayer.getItemInHand(InteractionHand.MAIN_HAND).shrink(1);
-                progress = 42;
-                ((ServerLevel) player.level()).playSound(null, player.blockPosition(), CuffedMod.HANDCUFFED_SOUND,
-                        SoundSource.PLAYERS, 1f, 1f);
+                GetHandcuffedByPlayer(player);
             }
         }
 
@@ -196,6 +191,45 @@ public class Handcuffed implements IHandcuffed {
     @Override
     public boolean uncuffed() {
         return !handcuffed;
+    }
+
+    public void GetHandcuffedByPlayer(Player player) {
+        CuffedMod.LOGGER.info("Player has been handcuffed");
+
+        // Fixes dupe glitch, if they are not holding cuffs, then find cuffs in their
+        // inventory.
+        boolean foundCuffs = false;
+        if (!cuffingPlayer.getItemInHand(InteractionHand.MAIN_HAND).is(ModItems.HANDCUFFS.get()))
+            for (int i = 0; i < cuffingPlayer.getInventory().items.size(); i++) {
+                if (cuffingPlayer.getInventory().items.get(i).is(ModItems.HANDCUFFS.get())) {
+                    cuffingPlayer.getInventory().items.get(i).shrink(1);
+                    foundCuffs = true;
+                    break;
+                }
+            }
+        else {
+            cuffingPlayer.getItemInHand(InteractionHand.MAIN_HAND).shrink(1);
+            foundCuffs = true;
+        }
+
+        if (foundCuffs) {
+            CuffedMod.LOGGER.info("And is staying cuffed");
+            // If the handcuffer is still holding or has cuffs in their inventory, handcuff
+            // the person and use a pair.
+            progress = 42;
+            ((ServerLevel) player.level()).playSound(null, player.blockPosition(), CuffedMod.HANDCUFFED_SOUND,
+                    SoundSource.PLAYERS, 1f, 1f);
+        } else {
+            // If the handcuffer has scrolled away, or lost their cuffs, then break out of
+            // them.
+            CuffedMod.LOGGER.info("and has broken out because the cuffer has no cuffs");
+            ((ServerLevel) player.level()).playSound(null, player.blockPosition(), SoundEvents.ITEM_BREAK,
+                    SoundSource.PLAYERS, 1f, 1f);
+            cuffingPlayer.getCooldowns().addCooldown(ModItems.HANDCUFFS.get(), 20);
+            hasBrokenCuffs = true;
+            removeHandcuffs();
+        }
+        cuffingPlayer = null;
     }
 
     /**
@@ -366,14 +400,12 @@ public class Handcuffed implements IHandcuffed {
                 CuffedServer.addChainedPair(self, anchor);
         }
 
-
         SendUpdatePacket();
     }
 
     @Override
     public void setAnchor(Entity entity, boolean ignoreNull) {
         Entity oldAnchor = anchor;
-
 
         if (!ignoreNull && anchor != null && entity == null) {
             Vec3 mid = new Vec3((self.getX() + anchor.getX()) / 2, (self.getY() + anchor.getY()) / 2,
