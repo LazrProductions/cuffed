@@ -74,7 +74,7 @@ public class CuffedMod {
     public static final Logger LOGGER = LogManager.getLogger(CuffedMod.MODID);
     public static final String MODID = "cuffed";
 
-    public static final CreativeNetwork NETWORK = new CreativeNetwork("1.0", LOGGER,
+    public static final CreativeNetwork NETWORK = new CreativeNetwork(1, LOGGER,
             new ResourceLocation(CuffedMod.MODID, "main"));
 
     public static ResourceLocation res(String n) {
