@@ -9,13 +9,41 @@
     "item.cuffed.possessions_box.full": "Box of Possessions",
     "item.cuffed.padlock": "Padlock",
     "item.cuffed.lockpick": "Lockpick",
+    "item.cuffed.prisoner_tag": "Prisoner Tag",
 
     "block.cuffed.cell_door": "Cell Door",
     "block.cuffed.reinforced_stone": "Reinforced Stone",
     "block.cuffed.chiseled_reinforced_stone": "Chiseled Reinforced Stone",
     "block.cuffed.reinforced_stone_slab": "Reinforced Stone Slab",
     "block.cuffed.reinforced_stone_stairs": "Reinforced Stone Stairs",
+    "block.cuffed.reinforced_bars": "Reinforced Bars",
+    "block.cuffed.pillory": "Pillory",
 
     "death.attack.hang": "%1$s fell victim to capital punishment",
-    "death.attack.bramble.player": "%1$s couldn't live in the same world as %2$s"
+
+    "info.cuffed.inProgress": "You are Getting Handcuffed",
+    "info.cuffed.handcuffed": "You are Handcuffed",
+    "info.cuffed.anchored": "You are Chained",
+    "info.cuffed.detained": "You are Detained",
+    "info.cuffed.softcuffed": "You are Handcuffed, but free to move.",
+
+    "stat.cuffed.players_handcuffed": "Players Handcuffed",
+    "stat.cuffed.times_handcuffed": "Times Handcuffed",
+    "stat.cuffed.handcuffs_broken": "Handcuffs Broken",
+    "stat.cuffed.handcuffs_interupted": "Handcuffs Interupted",
+    "stat.cuffed.time_spent_handcuffed": "Time Spent Handcuffed",
+    "stat.cuffed.successful_lockpicks": "Successful Lockpicks",
+    "stat.cuffed.lockpicks_broken": "Lockpicks Broken",
+
+    "command.cuffed.notcuffed": "%1$s is not in handcuffs.",
+    "command.cuffed.alreadycuffed": "%1$s is already handcuffed.",
+    "command.cuffed.toggle.softcuffed.on": "%1$s is now soft-cuffed.",
+    "command.cuffed.toggle.softcuffed.off": "%1$s is no longer soft-cuffed.",
+    "command.cuffed.nickname.set": "Set %1$s's nickname to %2$s.",
+    "command.cuffed.nickname.reset": "Reset %1$s's nickname.",
+    "command.cuffed.handcuff.on": "%1$s is now in Handcuffs",
+    "command.cuffed.handcuff.off": "%1$s is no longer in Handcuffs",
+    "command.cuffed.get.on": "%1$s is in handcuffs.",
+    "command.cuffed.get.off": "%1$s is not in handcuffs.",
+    "command.cuffed.debug": "Sent debug sync packet to %1$s."
 }

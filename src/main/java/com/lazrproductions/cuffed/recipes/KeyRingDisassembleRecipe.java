@@ -1,7 +1,7 @@
 package com.lazrproductions.cuffed.recipes;
 
-import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.init.ModItems;
+import com.lazrproductions.cuffed.init.ModRecipes;
 
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
@@ -72,7 +72,7 @@ public class KeyRingDisassembleRecipe extends CustomRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return CuffedMod.KEY_RING_DISASSEMBLE.get();
+        return ModRecipes.KEY_RING_DISASSEMBLE.get();
     }
 
 }

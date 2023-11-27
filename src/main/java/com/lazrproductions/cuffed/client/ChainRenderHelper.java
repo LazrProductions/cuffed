@@ -5,7 +5,7 @@ import java.util.Random;
 import org.joml.Math;
 import org.joml.Matrix4f;
 
-import com.lazrproductions.cuffed.config.ModCommonConfigs;
+import com.lazrproductions.cuffed.CuffedMod;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.LightTexture;
@@ -22,7 +22,7 @@ public class ChainRenderHelper {
 		if(entityFrom == null)
 			return;
 
-		float maxLength = ModCommonConfigs.MAX_CHAIN_LENGTH.get();
+		float maxLength = CuffedMod.CONFIG.handcuffSettings.maxChainLength;
 
 		float distance = entity.distanceTo(entityFrom) / maxLength;
 		if(distance>maxLength)
@@ -35,7 +35,7 @@ public class ChainRenderHelper {
 	public static void renderChainFrom(Entity entity, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, Entity entityTo) {
 		if(entityTo == null)
 			return;
-		float maxLength = ModCommonConfigs.MAX_CHAIN_LENGTH.get();
+		float maxLength = CuffedMod.CONFIG.handcuffSettings.maxChainLength;
 		float distance = entity.distanceTo(entityTo) / maxLength;
 			if(distance>maxLength)
 				distance = maxLength;

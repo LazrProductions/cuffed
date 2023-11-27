@@ -3,7 +3,7 @@ package com.lazrproductions.cuffed.client.render.entity;
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.client.render.entity.model.ChainKnotEntityModel;
 import com.lazrproductions.cuffed.entity.ChainKnotEntity;
-import com.lazrproductions.cuffed.events.RenderChainKnotEntityEvent;
+import com.lazrproductions.cuffed.event.RenderChainKnotEntityEvent;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 

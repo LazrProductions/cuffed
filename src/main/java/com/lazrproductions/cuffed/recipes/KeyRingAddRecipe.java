@@ -3,8 +3,8 @@ package com.lazrproductions.cuffed.recipes;
 import java.util.ArrayList;
 
 import com.lazrproductions.cuffed.CuffedMod;
-import com.lazrproductions.cuffed.config.ModCommonConfigs;
 import com.lazrproductions.cuffed.init.ModItems;
+import com.lazrproductions.cuffed.init.ModRecipes;
 
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
@@ -46,7 +46,7 @@ public class KeyRingAddRecipe extends CustomRecipe {
         }
 
         if (ringStack != null)
-            if ((ringStack.getOrCreateTag().getInt("Keys")) + keyStack.size() > ModCommonConfigs.MAX_KEYS_ON_RING.get())
+            if ((ringStack.getOrCreateTag().getInt("Keys")) + keyStack.size() > CuffedMod.CONFIG.maxKeysPerRing)
                 return false;
 
         if (ringStack == null || keyStack.size() == 0)
@@ -100,7 +100,7 @@ public class KeyRingAddRecipe extends CustomRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return CuffedMod.KEY_RING_ADD.get();
+        return ModRecipes.KEY_RING_ADD.get();
     }
 
 }

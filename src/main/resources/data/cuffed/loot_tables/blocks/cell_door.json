@@ -13,6 +13,13 @@
         "conditions": [
           {
             "condition": "minecraft:survives_explosion"
+          },
+          {
+            "block": "cuffed:cell_door",
+            "condition": "minecraft:block_state_property",
+            "properties": {
+              "half": "lower"
+            }
           }
         ]
       }

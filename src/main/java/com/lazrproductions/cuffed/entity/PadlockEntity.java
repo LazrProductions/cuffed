@@ -19,6 +19,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -61,6 +62,12 @@ public class PadlockEntity extends HangingEntity {
     @Override
     public void dropItem(@Nullable Entity entity) {
         this.playSound(SoundEvents.CHAIN_BREAK, 1.0F, 1.0F);
+        float xO = this.getYRot() == 90.0f ? -1 : this.getYRot() == 270.0f || this.getYRot() == -90.0f ? 1 : 0;
+        float zO = this.getYRot() == 0.0f ? 1 : this.getYRot() == 180.0f || this.getYRot() == -180.0f ? -1 : 0;
+        ItemEntity itementity = new ItemEntity(this.level(), this.pos.getX() + 0.5f + xO, this.pos.getY() + 0.5f,
+                this.pos.getZ() + 0.5f + zO, new ItemStack(ModItems.PADLOCK.get()));
+        itementity.setDefaultPickUpDelay();
+        this.level().addFreshEntity(itementity);
     }
 
     @Override
@@ -76,6 +83,9 @@ public class PadlockEntity extends HangingEntity {
                         int[] boundPos = doorTag.getIntArray("Position");
                         if (boundPos[0] == this.pos.getX() && boundPos[1] == this.pos.getY()
                                 && boundPos[2] == this.pos.getZ()) {
+                            
+                            
+                            interactor.awardStat(Stats.ITEM_USED.get(ModItems.KEY.get()));        
                             // Toggle locked
                             if (!interactor.isCrouching()) {
                                 setLocked(!isLocked());
@@ -103,6 +113,7 @@ public class PadlockEntity extends HangingEntity {
 
             if (stack.is((ModItems.KEY_RING.get()))) {
                 if (KeyRing.HasBoundDoorAt(stack, this.pos)) {
+                    interactor.awardStat(Stats.ITEM_USED.get(ModItems.KEY_RING.get()));    
                     // Unlock
                     if (!interactor.isCrouching()) {
                         setLocked(!isLocked());
@@ -127,6 +138,7 @@ public class PadlockEntity extends HangingEntity {
             }
 
             if (stack.is((Items.DIAMOND)) && !isReinforced()) {
+                interactor.awardStat(Stats.ITEM_USED.get(Items.DIAMOND));
                 setReinforced(true);
                 stack.shrink(1);
                 this.playSound(SoundEvents.NETHERITE_BLOCK_PLACE, 1, 1);
@@ -303,6 +315,6 @@ public class PadlockEntity extends HangingEntity {
                 (double) this.pos.getZ() + 0.5D);
 
         this.setBoundingBox(new AABB(this.getX() - 0.52D, this.getY() - 0.12D, this.getZ() - 0.52D,
-                this.getX() + 0.52D, this.getY() + 0.42D, this.getZ() + 0.52D));
+                this.getX() + 0.52D, this.getY() + 0.13D, this.getZ() + 0.52D));
     }
 }

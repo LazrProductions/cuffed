@@ -4,6 +4,8 @@ import com.lazrproductions.cuffed.entity.PadlockEntity;
 import com.lazrproductions.cuffed.init.ModTags;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -29,7 +31,9 @@ public class Padlock extends Item {
                 if(PadlockEntity.getLockAt(level, pos) != null)
                     return InteractionResult.FAIL;
                 else{
+                    player.level().playSound(null, pos, SoundEvents.CHAIN_PLACE, SoundSource.BLOCKS);
                     PadlockEntity.getOrCreateLockAt(level, pos, context.getClickedFace());
+                    //player.awardStat(Stats.ITEM_USED.get(ModItems.PADLOCK.get()));
                     player.getItemInHand(context.getHand()).shrink(1);
                     return InteractionResult.CONSUME;
                 }

@@ -2,8 +2,8 @@ package com.lazrproductions.cuffed.packet;
 
 import java.util.UUID;
 
-import com.lazrproductions.cuffed.client.CuffedEventClient;
-import com.lazrproductions.cuffed.server.CuffedEventServer;
+import com.lazrproductions.cuffed.api.CuffedAPI;
+import com.lazrproductions.cuffed.event.ModClientEvents;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -43,14 +43,14 @@ public class LockpickPacket extends CreativePacket {
     public void executeClient(Player arg0) {
         if (stopCode <= -1) {
             if(arg0.getId() == playerId) {
-                CuffedEventClient.maxPhases = pickPhases;
-                CuffedEventClient.pickingLock = lockId;
-                CuffedEventClient.lockpickTick = lockpickTick;
-                CuffedEventClient.pickingSlot = selectedSlot;
+                ModClientEvents.maxPhases = pickPhases;
+                ModClientEvents.pickingLock = lockId;
+                ModClientEvents.lockpickTick = lockpickTick;
+                ModClientEvents.pickingSlot = selectedSlot;
                 if (lockpickTick > -1)
-                    CuffedEventClient.isLockpicking = true;
+                    ModClientEvents.isLockpicking = true;
                 else
-                    CuffedEventClient.isLockpicking = false;
+                    ModClientEvents.isLockpicking = false;
             }
         }
     }
@@ -58,6 +58,6 @@ public class LockpickPacket extends CreativePacket {
     @Override
     public void executeServer(ServerPlayer arg0) {
         if(stopCode>-1)
-            CuffedEventServer.FinishLockpicking(stopCode, lockId, playerId, UUID.fromString(playerUUID));
+            CuffedAPI.Lockpicking.FinishLockpicking(stopCode, lockId, playerId, UUID.fromString(playerUUID));
     }
 }

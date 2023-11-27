@@ -100,8 +100,7 @@ dependencies {
 
 
 mixin {
-    // MixinGradle Settings
-    add sourceSets.main, 'mixins.cuffed.refmap.json'
+    add sourceSets.main, 'mixin.cuffed.refmap.json'
     config 'mixins.cuffed.json'
 }
 

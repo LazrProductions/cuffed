@@ -5,9 +5,10 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import com.lazrproductions.cuffed.api.IHandcuffed;
+import com.lazrproductions.cuffed.CuffedMod;
+import com.lazrproductions.cuffed.api.CuffedAPI;
+import com.lazrproductions.cuffed.cap.CuffedCapability;
 import com.lazrproductions.cuffed.init.ModEntityTypes;
-import com.lazrproductions.cuffed.server.CuffedServer;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -94,9 +95,14 @@ public class ChainKnotEntity extends HangingEntity {
     public void dropItem(@Nullable Entity p_31837_) {
         this.playSound(SoundEvents.CHAIN_BREAK, 1.0F, 1.0F);
         for (int i = 0; i < chainedPlayers.size(); i++) {
-            IHandcuffed cuffed = CuffedServer.getHandcuffed(chainedPlayers.get(i));
-            cuffed.setAnchor(null);
+            CuffedCapability cuffed = CuffedAPI.Capabilities.getCuffedCapability(chainedPlayers.get(i));
+            cuffed.server_setAnchor(null);
         }
+        // Chains are dropped from the method(s) above, so this isn't needed.
+        // ItemEntity itementity = new ItemEntity(this.level(), this.pos.getX() + 0.5f, this.pos.getY() + 0.5f,
+        //         this.pos.getZ() + 0.5f, new ItemStack(Items.CHAIN));
+        // itementity.setDefaultPickUpDelay();
+        // this.level().addFreshEntity(itementity);
     }
 
     @Override
@@ -105,28 +111,29 @@ public class ChainKnotEntity extends HangingEntity {
             return InteractionResult.SUCCESS;
         } else {
             boolean flag = false;
+            double maxDist = CuffedMod.CONFIG.handcuffSettings.maxChainLength;
             List<Player> list = this.level().getEntitiesOfClass(Player.class,
-                    new AABB(this.getX() - 7.0D, this.getY() - 7.0D, this.getZ() - 7.0D, this.getX() + 7.0D,
-                            this.getY() + 7.0D, this.getZ() + 7.0D));
+                    new AABB(this.getX() - maxDist - 2.0D, this.getY() - maxDist - 2.0D, this.getZ() - maxDist - 2.0D, 
+                            this.getX() + maxDist + 2.0D, this.getY() + maxDist + 2.0D, this.getZ() + maxDist + 2.0D));
 
             for (Player player : list) {
-                IHandcuffed cuffed = CuffedServer.getHandcuffed(player);
+                CuffedCapability cuffed = CuffedAPI.Capabilities.getCuffedCapability(player);
                 if (cuffed.getAnchor() == interactor) {
-                    cuffed.setAnchor(interactor);
+                    cuffed.server_setAnchor(this);
                     flag = true;
                 }
             }
 
             boolean flag1 = false;
             if (!flag) {
-                this.discard();
                 for (Player player : list) {
-                    IHandcuffed cuffed = CuffedServer.getHandcuffed(player);
-                    if (cuffed.isChained() && cuffed.getAnchor() == this) {
-                        cuffed.setAnchor(null);
+                    CuffedCapability cuffed = CuffedAPI.Capabilities.getCuffedCapability(player);
+                    if (cuffed.isAnchored() && cuffed.getAnchor() == this) {
+                        cuffed.server_setAnchor(null);
                         flag1 = true;
                     }
                 }
+                this.discard();
             }
 
             if (flag || flag1) {

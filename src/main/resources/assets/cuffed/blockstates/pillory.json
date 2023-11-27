@@ -1,0 +1,40 @@
+{
+    "variants": {
+        "half=upper,closed=false,facing=north": {
+            "model": "cuffed:block/pillory_open"
+        },
+        "half=upper,closed=false,facing=east": {
+            "model": "cuffed:block/pillory_open", "y": 90
+        },
+        "half=upper,closed=false,facing=south": {
+            "model": "cuffed:block/pillory_open", "y": 180
+        },
+        "half=upper,closed=false,facing=west": {
+            "model": "cuffed:block/pillory_open", "y": 270
+        },
+        "half=upper,closed=true,facing=north": {
+            "model": "cuffed:block/pillory_closed"
+        },
+        "half=upper,closed=true,facing=east": {
+            "model": "cuffed:block/pillory_closed", "y": 90
+        },
+        "half=upper,closed=true,facing=south": {
+            "model": "cuffed:block/pillory_closed", "y": 180
+        },
+        "half=upper,closed=true,facing=west": {
+            "model": "cuffed:block/pillory_closed", "y": 270
+        },
+        "half=lower,facing=north": {
+            "model": "cuffed:block/pillory_base"
+        },
+        "half=lower,facing=east": {
+            "model": "cuffed:block/pillory_base", "y": 90
+        },
+        "half=lower,facing=south": {
+            "model": "cuffed:block/pillory_base", "y": 180
+        },
+        "half=lower,facing=west": {
+            "model": "cuffed:block/pillory_base", "y": 270
+        }
+    }
+}

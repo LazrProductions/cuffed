@@ -1,0 +1,33 @@
+CHANGELOG
+
+Additions:
++ Added Pillory block, a new restraint that handcuffed players can be detained in.
++ Added Captive Tag, a type of nametag that can be applied to players, changing their display name.
++ Added the ability to break out of handcuff by spamming left and right movement keys, can be disabled in config.
++ Added config options for enabling/disabling the interuption phase while getting handcuffed
++ Added statistics for the following:
+  - Times Handcuffed
+  - Players Handcuffed
+  - Time Spent Handcuffed
+  - Handcuffs Broken Out Of
+  - Handcuffs Interupted
+  - Time Spent Lockpicking
+  - Lockpicks Broken
+  - Successful Lockpicks
++ Added handuffed animations, and variants for the various states of being handcuffed (IE: soft-cuffed, detained, anchored).
+
+Fixes:
+- Reworked Config Schema, configs are now .json files and are more reliable.
+  (!) All old configs will not apply to this version and above, and must be re-configured.
+- Reworked Command Syntax, cleaned and fixed up /handcuff (and changed it to /handcuffs) to make it more reliable and user-freindly.
+- Handcuffed players no longer break out of their handcuffs when disconnecting.
+- Anchored players remain anchored when disconnecting.
+- Handcuffed players can no longer scroll in their hotbar with the number keys.
+- Handcuffed players can now be targetted by mobs.
+- Make padlock hitbox shorter for easier access to locked blocks.
+- Fix Cell Doors dropping 2 Cell Door items instead of 1.
+- Padlocks now drop a padlock item when breaking with no block under it. 
+- Removed many unneccessary log spamming, mostly left-over from debugging.
+
+[ backend (not in official changelog) ]
+: completely rewrote the mod from top to bottom for better compatability, workflow, and reliability.

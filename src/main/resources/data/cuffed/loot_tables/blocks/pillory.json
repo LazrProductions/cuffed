@@ -1,0 +1,27 @@
+{
+    "type": "minecraft:block",
+    "pools": [
+      {
+        "rolls": 1,
+        "entries": [
+          {
+            "type": "minecraft:item",
+
+            "name": "cuffed:pillory"
+          }
+        ],
+        "conditions": [
+          {
+            "condition": "minecraft:survives_explosion"
+          },
+          {
+            "block": "cuffed:pillory",
+            "condition": "minecraft:block_state_property",
+            "properties": {
+              "half": "lower"
+            }
+          }
+        ]
+      }
+    ]
+  }

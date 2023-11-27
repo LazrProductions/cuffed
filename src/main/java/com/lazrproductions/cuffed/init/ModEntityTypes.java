@@ -23,7 +23,7 @@ public class ModEntityTypes {
                     .clientTrackingRange(10)
                     .updateInterval(Integer.MAX_VALUE)
                     .setShouldReceiveVelocityUpdates(false)
-                    .sized(6 / 16f, 0.2f).canSpawnFarFromPlayer().fireImmune()
+                    .sized(6 / 16f, 0.5f).canSpawnFarFromPlayer().fireImmune()
                     .build(new ResourceLocation(CuffedMod.MODID, "chain_knot").toString()));
 
     public static RegistryObject<EntityType<PadlockEntity>> PADLOCK = ENTITY_TYPES.register("padlock",
@@ -31,7 +31,7 @@ public class ModEntityTypes {
                     .clientTrackingRange(10)
                     .updateInterval(Integer.MAX_VALUE)
                     .setShouldReceiveVelocityUpdates(false)
-                    .sized(6 / 16f, 0.5f).canSpawnFarFromPlayer().fireImmune()
+                    .sized(6 / 16f, 0.1f).canSpawnFarFromPlayer().fireImmune()
                     .build(new ResourceLocation(CuffedMod.MODID, "padlock").toString()));
 
     public static void register(IEventBus bus) {

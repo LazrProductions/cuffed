@@ -5,25 +5,39 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.lazrproductions.cuffed.api.IHandcuffed;
-import com.lazrproductions.cuffed.server.CuffedServer;
+import com.lazrproductions.cuffed.CuffedMod;
+import com.lazrproductions.cuffed.api.CuffedAPI;
+import com.lazrproductions.cuffed.cap.CuffedCapability;
 
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 
 @Mixin(Player.class)
-public abstract class PlayerMixin extends LivingEntity {
-    
-    protected PlayerMixin(EntityType<? extends LivingEntity> p_20966_, Level p_20967_) {
-        super(p_20966_, p_20967_);
+public class PlayerMixin {
+    @Inject(at = @At("HEAD"), method = "getName", cancellable = true)
+    public void getName(CallbackInfoReturnable<Component> callback) {
+        Component n = getNickname();
+        if (n != null)
+            callback.setReturnValue(n);
     }
-    
-    @Inject(at = @At("HEAD"), method = "Lnet/minecraft/world/entity/player/Player;canBeSeenAsEnemy()Z", cancellable = true)
-    public void isHandcuffed(CallbackInfoReturnable<Boolean> cir) {
-        IHandcuffed handcuffed = CuffedServer.getHandcuffed((Player) (Object) this);
-        if (handcuffed.isHandcuffed())
-            cir.setReturnValue(false);
+
+    @Inject(at = @At("HEAD"), method = "getDisplayName", cancellable = true)
+    public void getDisplayName(CallbackInfoReturnable<Component> callback) {
+        Component n = getNickname();
+        if (n != null)
+            callback.setReturnValue(n);
+    }
+
+
+
+    public Component getNickname() {
+        Player t = (Player) (Object) this;
+        CuffedCapability c = CuffedAPI.Capabilities.getCuffedCapability(t);
+        if (c.getNickname() != null) {
+            if (c.isGettingOrCurrentlyHandcuffed() || CuffedMod.CONFIG.handcuffSettings.persistantNickname)
+                return c.getNickname();
+        }
+
+        return null;
     }
 }
