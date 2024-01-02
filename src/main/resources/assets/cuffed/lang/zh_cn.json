@@ -1,0 +1,49 @@
+{
+  "itemGroup.cuffed": "监禁",
+
+  "item.cuffed.key": "钥匙",
+  "item.cuffed.key_ring": "钥匙串",
+  "item.cuffed.handcuffs_key": "手铐钥匙",
+  "item.cuffed.handcuffs": "手铐",
+  "item.cuffed.possessions_box.empty": "空盒子",
+  "item.cuffed.possessions_box.full": "装有物品的盒子",
+  "item.cuffed.padlock": "挂锁",
+  "item.cuffed.lockpick": "撬锁器",
+  "item.cuffed.prisoner_tag": "犯人名牌",
+
+  "block.cuffed.cell_door": "监狱门",
+  "block.cuffed.reinforced_stone": "加固石砖",
+  "block.cuffed.chiseled_reinforced_stone": "錾制加固石砖",
+  "block.cuffed.reinforced_stone_slab": "加固石砖台阶",
+  "block.cuffed.reinforced_stone_stairs": "加固石砖楼梯",
+  "block.cuffed.reinforced_bars": "加固栅栏",
+  "block.cuffed.pillory": "颈手枷",
+
+  "death.attack.hang": "%1$s 被处以极刑",
+
+  "info.cuffed.inProgress": "你正在被铐住双手",
+  "info.cuffed.handcuffed": "你被铐住了双手",
+  "info.cuffed.anchored": "你被锁住了",
+  "info.cuffed.detained": "你被拘留了",
+  "info.cuffed.softcuffed": "你被铐住了双手，但可以自由移动",
+
+  "stat.cuffed.players_handcuffed": "被铐住的玩家",
+  "stat.cuffed.times_handcuffed": "被铐住的次数",
+  "stat.cuffed.handcuffs_broken": "被破坏的手铐",
+  "stat.cuffed.handcuffs_interupted": "被阻止的手铐",
+  "stat.cuffed.time_spent_handcuffed": "被铐住的时间",
+  "stat.cuffed.successful_lockpicks": "撬锁成功",
+  "stat.cuffed.lockpicks_broken": "撬锁失败",
+
+  "command.cuffed.notcuffed": "%1$s 没有被铐住。",
+  "command.cuffed.alreadycuffed": "%1$s 已经被铐住了。",
+  "command.cuffed.toggle.softcuffed.on": "%1$s 正在被软禁。",
+  "command.cuffed.toggle.softcuffed.off": "%1$s 不再被软禁了。",
+  "command.cuffed.nickname.set": "将 %1$s 的昵称设为 %2$s。",
+  "command.cuffed.nickname.reset": "重设 %1$s 的昵称",
+  "command.cuffed.handcuff.on": "%1$s 正在被铐住。",
+  "command.cuffed.handcuff.off": "%1$s 不再被铐住了。",
+  "command.cuffed.get.on": "%1$s 被铐住了。",
+  "command.cuffed.get.off": "%1$s 不再被铐住了。",
+  "command.cuffed.debug": "同步传输测试包给 %1$s。"
+}
