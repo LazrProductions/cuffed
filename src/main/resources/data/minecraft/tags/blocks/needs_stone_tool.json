@@ -1,7 +1,6 @@
 {
     "replace": false,
     "values": [
-        "cuffed:cell_door",
         "cuffed:reinforced_stone",
         "cuffed:reinforced_stone_stairs",
         "cuffed:reinforced_stone_slab",

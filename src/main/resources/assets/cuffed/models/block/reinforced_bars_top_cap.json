@@ -1,9 +1,9 @@
 {
     "ambientocclusion": false,
     "textures": {
-        "particle": "cuffed:cuffed:block/reinforced_bars",
-        "bars": "cuffed:block/reinforced_bars",
-        "edge": "cuffed:block/reinforced_bars"
+        "particle": "cuffed:block/reinforced_bars_top",
+        "bars": "cuffed:block/reinforced_bars_top",
+        "edge": "cuffed:block/reinforced_bars_top"
     },
     "elements": [
         {   "from": [ 8, 0, 8 ],
@@ -20,5 +20,6 @@
                 "south": { "uv": [ 7, 0, 9, 16 ], "texture": "#bars" }
             }
         }
-    ]
+    ],
+    "render_type": "cutout"
 }

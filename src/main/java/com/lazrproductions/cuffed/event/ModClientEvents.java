@@ -11,18 +11,11 @@ import com.lazrproductions.cuffed.client.ChainRenderHelper;
 import com.lazrproductions.cuffed.entity.PadlockEntity;
 import com.lazrproductions.cuffed.init.ModBlocks;
 import com.lazrproductions.cuffed.init.ModTags;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.client.model.PlayerModel;
-import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -36,7 +29,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.ComputeFovModifierEvent;
 import net.minecraftforge.client.event.InputEvent;
@@ -213,7 +205,8 @@ public class ModClientEvents {
                                     || pickresult.is(ModBlocks.REINFORCED_STONE.get())
                                     || pickresult.is(ModBlocks.REINFORCED_STONE_CHISELED.get())
                                     || pickresult.is(ModBlocks.REINFORCED_STONE_SLAB.get())
-                                    || pickresult.is(ModBlocks.REINFORCED_STONE_STAIRS.get())))
+                                    || pickresult.is(ModBlocks.REINFORCED_STONE_STAIRS.get())
+                                    || pickresult.is(ModBlocks.REINFORCED_BARS.get())))
                         event.setCanceled(true);
                 } else if (event.isUseItem() && !(inst.hitResult instanceof EntityHitResult)) {
 
@@ -350,54 +343,6 @@ public class ModClientEvents {
             ChainRenderHelper.renderChainFrom(anchoredPlayer, event.getPartialTick(), event.getPoseStack(),
                     event.getMultiBufferSource(), renderedPlayer);
         }
-    }
-
-    @SubscribeEvent
-    public void renderPlayerPost(RenderPlayerEvent.Post event) {
-        Player player = event.getEntity();
-        PlayerRenderer render = event.getRenderer();
-        PlayerModel<AbstractClientPlayer> model = render.getModel();
-
-        if (player != null) {
-            CuffedCapability cap = CuffedAPI.Capabilities.getCuffedCapability(player);
-            if (cap.isAnchored()) {
-                renderChainedOverlay(model, player, event);
-            }
-        }
-    }
-
-    Vec3 defaultScale = new Vec3(1, 1, 1);
-    float oldRot = 0;
-
-    private void renderChainedOverlay(PlayerModel<AbstractClientPlayer> model, Player player,
-            RenderPlayerEvent event) {
-        model.attackTime = 0;
-        PoseStack matrix = event.getPoseStack();
-        VertexConsumer buffer = event.getMultiBufferSource()
-                .getBuffer(model.renderType(CuffedMod.CHAINED_OVERLAY_TEXTURE));
-        int light = event.getPackedLight();
-        int texture = OverlayTexture.NO_OVERLAY;
-
-        ModelPart part = model.body;
-
-        oldRot = Mth.clampedLerp(oldRot, player.yBodyRot, event.getPartialTick() / 1.1f);
-
-        part.x = 0;
-        part.y = player.isCrouching() ? 19.75F : 22.75F;
-        part.z = 0;
-        part.xRot = 3.14F; // - (player.xRotO/90)*1.2F; //-3.0F > -1.65F > -0.0F;
-        part.yRot = (float) -Math.toRadians(oldRot); // + (float)Math.toRadians(180F);
-        part.zRot = 0.0F;
-        part.xScale = 1.1F;
-        part.yScale = 1.1F;
-        part.zScale = 1.1F;
-
-        part.visible = true;
-
-        part.render(matrix, buffer, light, texture);
-        part.xScale = (float) defaultScale.x;
-        part.yScale = (float) defaultScale.y;
-        part.zScale = (float) defaultScale.z;
     }
 
     @SubscribeEvent

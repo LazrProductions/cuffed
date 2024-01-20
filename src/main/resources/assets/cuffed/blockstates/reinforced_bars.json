@@ -2,98 +2,330 @@
     "multipart": [
       {
         "apply": {
-          "model": "cuffed:block/reinforced_bars_post_ends"
+          "model": "cuffed:block/reinforced_bars_bottom_post_ends"
+        },
+        "when": {
+          "column": 0
         }
       },
       {
         "apply": {
-          "model": "cuffed:block/reinforced_bars_post"
+          "model": "cuffed:block/reinforced_bars_bottom_post"
         },
         "when": {
           "east": "false",
           "north": "false",
           "south": "false",
-          "west": "false"
+          "west": "false",
+          "column": 0
         }
       },
       {
         "apply": {
-          "model": "cuffed:block/reinforced_bars_cap"
+          "model": "cuffed:block/reinforced_bars_bottom_cap"
         },
         "when": {
           "east": "false",
           "north": "true",
           "south": "false",
-          "west": "false"
+          "west": "false",
+          "column": 0
         }
       },
       {
         "apply": {
-          "model": "cuffed:block/reinforced_bars_cap",
+          "model": "cuffed:block/reinforced_bars_bottom_cap",
           "y": 90
         },
         "when": {
           "east": "true",
           "north": "false",
           "south": "false",
-          "west": "false"
+          "west": "false",
+          "column": 0
         }
       },
       {
         "apply": {
-          "model": "cuffed:block/reinforced_bars_cap_alt"
+          "model": "cuffed:block/reinforced_bars_bottom_cap_alt"
         },
         "when": {
           "east": "false",
           "north": "false",
           "south": "true",
-          "west": "false"
+          "west": "false",
+          "column": 0
         }
       },
       {
         "apply": {
-          "model": "cuffed:block/reinforced_bars_cap_alt",
+          "model": "cuffed:block/reinforced_bars_bottom_cap_alt",
           "y": 90
         },
         "when": {
           "east": "false",
           "north": "false",
           "south": "false",
-          "west": "true"
+          "west": "true",
+          "column": 0
         }
       },
       {
         "apply": {
-          "model": "cuffed:block/reinforced_bars_side"
+          "model": "cuffed:block/reinforced_bars_bottom_side"
         },
         "when": {
-          "north": "true"
+          "north": "true",
+          "column": 0
         }
       },
       {
         "apply": {
-          "model": "cuffed:block/reinforced_bars_side",
+          "model": "cuffed:block/reinforced_bars_bottom_side",
           "y": 90
         },
         "when": {
-          "east": "true"
+          "east": "true",
+          "column": 0
         }
       },
       {
         "apply": {
-          "model": "cuffed:block/reinforced_bars_side_alt"
+          "model": "cuffed:block/reinforced_bars_bottom_side_alt"
         },
         "when": {
-          "south": "true"
+          "south": "true",
+          "column": 0
         }
       },
       {
         "apply": {
-          "model": "cuffed:block/reinforced_bars_side_alt",
+          "model": "cuffed:block/reinforced_bars_bottom_side_alt",
           "y": 90
         },
         "when": {
-          "west": "true"
+          "west": "true",
+          "column": 0
+        }
+      },
+
+
+      {
+        "apply": {
+          "model": "cuffed:block/reinforced_bars_middle_post_ends"
+        },
+        "when": {
+          "column": 1
+        }
+      },
+      {
+        "apply": {
+          "model": "cuffed:block/reinforced_bars_middle_post"
+        },
+        "when": {
+          "east": "false",
+          "north": "false",
+          "south": "false",
+          "west": "false",
+          "column": 1
+        }
+      },
+      {
+        "apply": {
+          "model": "cuffed:block/reinforced_bars_middle_cap"
+        },
+        "when": {
+          "east": "false",
+          "north": "true",
+          "south": "false",
+          "west": "false",
+          "column": 1
+        }
+      },
+      {
+        "apply": {
+          "model": "cuffed:block/reinforced_bars_middle_cap",
+          "y": 90
+        },
+        "when": {
+          "east": "true",
+          "north": "false",
+          "south": "false",
+          "west": "false",
+          "column": 1
+        }
+      },
+      {
+        "apply": {
+          "model": "cuffed:block/reinforced_bars_middle_cap_alt"
+        },
+        "when": {
+          "east": "false",
+          "north": "false",
+          "south": "true",
+          "west": "false",
+          "column": 1
+        }
+      },
+      {
+        "apply": {
+          "model": "cuffed:block/reinforced_bars_middle_cap_alt",
+          "y": 90
+        },
+        "when": {
+          "east": "false",
+          "north": "false",
+          "south": "false",
+          "west": "true",
+          "column": 1
+        }
+      },
+      {
+        "apply": {
+          "model": "cuffed:block/reinforced_bars_middle_side"
+        },
+        "when": {
+          "north": "true",
+          "column": 1
+        }
+      },
+      {
+        "apply": {
+          "model": "cuffed:block/reinforced_bars_middle_side",
+          "y": 90
+        },
+        "when": {
+          "east": "true",
+          "column": 1
+        }
+      },
+      {
+        "apply": {
+          "model": "cuffed:block/reinforced_bars_middle_side_alt"
+        },
+        "when": {
+          "south": "true",
+          "column": 1
+        }
+      },
+      {
+        "apply": {
+          "model": "cuffed:block/reinforced_bars_middle_side_alt",
+          "y": 90
+        },
+        "when": {
+          "west": "true",
+          "column": 1
+        }
+      },
+
+
+      {
+        "apply": {
+          "model": "cuffed:block/reinforced_bars_top_post_ends"
+        },
+        "when": {
+          "column": 2
+        }
+      },
+      {
+        "apply": {
+          "model": "cuffed:block/reinforced_bars_top_post"
+        },
+        "when": {
+          "east": "false",
+          "north": "false",
+          "south": "false",
+          "west": "false",
+          "column": 2
+        }
+      },
+      {
+        "apply": {
+          "model": "cuffed:block/reinforced_bars_top_cap"
+        },
+        "when": {
+          "east": "false",
+          "north": "true",
+          "south": "false",
+          "west": "false",
+          "column": 2
+        }
+      },
+      {
+        "apply": {
+          "model": "cuffed:block/reinforced_bars_top_cap",
+          "y": 90
+        },
+        "when": {
+          "east": "true",
+          "north": "false",
+          "south": "false",
+          "west": "false",
+          "column": 2
+        }
+      },
+      {
+        "apply": {
+          "model": "cuffed:block/reinforced_bars_top_cap_alt"
+        },
+        "when": {
+          "east": "false",
+          "north": "false",
+          "south": "true",
+          "west": "false",
+          "column": 2
+        }
+      },
+      {
+        "apply": {
+          "model": "cuffed:block/reinforced_bars_top_cap_alt",
+          "y": 90
+        },
+        "when": {
+          "east": "false",
+          "north": "false",
+          "south": "false",
+          "west": "true",
+          "column": 2
+        }
+      },
+      {
+        "apply": {
+          "model": "cuffed:block/reinforced_bars_top_side"
+        },
+        "when": {
+          "north": "true",
+          "column": 2
+        }
+      },
+      {
+        "apply": {
+          "model": "cuffed:block/reinforced_bars_top_side",
+          "y": 90
+        },
+        "when": {
+          "east": "true",
+          "column": 2
+        }
+      },
+      {
+        "apply": {
+          "model": "cuffed:block/reinforced_bars_top_side_alt"
+        },
+        "when": {
+          "south": "true",
+          "column": 2
+        }
+      },
+      {
+        "apply": {
+          "model": "cuffed:block/reinforced_bars_top_side_alt",
+          "y": 90
+        },
+        "when": {
+          "west": "true",
+          "column": 2
         }
       }
     ]

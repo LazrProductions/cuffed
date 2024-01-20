@@ -1,28 +1,28 @@
 Things to test with cuffed mod:
 
-handcuffing
-unhancuffing
-- with key
-- with breaking out
-- with lockpick
-- with death
+✓ handcuffing
+✓ unhancuffing
+✓ - with key
+✓ - with breaking out
+✓ - with lockpick
+✓ - with death
 
 anchoring
-- to fence
-- to player
-- to animal
-- to misc entity
+✓ - to fence
+(NOT INTENDED) - to player
+(NOT INTENDED)- to animal
+(NOT INTENDED)- to misc entity
 
 detaining
-- in pillory
+✓ - in pillory
 
 deaths
-- while handcuffed
-- while anchored
-- while in pillory
-- while lockpicking
+✓ - while handcuffed
+✓ - while anchored
+✓ - while in pillory
+✓ - while lockpicking
 - while getting handcuffed
-- while getting lockpicked out of handcuffs
+✓ - while getting lockpicked out of handcuffs
 
 be anchored to dieing player
 

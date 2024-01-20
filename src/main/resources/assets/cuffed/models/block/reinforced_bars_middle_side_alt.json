@@ -1,0 +1,24 @@
+{
+    "ambientocclusion": false,
+    "textures": {
+        "particle": "cuffed:block/reinforced_bars_middle",
+        "bars": "cuffed:block/reinforced_bars_middle",
+        "edge": "cuffed:block/reinforced_bars_middle"
+    },
+    "elements": [
+        {   "from": [ 8, 0, 8 ],
+            "to": [ 8, 16, 16 ],
+            "faces": {
+                "west": { "uv": [ 8, 0, 0, 16 ], "texture": "#bars" },
+                "east": { "uv": [ 0, 0, 8, 16 ], "texture": "#bars" }
+            }
+        },
+        {   "from": [ 7, 0, 9 ],
+            "to": [ 9, 16, 16 ],
+            "faces": {
+                "south": { "uv": [ 7, 0, 9, 16 ], "texture": "#edge", "cullface": "south" }
+            }
+        }
+    ],
+    "render_type": "cutout"
+}

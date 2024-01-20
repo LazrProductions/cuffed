@@ -62,6 +62,17 @@ public class CuffedCapability implements ICuffedCapability {
         }
     }
 
+    public CompoundTag getDefaultNBT() {
+        CompoundTag nbt = new CompoundTag();
+        nbt.putFloat("progress", 0);
+        nbt.putInt("breakProgress", 0);
+        nbt.putBoolean("handcuffed", false);
+        nbt.putBoolean("softcuffed", false);
+        nbt.putInt("detained", -1);
+        nbt.putString("nickname", Component.Serializer.toJson(nickname));        
+        return nbt;
+    }
+
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
@@ -166,21 +177,41 @@ public class CuffedCapability implements ICuffedCapability {
 
     @Override
     public void server_joinWorld(ServerPlayer player) {
+        AttributeInstance playerAtt = player.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (playerAtt != null && playerAtt.hasModifier(ModAttributes.HANDCUFFED_ATTIRBUTE))
+            playerAtt.removeModifier(ModAttributes.HANDCUFFED_ATTIRBUTE);
+
         if(serverAnchor!=null) {
             Entity e = player.serverLevel().getEntity(serverAnchor);
             if(e!=null)
                 anchor = e.getId();
         }
+
+        if(isGettingHandcuffed()) {
+            handcuffed = false;
+            server_cuffingPlayer = null;
+            server_canInterupt = false;
+            //server_setAnchor(null);
+            if(!CuffedMod.CONFIG.handcuffSettings.persistantNickname)
+                server_setNickname(null);
+            softCuffed = false;
+            progress = 0;
+        }
+
         CuffedAPI.syncAllOthersToClient(player);
         CuffedAPI.sendCuffedSyncPacketToClient(player.getId(), player.getUUID(), serializeNBT());
     }
 
     @Override
     public void server_leaveWorld(ServerPlayer player) {
-        //if(getAnchor()!=null)
-        //    server_setAnchor(null);
+        AttributeInstance playerAtt = player.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (playerAtt != null && playerAtt.hasModifier(ModAttributes.HANDCUFFED_ATTIRBUTE))
+            playerAtt.removeModifier(ModAttributes.HANDCUFFED_ATTIRBUTE);
 
-        CuffedAPI.sendCuffedSyncPacketToClient(player.getId(), player.getUUID(), serializeNBT());
+        if(isHandcuffed())
+            CuffedAPI.sendCuffedSyncPacketToClient(player.getId(), player.getUUID(), serializeNBT());
+        else if(isGettingHandcuffed())
+            CuffedAPI.sendCuffedSyncPacketToClient(player.getId(), player.getUUID(), getDefaultNBT());
     }
 
     int breakRegenDelayTimer = 0;
@@ -188,6 +219,7 @@ public class CuffedCapability implements ICuffedCapability {
     @Override
     public void server_tick(ServerPlayer player) {
         boolean needsSyncing = false;
+        AttributeInstance playerAtt = player.getAttribute(Attributes.MOVEMENT_SPEED);
 
         if (localSelf == null)
             localSelf = player;
@@ -209,10 +241,11 @@ public class CuffedCapability implements ICuffedCapability {
         if (!player.isAlive()) {
             if(isGettingOrCurrentlyHandcuffed())
                 server_removeHandcuffs();
+            if (playerAtt != null && playerAtt.hasModifier(ModAttributes.HANDCUFFED_ATTIRBUTE))
+                playerAtt.removeModifier(ModAttributes.HANDCUFFED_ATTIRBUTE);
             return;
         }
 
-        AttributeInstance playerAtt = player.getAttribute(Attributes.MOVEMENT_SPEED);
 
         if(isHandcuffed())
             localSelf.awardStat(ModStatistics.TIME_SPENT_HANDCUFFED.get());
@@ -232,23 +265,7 @@ public class CuffedCapability implements ICuffedCapability {
 
                 if (localSelf.distanceTo(_anchor) > maxDist - 2 && localSelf.getY() < _anchor.getY() - 1.5F
                         && !localSelf.onGround()) {
-                    if (!server_wasHanging) {
-                        server_suffocateTick = 20;
-                        server_suffocateAir = localSelf.getMaxAirSupply();
-                        server_wasHanging = true;
-                    }
-
-                    if (server_wasHanging && server_suffocateAir > -16)
-                        server_suffocateAir -= 2;
-
-                    if (server_suffocateAir <= 0 && server_suffocateTick == 0) {
-                        localSelf.hurt(ModDamageTypes.GetModSource(localSelf, ModDamageTypes.HANG, null), 2);
-                    }
-
-                    localSelf.setAirSupply(server_suffocateAir);
-                    server_suffocateTick--;
-                    if (server_suffocateTick < 0)
-                        server_suffocateTick = 20;
+                    localSelf.hurt(ModDamageTypes.GetModSource(localSelf, ModDamageTypes.HANG, null), 2);
                 } else
                     server_wasHanging = false;
             }
@@ -408,9 +425,6 @@ public class CuffedCapability implements ICuffedCapability {
             server_cuffingPlayer.getItemInHand(InteractionHand.MAIN_HAND).shrink(1);
             foundCuffs = true;
         }
-
-        if(player.distanceTo(server_cuffingPlayer) > 5)
-            foundCuffs = false; //Cannot handcuff someone who is further than 5 blocks away.
 
         if (foundCuffs) {
             // If the handcuffer is still holding or has cuffs in their inventory, handcuff
@@ -706,6 +720,7 @@ public class CuffedCapability implements ICuffedCapability {
 
     @Override
     public void client_joinWorld(Player player) {
+
     }
 
     @Override
@@ -798,16 +813,20 @@ public class CuffedCapability implements ICuffedCapability {
                 renderHandcuffedGUI(instance, graphics, list);
             }
         }
+
+        if(keypressCooldown>0)
+            keypressCooldown--;
     }
     
     int lastKeyPressed = -1;
     float ph_bp = 0;
+    float keypressCooldown = 0;
     @Override
     public void client_onKeyPressed(Minecraft instace, Key event) {
         if(!CuffedMod.CONFIG.handcuffSettings.enableHandcuffBreaking || !isHandcuffed() || isAnchored() || isDetained() > -1)
             return;
 
-        if(getBreakProgress()<9)
+        if(getBreakProgress()<9 && keypressCooldown <= 0)
             if(event.getKey() == instace.options.keyLeft.getKey().getValue() || event.getKey() == instace.options.keyRight.getKey().getValue()) {
                 if(lastKeyPressed!=event.getKey()) {
                     localSelf.playNotifySound(SoundEvents.CHAIN_STEP, SoundSource.PLAYERS, 1f, Mth.nextFloat(localSelf.getRandom(), 0.9f,1.1f));
@@ -815,6 +834,7 @@ public class CuffedCapability implements ICuffedCapability {
                     if(ph_bp>1f) {
                         CuffedAPI.sendCuffedBreakOutPacketToServer(getBreakProgress()+1);
                         ph_bp = 0;
+                        keypressCooldown=4; // max speed that can be clicked is 5 clicks a second, to prevent macros. (or a click every 4 ticks)
                     }
                 }
             }

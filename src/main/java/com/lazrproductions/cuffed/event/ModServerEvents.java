@@ -81,9 +81,6 @@ public class ModServerEvents {
         AttributeInstance playerAtt = player.getAttribute(Attributes.MOVEMENT_SPEED);
         if (playerAtt != null && playerAtt.hasModifier(ModAttributes.HANDCUFFED_ATTIRBUTE))
             playerAtt.removeModifier(ModAttributes.HANDCUFFED_ATTIRBUTE);
-        AttributeInstance playerJumpAtt = player.getAttribute(Attributes.JUMP_STRENGTH);
-        if (playerJumpAtt != null && playerJumpAtt.hasModifier(ModAttributes.HANDCUFFED_ATTIRBUTE))
-            playerJumpAtt.removeModifier(ModAttributes.HANDCUFFED_ATTIRBUTE);
     }
 
     @SubscribeEvent
@@ -99,14 +96,19 @@ public class ModServerEvents {
 
     @SubscribeEvent
     public void playerMineBlock(BreakEvent event) {
-        if (event.getState().is(ModBlocks.CELL_DOOR.get()))
+        BlockState pickresult = event.getState();
+        if ((pickresult.is(ModBlocks.CELL_DOOR.get())
+            || pickresult.is(ModBlocks.REINFORCED_STONE.get())
+            || pickresult.is(ModBlocks.REINFORCED_STONE_CHISELED.get())
+            || pickresult.is(ModBlocks.REINFORCED_STONE_SLAB.get())
+            || pickresult.is(ModBlocks.REINFORCED_STONE_STAIRS.get())
+            || pickresult.is(ModBlocks.REINFORCED_BARS.get())))
             if (!event.getPlayer().isCreative()
                     && !event.getPlayer().getItemInHand(InteractionHand.MAIN_HAND).is(ItemTags.PICKAXES))
                 event.setCanceled(true);
 
         Level level = (Level) event.getLevel();
         BlockPos pickpos = event.getPos();
-        BlockState pickresult = event.getState();
         PadlockEntity padlock = PadlockEntity.getLockAt(level, pickpos);
 
         boolean isLockedBlock = false;
@@ -181,8 +183,10 @@ public class ModServerEvents {
 
                     if (!handcuffed.isAnchored()) {
                         if (interacting.getMainHandItem().is(ModItems.HANDCUFFS_KEY.get())) {
-                            // remove Handcuffed player's handcuffs
-                            CuffedAPI.Handcuffing.removeHandcuffs((ServerPlayer)target);
+                            if(handcuffed.isDetained() < 0) {
+                                // remove Handcuffed player's handcuffs
+                                CuffedAPI.Handcuffing.removeHandcuffs((ServerPlayer)target);
+                            }
                             interacting.awardStat(Stats.ITEM_USED.get(ModItems.HANDCUFFS_KEY.get()));
                         } else if (interacting.getMainHandItem().is(Items.CHAIN)) {
                             interacting.awardStat(Stats.ITEM_USED.get(Items.CHAIN));
@@ -193,7 +197,7 @@ public class ModServerEvents {
                                     .FillFromInventory(interacting.getMainHandItem(), target.getInventory(), true);
                             interacting.awardStat(Stats.ITEM_USED.get(ModItems.POSSESSIONSBOX.get()));
                         } else if (event.getEntity().getItemInHand(event.getHand()).is(ModItems.LOCKPICK.get())) {
-                            if (!event.getEntity().getCooldowns().isOnCooldown(ModItems.LOCKPICK.get())) {
+                            if (!event.getEntity().getCooldowns().isOnCooldown(ModItems.LOCKPICK.get()) && handcuffed.isDetained() < 0) {
                                 // can lockpick so begin lockpick
                                 event.getEntity().getCooldowns().addCooldown(ModItems.LOCKPICK.get(), 4 * 20);
 
@@ -203,7 +207,12 @@ public class ModServerEvents {
                                     event.getEntity().getInventory().selected,
                                     CuffedMod.CONFIG.lockpickingSettings.lockpickingPhasesForBreakingHandcuffs);
                             }
-                        } else if (interacting.getMainHandItem().isEmpty()) {
+                        } else if (interacting.getMainHandItem().getItem().getFoodProperties(interacting.getMainHandItem(), interacting).getNutrition() > 0) {
+                            if(target.getFoodData().needsFood()) {
+                                target.eat(level, interacting.getMainHandItem());
+                            }
+                        
+                        }else if (interacting.getMainHandItem().isEmpty()) {
                             if (interacting.isCrouching()) {
                                 if (hadJustSofted <= 0) {
                                     handcuffed.server_setSoftCuffed(!handcuffed.isSoftCuffed());
@@ -253,9 +262,6 @@ public class ModServerEvents {
                 AttributeInstance playerAtt = player.getAttribute(Attributes.MOVEMENT_SPEED);
                 if (playerAtt != null && playerAtt.hasModifier(ModAttributes.HANDCUFFED_ATTIRBUTE))
                     playerAtt.removeModifier(ModAttributes.HANDCUFFED_ATTIRBUTE);
-                AttributeInstance playerJumpAtt = player.getAttribute(Attributes.JUMP_STRENGTH);
-                if (playerJumpAtt != null && playerJumpAtt.hasModifier(ModAttributes.HANDCUFFED_ATTIRBUTE))
-                    playerJumpAtt.removeModifier(ModAttributes.HANDCUFFED_ATTIRBUTE);
             }
         }
     }

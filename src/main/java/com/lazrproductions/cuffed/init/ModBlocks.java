@@ -3,9 +3,9 @@ package com.lazrproductions.cuffed.init;
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.blocks.CellDoor;
 import com.lazrproductions.cuffed.blocks.PilloryBlock;
+import com.lazrproductions.cuffed.blocks.ReinforcedBarsBlock;
 
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.IronBarsBlock;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.StairBlock;
@@ -26,26 +26,26 @@ public class ModBlocks {
         public static final RegistryObject<Block> CELL_DOOR = BLOCKS.register("cell_door",
                         () -> new CellDoor(
                                         BlockBehaviour.Properties.of().mapColor(MapColor.METAL).noOcclusion()
-                                                        .strength(0.25F)
+                                                        .strength(5.0F, 6.0F).requiresCorrectToolForDrops()
                                                         .sound(SoundType.METAL).pushReaction(PushReaction.IGNORE),
                                         BlockSetType.IRON));
 
                                         
         public static final RegistryObject<Block> REINFORCED_STONE = BLOCKS.register("reinforced_stone",
                         () -> new Block(BlockBehaviour.Properties.of().sound(SoundType.STONE).mapColor(MapColor.METAL)
-                                        .noOcclusion().strength(0.25F)
+                                        .noOcclusion().requiresCorrectToolForDrops().strength(1.5F, 6.0F)
                                         .pushReaction(PushReaction.IGNORE)));
 
         public static final RegistryObject<Block> REINFORCED_STONE_CHISELED = BLOCKS.register(
                         "chiseled_reinforced_stone",
                         () -> new Block(BlockBehaviour.Properties.of().sound(SoundType.STONE).mapColor(MapColor.METAL)
-                                        .noOcclusion().strength(0.25F)
+                                        .noOcclusion().requiresCorrectToolForDrops().strength(1.5F, 6.0F)
                                         .pushReaction(PushReaction.IGNORE)));
 
         public static final RegistryObject<Block> REINFORCED_STONE_SLAB = BLOCKS.register("reinforced_stone_slab",
                         () -> new SlabBlock(
                                         BlockBehaviour.Properties.of().sound(SoundType.STONE).mapColor(MapColor.METAL)
-                                                        .noOcclusion().strength(0.25F)
+                                                        .noOcclusion().requiresCorrectToolForDrops().strength(1.5F, 6.0F)
                                                         .pushReaction(PushReaction.IGNORE)));
 
         public static final RegistryObject<Block> REINFORCED_STONE_STAIRS = BLOCKS.register("reinforced_stone_stairs",
@@ -53,14 +53,14 @@ public class ModBlocks {
                                         BlockBehaviour.Properties.copy(REINFORCED_STONE.get())));
         
         public static final RegistryObject<Block> REINFORCED_BARS = BLOCKS.register("reinforced_bars",
-                () -> new IronBarsBlock(BlockBehaviour.Properties.of().sound(SoundType.METAL).mapColor(MapColor.METAL)
-                                .noOcclusion().strength(0.4F)
+                () -> new ReinforcedBarsBlock(BlockBehaviour.Properties.of().sound(SoundType.METAL).mapColor(MapColor.METAL)
+                                .noOcclusion().strength(5.0F, 6.0F)
                                 .pushReaction(PushReaction.IGNORE)));
 
 
         public static final RegistryObject<Block> PILLORY = BLOCKS.register("pillory",
                         () -> new PilloryBlock(BlockBehaviour.Properties.of().sound(SoundType.WOOD)
-                                        .mapColor(MapColor.WOOD).noCollission().strength(0.25F)));
+                                        .mapColor(MapColor.WOOD).noCollission().strength(1.25F)));
 
         public static void register(IEventBus bus) {
                 BLOCKS.register(bus);

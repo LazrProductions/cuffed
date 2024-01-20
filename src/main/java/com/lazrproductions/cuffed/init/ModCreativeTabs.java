@@ -18,17 +18,18 @@ public class ModCreativeTabs {
                     .title(Component.translatable("itemGroup.cuffed"))
                     .icon(() -> ModItems.HANDCUFFS.get().getDefaultInstance())
                     .displayItems((parameters, output) -> {
-                        output.accept(ModItems.PADLOCK.get());
-                        output.accept(ModItems.KEY.get());
-                        output.accept(ModItems.KEY_RING.get());
-                        output.accept(ModItems.LOCKPICK.get());
-
                         output.accept(ModItems.HANDCUFFS.get());
                         output.accept(ModItems.HANDCUFFS_KEY.get());
                         output.accept(ModItems.POSSESSIONSBOX.get());
                         output.accept(ModItems.PRISONER_TAG.get());
 
+                        output.accept(ModItems.PADLOCK.get());
+                        output.accept(ModItems.KEY.get());
+                        output.accept(ModItems.KEY_RING.get());
+                        output.accept(ModItems.LOCKPICK.get());
+
                         output.accept(ModItems.CELL_DOOR_ITEM.get());
+                        output.accept(ModItems.REINFORCED_BARS_ITEM.get());
                         output.accept(ModItems.REINFORCED_STONE_ITEM.get());
                         output.accept(ModItems.REINFORCED_STONE_CHISELED_ITEM.get());
                         output.accept(ModItems.REINFORCED_STONE_SLAB_ITEM.get());

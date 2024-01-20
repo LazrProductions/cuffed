@@ -109,13 +109,15 @@ public class CuffedAPI {
 
         public static void removeHandcuffs(Player player) {
             CuffedCapability uncuff = Capabilities.getCuffedCapability(player);
-            uncuff.server_removeHandcuffs();
 
             // spawn a handcuffs item
-            ItemEntity itementity = new ItemEntity(player.level(), player.getX(), player.getY(), player.getZ(), new ItemStack(ModItems.HANDCUFFS.get()));
-            itementity.setDefaultPickUpDelay();
-            player.level().addFreshEntity(itementity);
+            if(uncuff.isHandcuffed()) {
+                ItemEntity itementity = new ItemEntity(player.level(), player.getX(), player.getY(), player.getZ(), new ItemStack(ModItems.HANDCUFFS.get()));
+                itementity.setDefaultPickUpDelay();
+                player.level().addFreshEntity(itementity);
+            }
 
+            uncuff.server_removeHandcuffs();
             MinecraftForge.EVENT_BUS.post(new PlayerUncuffedEvent(player, uncuff));
         }
     }
