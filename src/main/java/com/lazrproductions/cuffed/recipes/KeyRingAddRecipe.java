@@ -7,7 +7,6 @@ import com.lazrproductions.cuffed.init.ModItems;
 import com.lazrproductions.cuffed.init.ModRecipes;
 
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -17,8 +16,8 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 
 public class KeyRingAddRecipe extends CustomRecipe {
-    public KeyRingAddRecipe(ResourceLocation idIn, CraftingBookCategory category) {
-        super(idIn, category);
+    public KeyRingAddRecipe(CraftingBookCategory category) {
+        super(category);
     }
 
     @Override

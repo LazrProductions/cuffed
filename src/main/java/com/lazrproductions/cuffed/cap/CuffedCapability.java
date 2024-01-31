@@ -179,7 +179,7 @@ public class CuffedCapability implements ICuffedCapability {
     public void server_joinWorld(ServerPlayer player) {
         AttributeInstance playerAtt = player.getAttribute(Attributes.MOVEMENT_SPEED);
         if (playerAtt != null && playerAtt.hasModifier(ModAttributes.HANDCUFFED_ATTIRBUTE))
-            playerAtt.removeModifier(ModAttributes.HANDCUFFED_ATTIRBUTE);
+            playerAtt.removeModifier(ModAttributes.HANDCUFFED_ATTIRBUTE.getId());
 
         if(serverAnchor!=null) {
             Entity e = player.serverLevel().getEntity(serverAnchor);
@@ -206,7 +206,7 @@ public class CuffedCapability implements ICuffedCapability {
     public void server_leaveWorld(ServerPlayer player) {
         AttributeInstance playerAtt = player.getAttribute(Attributes.MOVEMENT_SPEED);
         if (playerAtt != null && playerAtt.hasModifier(ModAttributes.HANDCUFFED_ATTIRBUTE))
-            playerAtt.removeModifier(ModAttributes.HANDCUFFED_ATTIRBUTE);
+            playerAtt.removeModifier(ModAttributes.HANDCUFFED_ATTIRBUTE.getId());
 
         if(isHandcuffed())
             CuffedAPI.sendCuffedSyncPacketToClient(player.getId(), player.getUUID(), serializeNBT());
@@ -242,7 +242,7 @@ public class CuffedCapability implements ICuffedCapability {
             if(isGettingOrCurrentlyHandcuffed())
                 server_removeHandcuffs();
             if (playerAtt != null && playerAtt.hasModifier(ModAttributes.HANDCUFFED_ATTIRBUTE))
-                playerAtt.removeModifier(ModAttributes.HANDCUFFED_ATTIRBUTE);
+                playerAtt.removeModifier(ModAttributes.HANDCUFFED_ATTIRBUTE.getId());
             return;
         }
 
@@ -256,7 +256,7 @@ public class CuffedCapability implements ICuffedCapability {
                     playerAtt.addPermanentModifier(ModAttributes.HANDCUFFED_ATTIRBUTE);
             } else {
                 if (playerAtt != null && playerAtt.hasModifier(ModAttributes.HANDCUFFED_ATTIRBUTE))
-                    playerAtt.removeModifier(ModAttributes.HANDCUFFED_ATTIRBUTE);
+                    playerAtt.removeModifier(ModAttributes.HANDCUFFED_ATTIRBUTE.getId());
             }
 
             Entity _anchor = getAnchor();
@@ -299,7 +299,7 @@ public class CuffedCapability implements ICuffedCapability {
             //     CuffedAPI.Handcuffing.removeHandcuffs(player);
         } else {
             if (playerAtt != null && playerAtt.hasModifier(ModAttributes.HANDCUFFED_ATTIRBUTE))
-                playerAtt.removeModifier(ModAttributes.HANDCUFFED_ATTIRBUTE);
+                playerAtt.removeModifier(ModAttributes.HANDCUFFED_ATTIRBUTE.getId());
             server_wasHanging = false;
         }
 

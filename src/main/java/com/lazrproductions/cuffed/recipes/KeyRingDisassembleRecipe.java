@@ -14,8 +14,8 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 
 public class KeyRingDisassembleRecipe extends CustomRecipe {
-    public KeyRingDisassembleRecipe(ResourceLocation idIn, CraftingBookCategory category) {
-        super(idIn, category);
+    public KeyRingDisassembleRecipe(CraftingBookCategory category) {
+        super(category);
     }
 
     @Override

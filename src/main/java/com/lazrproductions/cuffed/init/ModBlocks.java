@@ -49,8 +49,8 @@ public class ModBlocks {
                                                         .pushReaction(PushReaction.IGNORE)));
 
         public static final RegistryObject<Block> REINFORCED_STONE_STAIRS = BLOCKS.register("reinforced_stone_stairs",
-                        () -> new StairBlock(() -> REINFORCED_STONE.get().defaultBlockState(),
-                                        BlockBehaviour.Properties.copy(REINFORCED_STONE.get())));
+                        () -> new StairBlock(REINFORCED_STONE.get().defaultBlockState(),
+                                        BlockBehaviour.Properties.ofFullCopy(REINFORCED_STONE.get())));
         
         public static final RegistryObject<Block> REINFORCED_BARS = BLOCKS.register("reinforced_bars",
                 () -> new ReinforcedBarsBlock(BlockBehaviour.Properties.of().sound(SoundType.METAL).mapColor(MapColor.METAL)

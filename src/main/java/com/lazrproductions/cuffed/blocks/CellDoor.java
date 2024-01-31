@@ -41,7 +41,7 @@ public class CellDoor extends DoorBlock {
     private final BlockSetType type;
 
     public CellDoor(Properties p, BlockSetType setType) {
-        super(p, setType);
+        super(setType, p);
         this.type = setType;
         this.registerDefaultState(
                 this.stateDefinition.any()

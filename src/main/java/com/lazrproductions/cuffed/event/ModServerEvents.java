@@ -80,7 +80,7 @@ public class ModServerEvents {
 
         AttributeInstance playerAtt = player.getAttribute(Attributes.MOVEMENT_SPEED);
         if (playerAtt != null && playerAtt.hasModifier(ModAttributes.HANDCUFFED_ATTIRBUTE))
-            playerAtt.removeModifier(ModAttributes.HANDCUFFED_ATTIRBUTE);
+            playerAtt.removeModifier(ModAttributes.HANDCUFFED_ATTIRBUTE.getId());
     }
 
     @SubscribeEvent
@@ -261,7 +261,7 @@ public class ModServerEvents {
 
                 AttributeInstance playerAtt = player.getAttribute(Attributes.MOVEMENT_SPEED);
                 if (playerAtt != null && playerAtt.hasModifier(ModAttributes.HANDCUFFED_ATTIRBUTE))
-                    playerAtt.removeModifier(ModAttributes.HANDCUFFED_ATTIRBUTE);
+                    playerAtt.removeModifier(ModAttributes.HANDCUFFED_ATTIRBUTE.getId());
             }
         }
     }
