@@ -1,49 +1,46 @@
 package com.lazrproductions.cuffed.init;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.lazrproductions.cuffed.CuffedMod;
 
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.stats.StatFormatter;
+import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
 
 public class ModStatistics {
-    private static final DeferredRegister<ResourceLocation> REGISTER = DeferredRegister.create(
-			Registries.CUSTOM_STAT, CuffedMod.MODID
-	);
-	private static final List<Runnable> RUN_IN_SETUP = new ArrayList<>();
+	public static ResourceLocation PLAYERS_HANDCUFFED_LOCATION = new ResourceLocation(CuffedMod.MODID, "players_handcuffed");
+	public static Stat<ResourceLocation> PLAYERS_HANDCUFFED;
+	public static ResourceLocation TIMES_HANDCUFFED_LOCATION = new ResourceLocation(CuffedMod.MODID, "times_handcuffed");
+	public static Stat<ResourceLocation> TIMES_HANDCUFFED;
+	public static ResourceLocation HANDCUFFS_BROKEN_LOCATION = new ResourceLocation(CuffedMod.MODID, "handcuffs_broken");
+	public static Stat<ResourceLocation> HANDCUFFS_BROKEN;
+	public static ResourceLocation HANDCUFFS_INTERUPTED_LOCATION = new ResourceLocation(CuffedMod.MODID, "handcuffs_interupted");
+	public static Stat<ResourceLocation> HANDCUFFS_INTERUPTED;
+	public static ResourceLocation TIME_SPENT_HANDCUFFED_LOCATION = new ResourceLocation(CuffedMod.MODID, "time_spent_handcuffed");
+	public static Stat<ResourceLocation> TIME_SPENT_HANDCUFFED;
 
-	public static final RegistryObject<ResourceLocation> PLAYERS_HANDCUFFED = registerCustomStat("players_handcuffed", StatFormatter.DEFAULT);
-	public static final RegistryObject<ResourceLocation> TIMES_HANDCUFFED = registerCustomStat("times_handcuffed", StatFormatter.DEFAULT);
-	public static final RegistryObject<ResourceLocation> HANDCUFFS_BROKEN = registerCustomStat("handcuffs_broken", StatFormatter.DEFAULT);
-	public static final RegistryObject<ResourceLocation> HANDCUFFS_INTERUPTED = registerCustomStat("handcuffs_interupted", StatFormatter.DEFAULT);
-	public static final RegistryObject<ResourceLocation> TIME_SPENT_HANDCUFFED = registerCustomStat("time_spent_handcuffed", StatFormatter.TIME);
+	public static ResourceLocation SUCCESSFUL_LOCKPICKS_LOCATION = new ResourceLocation(CuffedMod.MODID, "successful_lockpicks");
+	public static Stat<ResourceLocation> SUCCESSFUL_LOCKPICKS;
+	public static ResourceLocation LOCKPICKS_BROKEN_LOCATION = new ResourceLocation(CuffedMod.MODID, "lockpicks_broken");
+	public static Stat<ResourceLocation> LOCKPICKS_BROKEN;
 
-	public static final RegistryObject<ResourceLocation> SUCCESSFUL_LOCKPICKS = registerCustomStat("successful_lockpicks", StatFormatter.DEFAULT);
-	public static final RegistryObject<ResourceLocation> LOCKPICKS_BROKEN = registerCustomStat("lockpicks_broken", StatFormatter.DEFAULT);
-
-	public static void register(IEventBus bus)
-	{
-		REGISTER.register(bus);
+	public static void register() {
+		Registry.register(Registry.CUSTOM_STAT, PLAYERS_HANDCUFFED_LOCATION, PLAYERS_HANDCUFFED_LOCATION);
+		Registry.register(Registry.CUSTOM_STAT, TIMES_HANDCUFFED_LOCATION, TIMES_HANDCUFFED_LOCATION);
+		Registry.register(Registry.CUSTOM_STAT, HANDCUFFS_BROKEN_LOCATION, HANDCUFFS_BROKEN_LOCATION);
+		Registry.register(Registry.CUSTOM_STAT, HANDCUFFS_INTERUPTED_LOCATION, HANDCUFFS_INTERUPTED_LOCATION);
+		Registry.register(Registry.CUSTOM_STAT, TIME_SPENT_HANDCUFFED_LOCATION, TIME_SPENT_HANDCUFFED_LOCATION);
+		Registry.register(Registry.CUSTOM_STAT, SUCCESSFUL_LOCKPICKS_LOCATION, SUCCESSFUL_LOCKPICKS_LOCATION);
+		Registry.register(Registry.CUSTOM_STAT, LOCKPICKS_BROKEN_LOCATION, LOCKPICKS_BROKEN_LOCATION);
 	}
 
-	public static void setup()
-	{
-		RUN_IN_SETUP.forEach(Runnable::run);
-	}
-
-	private static RegistryObject<ResourceLocation> registerCustomStat(String name, StatFormatter formatter)
-	{
-		return REGISTER.register(name, () -> {
-			ResourceLocation regName = new ResourceLocation(CuffedMod.MODID, name);
-			RUN_IN_SETUP.add(() -> Stats.CUSTOM.get(regName, formatter));
-			return regName;
-		});
+	public static void load() {
+		PLAYERS_HANDCUFFED = Stats.CUSTOM.get(PLAYERS_HANDCUFFED_LOCATION);
+		TIMES_HANDCUFFED = Stats.CUSTOM.get(TIMES_HANDCUFFED_LOCATION);
+		HANDCUFFS_BROKEN = Stats.CUSTOM.get(HANDCUFFS_BROKEN_LOCATION);
+		HANDCUFFS_INTERUPTED = Stats.CUSTOM.get(HANDCUFFS_INTERUPTED_LOCATION);
+		TIME_SPENT_HANDCUFFED = Stats.CUSTOM.get(TIME_SPENT_HANDCUFFED_LOCATION);
+		SUCCESSFUL_LOCKPICKS = Stats.CUSTOM.get(SUCCESSFUL_LOCKPICKS_LOCATION);
+		LOCKPICKS_BROKEN = Stats.CUSTOM.get(LOCKPICKS_BROKEN_LOCATION);
 	}
 }

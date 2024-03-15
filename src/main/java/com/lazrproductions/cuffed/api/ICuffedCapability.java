@@ -1,9 +1,9 @@
 package com.lazrproductions.cuffed.api;
 
 import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -63,7 +63,7 @@ public interface ICuffedCapability {
     /**
      * Render any overlay this capability may have onto the screen.
      */
-    public void client_renderOverlay(Minecraft instance, LocalPlayer player, GuiGraphics graphics, float partialTick, Window window);
+    public void client_renderOverlay(Minecraft instance, LocalPlayer player, PoseStack stack, float partialTick, Window window);
 
     /**
      * Called when the client pressed any key

@@ -35,7 +35,7 @@ import team.creative.creativecore.common.network.CreativeNetwork;
 public class CuffedAPI {
     //#region//////////// NETWORKING ////////////
 
-    public static final CreativeNetwork NETWORK = new CreativeNetwork(1, CuffedMod.LOGGER, 
+    public static final CreativeNetwork NETWORK = new CreativeNetwork("1", CuffedMod.LOGGER, 
         new ResourceLocation(CuffedMod.MODID, "main"));
 
     /**
@@ -54,7 +54,7 @@ public class CuffedAPI {
      * @param player The player to sync to.
      */
     public static void syncAllOthersToClient(ServerPlayer player) {
-        for (ServerPlayer p : player.serverLevel().players()) {
+        for (ServerPlayer p : player.getLevel().players()) {
             if(p.getId()!=player.getId()) {
                 CuffedCapability c = Capabilities.getCuffedCapability(p);
                 CuffedSyncPacket packet = new CuffedSyncPacket(p.getId(), player.getUUID().toString(), c.serializeNBT());
@@ -112,9 +112,9 @@ public class CuffedAPI {
 
             // spawn a handcuffs item
             if(uncuff.isHandcuffed()) {
-                ItemEntity itementity = new ItemEntity(player.level(), player.getX(), player.getY(), player.getZ(), new ItemStack(ModItems.HANDCUFFS.get()));
+                ItemEntity itementity = new ItemEntity(player.getLevel(), player.getX(), player.getY(), player.getZ(), new ItemStack(ModItems.HANDCUFFS.get()));
                 itementity.setDefaultPickUpDelay();
-                player.level().addFreshEntity(itementity);
+                player.getLevel().addFreshEntity(itementity);
             }
 
             uncuff.server_removeHandcuffs();
@@ -147,11 +147,11 @@ public class CuffedAPI {
         public static void FinishLockpicking(int code, int lockId, int playerId, UUID playerUUID) {
             ServerPlayer pl = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(playerUUID);
             if (pl != null) {
-                Level l = pl.level();
+                Level l = pl.getLevel();
                 if (l != null) {
                     Player player = (Player) l.getEntity(playerId);
                     if (player != null) {
-                        Level level = player.level();
+                        Level level = player.getLevel();
                         if (level != null) {
                             if (!level.isClientSide) {
                                 ItemStack itemstack = player.getItemInHand(InteractionHand.MAIN_HAND);
@@ -162,26 +162,26 @@ public class CuffedAPI {
                                         p.broadcastBreakEvent(InteractionHand.MAIN_HAND);
                                     });
 
-                                    player.awardStat(ModStatistics.LOCKPICKS_BROKEN.get());
+                                    player.awardStat(ModStatistics.LOCKPICKS_BROKEN);
                                 } else {
                                     // has completed lockpicking
                                     level.playLocalSound((float) player.position().x, (float) player.position().y,
                                             (float) player.position().z, SoundEvents.CHAIN_BREAK, SoundSource.PLAYERS, 1, 1,
                                             true);
 
-                                    player.awardStat(ModStatistics.LOCKPICKS_BROKEN.get());
+                                    player.awardStat(ModStatistics.LOCKPICKS_BROKEN);
 
                                     itemstack.hurtAndBreak(1, player, (p) -> {
                                         p.broadcastBreakEvent(InteractionHand.MAIN_HAND);
                                     });
                                     if (level.getEntity(lockId) instanceof PadlockEntity e) {
-                                        player.awardStat(ModStatistics.SUCCESSFUL_LOCKPICKS.get());
+                                        player.awardStat(ModStatistics.SUCCESSFUL_LOCKPICKS);
                                         e.RemoveLock();
                                     } else if (level.getEntity(lockId) instanceof Player e) {
                                         CuffedCapability cuffed = CuffedAPI.Capabilities.getCuffedCapability(e);
                                         if (cuffed.isHandcuffed()) {
                                             CuffedAPI.Handcuffing.removeHandcuffs(e);
-                                            player.awardStat(ModStatistics.SUCCESSFUL_LOCKPICKS.get());
+                                            player.awardStat(ModStatistics.SUCCESSFUL_LOCKPICKS);
                                         }
                                     }
                                 }

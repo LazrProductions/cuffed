@@ -24,11 +24,11 @@ import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.IronBarsBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
-import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DoorHingeSide;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -38,11 +38,8 @@ public class CellDoor extends DoorBlock {
 
     public static final BooleanProperty IN_BARS = BooleanProperty.create("in_bars");
 
-    private final BlockSetType type;
-
-    public CellDoor(Properties p, BlockSetType setType) {
-        super(p, setType);
-        this.type = setType;
+    public CellDoor(Properties p) {
+        super(p);
         this.registerDefaultState(
                 this.stateDefinition.any()
                         .setValue(FACING, Direction.NORTH)
@@ -107,11 +104,6 @@ public class CellDoor extends DoorBlock {
     }
 
     @Override
-    public BlockSetType type() {
-        return this.type;
-    }
-
-    @Override
     @Nullable
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         BlockPos blockpos = ctx.getClickedPos();
@@ -147,7 +139,7 @@ public class CellDoor extends DoorBlock {
                         && boundPos[2] == bottomPos.getZ()) {
                     state = state.cycle(OPEN);
                     level.setBlock(pos, state, 10);
-                    this.playSound(player, level, pos, state.getValue(OPEN));
+                    this.playSound(level, pos, state.getValue(OPEN));
                     level.gameEvent(player, this.isOpen(state) ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE,
                             pos);
                     return InteractionResult.sidedSuccess(level.isClientSide);
@@ -160,7 +152,7 @@ public class CellDoor extends DoorBlock {
         if (stack.is((ModItems.KEY_RING.get())) && KeyRing.HasBoundDoorAt(stack, bottomPos)) {
             state = state.cycle(OPEN);
             level.setBlock(pos, state, 10);
-            this.playSound(player, level, pos, state.getValue(OPEN));
+            this.playSound(level, pos, state.getValue(OPEN));
             level.gameEvent(player, this.isOpen(state) ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE,
                     pos);
             return InteractionResult.sidedSuccess(level.isClientSide);
@@ -169,10 +161,17 @@ public class CellDoor extends DoorBlock {
         return InteractionResult.FAIL;
     }
 
-    private void playSound(@Nullable Entity entity, Level level, BlockPos pos, boolean open) {
-        level.playSound(entity, pos, open ? this.type.doorOpen() : this.type.doorClose(),
-                SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.1F + 0.9F);
-    }
+
+    
+   private int getCloseSound() {
+    return this.material == Material.METAL ? 1011 : 1012;
+ }
+    private int getOpenSound() {
+    return this.material == Material.METAL ? 1005 : 1006;
+ }
+    private void playSound(Level p_52760_, BlockPos p_52761_, boolean p_52762_) {
+        p_52760_.levelEvent((Player)null, p_52762_ ? this.getOpenSound() : this.getCloseSound(), p_52761_, 0);
+     }
 
     @Override
     protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {

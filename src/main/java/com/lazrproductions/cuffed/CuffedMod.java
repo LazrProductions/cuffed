@@ -75,8 +75,6 @@ public class CuffedMod {
         ModCreativeTabs.register(modEventBus);
         ModRecipes.register(modEventBus);
 
-        ModStatistics.register(modEventBus);
-
         MinecraftForge.EVENT_BUS.register(this);
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerCaps);
@@ -101,7 +99,8 @@ public class CuffedMod {
 
         CuffedAPI.registerPackets();
 
-        ModStatistics.setup();
+        ModStatistics.register();
+        ModStatistics.load();
 
         MinecraftForge.EVENT_BUS.register(new ModServerEvents());
 
