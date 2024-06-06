@@ -25,7 +25,11 @@ run
 .fleet
 run/log4j2.xml
 blockbench
-.txt
+
+changelog.txt
+howtotestcuffed.txt
+roadmap.txt
+thingsToFix.txt
 
 # Files from Forge MDK
 forge*changelog.txt
