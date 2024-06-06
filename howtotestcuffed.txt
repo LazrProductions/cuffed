@@ -1,29 +1,16 @@
-Things to test with cuffed mod:
-
-✓ handcuffing
-✓ unhancuffing
-✓ - with key
-✓ - with breaking out
-✓ - with lockpick
-✓ - with death
-
-anchoring
-✓ - to fence
-(NOT INTENDED) - to player
-(NOT INTENDED)- to animal
-(NOT INTENDED)- to misc entity
-
-detaining
-✓ - in pillory
-
-deaths
-✓ - while handcuffed
-✓ - while anchored
-✓ - while in pillory
-✓ - while lockpicking
-- while getting handcuffed
-✓ - while getting lockpicked out of handcuffs
-
-be anchored to dieing player
-
-test config configurations
+cuffed.handcuffs_times_restrained
+cuffed.handcuffs_broken
+cuffed.handcuffs_time_spent_restrained Handcuffs
+cuffed.shackles_times_restrained Shackles
+cuffed.shackles_broken
+cuffed.shackles_time_spent_restrained
+cuffed.legcuffs_times_restrained
+cuffed.legcuffs_broken
+cuffed.legcuffs_time_spent_restrained
+cuffed.leg_shackles_times_restrained
+cuffed.leg_shackles_broken
+cuffed.leg_shackles_time_spent_restrained
+cuffed.times_nicknamed
+cuffed.successful_lockpicks
+cuffed.lockpicks_broken
+cuffed.open_safe

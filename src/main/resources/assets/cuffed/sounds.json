@@ -1,9 +1,17 @@
 {
-    "apply_handcuffs": {
+    "restraint.apply_handcuffs": {
         "category": "player",
         "sounds": [
             {
-                "name": "cuffed:apply_handcuffs"
+                "name": "cuffed:restraint/apply_handcuffs"
+            }
+        ]
+    },
+    "restraint.apply_shackles": {
+        "category": "player",
+        "sounds": [
+            {
+                "name": "cuffed:restraint/apply_shackles"
             }
         ]
     },
@@ -11,7 +19,31 @@
         "category": "block",
         "sounds": [
             {
-                "name": "cuffed:pillory_use"
+                "name": "cuffed:block/pillory_use"
+            }
+        ]
+    },
+    "block.guillotine.use": {
+        "category": "block",
+        "sounds": [
+            {
+                "name": "cuffed:block/guillotine_use"
+            }
+        ]
+    },
+    "block.safe.open": {
+        "category": "block",
+        "sounds": [
+            {
+                "name": "cuffed:block/safe_open"
+            }
+        ]
+    },
+    "block.safe.close": {
+        "category": "block",
+        "sounds": [
+            {
+                "name": "cuffed:block/safe_close"
             }
         ]
     }

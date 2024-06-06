@@ -1,40 +1,58 @@
 package com.lazrproductions.cuffed.event;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.api.CuffedAPI;
-import com.lazrproductions.cuffed.cap.CuffedCapability;
-import com.lazrproductions.cuffed.cap.provider.CuffedCapabilityProvider;
+import com.lazrproductions.cuffed.api.IRestrainableCapability;
+import com.lazrproductions.cuffed.cap.provider.RestrainableCapabilityProvider;
 import com.lazrproductions.cuffed.entity.ChainKnotEntity;
-import com.lazrproductions.cuffed.entity.PadlockEntity;
-import com.lazrproductions.cuffed.init.ModAttributes;
-import com.lazrproductions.cuffed.init.ModBlocks;
+import com.lazrproductions.cuffed.entity.base.IAnchorableEntity;
+import com.lazrproductions.cuffed.entity.base.IDetainableEntity;
+import com.lazrproductions.cuffed.entity.base.INicknamable;
+import com.lazrproductions.cuffed.event.base.LivingRideTickEvent;
+import com.lazrproductions.cuffed.init.ModEnchantments;
 import com.lazrproductions.cuffed.init.ModItems;
 import com.lazrproductions.cuffed.init.ModTags;
 import com.lazrproductions.cuffed.items.PossessionsBox;
+import com.lazrproductions.cuffed.restraints.base.AbstractArmRestraint;
+import com.lazrproductions.cuffed.restraints.base.AbstractLegRestraint;
+import com.lazrproductions.cuffed.restraints.base.IEnchantableRestraint;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.stats.Stats;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.Tags.Blocks;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.BlockEvent.BreakEvent;
@@ -45,51 +63,43 @@ import net.minecraftforge.fml.LogicalSide;
 public class ModServerEvents {
     @SubscribeEvent
     public void attachCapability(AttachCapabilitiesEvent<Entity> event) {
-        if (event.getObject() instanceof Player) {
-            if(!event.getObject().getCapability(CuffedAPI.Capabilities.CUFFED).isPresent()) {
-                event.addCapability(CuffedAPI.Capabilities.CUFFED_NAME, new CuffedCapabilityProvider());
+        if (event.getObject() instanceof Player)
+            if (!event.getObject().getCapability(CuffedAPI.Capabilities.RESTRAINABLE_CAPABILITY).isPresent())
+                event.addCapability(CuffedAPI.Capabilities.RESTRAINABLE_CAPABILITY_NAME,
+                        new RestrainableCapabilityProvider());
+    }
+
+    @SubscribeEvent
+    public void onPlayerCloned(PlayerEvent.Clone event) {
+        if (event.isWasDeath()) {
+            if (deadEntityRestraintData.containsKey(event.getEntity().getUUID())) {
+                event.getEntity().getCapability(CuffedAPI.Capabilities.RESTRAINABLE_CAPABILITY).ifPresent(n -> {
+                    n.copyFrom(deadEntityRestraintData.get(event.getEntity().getUUID()),
+                            (ServerLevel) event.getEntity().level());
+                    deadEntityRestraintData.remove(event.getEntity().getUUID());
+                });
+            }
+
+            if (deadEntityNicknameData.containsKey(event.getEntity().getUUID())) {
+                INicknamable nick = (INicknamable) event.getEntity();
+                nick.deserializeNickname(deadEntityNicknameData.get(event.getEntity().getUUID()));
+                deadEntityNicknameData.remove(event.getEntity().getUUID());
             }
         }
     }
 
     @SubscribeEvent
-    public void onPlayerCloned(PlayerEvent.Clone event) {
-        if(event.isWasDeath()) {
-            event.getOriginal().getCapability(CuffedAPI.Capabilities.CUFFED).ifPresent(oldStore -> {
-                event.getOriginal().getCapability(CuffedAPI.Capabilities.CUFFED).ifPresent(newStore -> {
-                    newStore.copyFrom(oldStore);
-                });
-            });
-        }
-    }
-
-    @SubscribeEvent
-    public void joinServer(PlayerEvent.PlayerLoggedInEvent event) {
-        ServerPlayer p = (ServerPlayer)event.getEntity();
-        if(p!=null) {
-            CuffedCapability cap = CuffedAPI.Capabilities.getCuffedCapability(p);
-            cap.server_joinWorld(p);
-        }
-    }
-
-    public void leaveServer(PlayerEvent.PlayerLoggedOutEvent event) {
-        ServerPlayer player = (ServerPlayer)event.getEntity();
-
-        CuffedCapability cap = CuffedAPI.Capabilities.getCuffedCapability(player);
-        cap.server_leaveWorld(player);
-
-        AttributeInstance playerAtt = player.getAttribute(Attributes.MOVEMENT_SPEED);
-        if (playerAtt != null && playerAtt.hasModifier(ModAttributes.HANDCUFFED_ATTIRBUTE))
-            playerAtt.removeModifier(ModAttributes.HANDCUFFED_ATTIRBUTE);
-    }
-
-    @SubscribeEvent
     public void tickServer(TickEvent.PlayerTickEvent event) {
-        if(event.phase == Phase.END && event.side == LogicalSide.SERVER) {
-            ServerPlayer p = (ServerPlayer)event.player;
-            if(p!=null) {
-                CuffedCapability cap = CuffedAPI.Capabilities.getCuffedCapability(p);
-                cap.server_tick(p);
+        if (event.phase == Phase.END && event.side == LogicalSide.SERVER) {
+            ServerPlayer p = (ServerPlayer) event.player;
+            if (p != null) {
+                // fix old player's attributes
+                AttributeInstance a = p.getAttribute(Attributes.MOVEMENT_SPEED);
+                if (a != null)
+                    a.removeModifier(UUID.fromString("3b44d328-0746-45c9-85e3-c2df6c70d4a3"));
+
+                IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(p);
+                cap.tickServer(p);
             }
         }
     }
@@ -97,172 +107,265 @@ public class ModServerEvents {
     @SubscribeEvent
     public void playerMineBlock(BreakEvent event) {
         BlockState pickresult = event.getState();
-        if ((pickresult.is(ModBlocks.CELL_DOOR.get())
-            || pickresult.is(ModBlocks.REINFORCED_STONE.get())
-            || pickresult.is(ModBlocks.REINFORCED_STONE_CHISELED.get())
-            || pickresult.is(ModBlocks.REINFORCED_STONE_SLAB.get())
-            || pickresult.is(ModBlocks.REINFORCED_STONE_STAIRS.get())
-            || pickresult.is(ModBlocks.REINFORCED_BARS.get())))
+        if (pickresult.is(ModTags.Blocks.REINFORCED_BLOCKS))
             if (!event.getPlayer().isCreative()
-                    && !event.getPlayer().getItemInHand(InteractionHand.MAIN_HAND).is(ItemTags.PICKAXES))
+                    && !event.getPlayer().getItemInHand(InteractionHand.MAIN_HAND).is(ItemTags.PICKAXES)) {
                 event.setCanceled(true);
+                return;
+            }
+
+        
 
         Level level = (Level) event.getLevel();
         BlockPos pickpos = event.getPos();
-        PadlockEntity padlock = PadlockEntity.getLockAt(level, pickpos);
 
-        boolean isLockedBlock = false;
-        if (pickresult.is(ModTags.Blocks.LOCKABLE_BLOCKS)) {
-            if (padlock != null && padlock.isLocked())
-                isLockedBlock = true;
-            else if (pickresult.getBlock() instanceof DoorBlock door) {
-                PadlockEntity eB = PadlockEntity.getLockAt(level, pickpos.below());
-                PadlockEntity eA = PadlockEntity.getLockAt(level, pickpos.above());
-                if (level.getBlockState(pickpos.below()).is(door) && eB != null && eB.isLocked())
-                    isLockedBlock = true;
-                else if (level.getBlockState(pickpos.above()).is(door) && eA != null && eA.isLocked())
-                    isLockedBlock = true;
-            }
+        IDetainableEntity detainableEntity = (IDetainableEntity) event.getPlayer();
+
+        if (detainableEntity.getDetained() > -1) {
+            event.setCanceled(true);
+            return;
         }
 
-        if (isLockedBlock)
+        if (CuffedAPI.Lockpicking.isLockedAt(level, pickresult, pickpos))
             event.setCanceled(true);
     }
 
-    int hadJustSofted = 0;
-
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void playerInteractBlock(PlayerInteractEvent.RightClickBlock event) {
-        Level level = event.getEntity().level();
-        if (!level.isClientSide) {
+        if (event.getHand() == InteractionHand.MAIN_HAND) {
+            Level level = event.getEntity().level();
+            if (!level.isClientSide()) {
 
-            if (event.getHand() == InteractionHand.OFF_HAND)
-                return;
-
-            hadJustSofted--;
-            Player interacting = event.getEntity();
-
-            ArrayList<CuffedCapability> isAnchorForPlayer = new ArrayList<CuffedCapability>(0);
-            MinecraftServer server = interacting.getServer();
-            if (server != null)
-                for (Iterator<ServerPlayer> iterator = server.getPlayerList().getPlayers().iterator(); iterator
-                        .hasNext();) {
-                    ServerPlayer member = iterator.next();
-                    CuffedCapability cuffed = CuffedAPI.Capabilities.getCuffedCapability(member);
-                    if (cuffed.isAnchored() && cuffed.getAnchor().getUUID() == interacting.getUUID())
-                        isAnchorForPlayer.add(cuffed);
-                }
-
-            if ((level.getBlockState(event.getPos()).is(Blocks.FENCES)
-                    || level.getBlockState(event.getPos()).is(net.minecraft.world.level.block.Blocks.TRIPWIRE_HOOK))
-                    && isAnchorForPlayer.size() > 0) {
-                for (int i = 0; i < isAnchorForPlayer.size(); i++) {
-                    isAnchorForPlayer.get(i).server_setAnchor(ChainKnotEntity.getOrCreateKnot(level, event.getPos()), true);
-                }
-                event.setCanceled(true);
-            }
-        }
-    }
-
-    
-    @SubscribeEvent(priority = EventPriority.HIGH)
-    public void playerInteractEntity(PlayerInteractEvent.EntityInteract event) {
-        Level level = event.getEntity().level();
-        if (!level.isClientSide) {
-
-            if (event.getTarget() instanceof Player target) {
-                if (event.getHand() == InteractionHand.OFF_HAND)
-                    return;
-
-                hadJustSofted--;
                 Player interacting = event.getEntity();
-                CuffedCapability handcuffed = CuffedAPI.Capabilities.getCuffedCapability(target);
 
-                if (handcuffed.isHandcuffed()) {
+                IDetainableEntity detainableEntity = (IDetainableEntity) interacting;
+
+                if (detainableEntity.getDetained() > -1) {
+                    event.setCancellationResult(InteractionResult.FAIL);
                     event.setCanceled(true);
-
-                    if (!handcuffed.isAnchored()) {
-                        if (interacting.getMainHandItem().is(ModItems.HANDCUFFS_KEY.get())) {
-                            if(handcuffed.isDetained() < 0) {
-                                // remove Handcuffed player's handcuffs
-                                CuffedAPI.Handcuffing.removeHandcuffs((ServerPlayer)target);
-                            }
-                            interacting.awardStat(Stats.ITEM_USED.get(ModItems.HANDCUFFS_KEY.get()));
-                        } else if (interacting.getMainHandItem().is(Items.CHAIN)) {
-                            interacting.awardStat(Stats.ITEM_USED.get(Items.CHAIN));
-                            handcuffed.server_setAnchor(interacting);
-                            interacting.getItemInHand(InteractionHand.MAIN_HAND).shrink(1);
-                        } else if (interacting.getMainHandItem().is(ModItems.POSSESSIONSBOX.get())) {
-                            ((PossessionsBox) interacting.getMainHandItem().getItem())
-                                    .FillFromInventory(interacting.getMainHandItem(), target.getInventory(), true);
-                            interacting.awardStat(Stats.ITEM_USED.get(ModItems.POSSESSIONSBOX.get()));
-                        } else if (event.getEntity().getItemInHand(event.getHand()).is(ModItems.LOCKPICK.get())) {
-                            if (!event.getEntity().getCooldowns().isOnCooldown(ModItems.LOCKPICK.get()) && handcuffed.isDetained() < 0) {
-                                // can lockpick so begin lockpick
-                                event.getEntity().getCooldowns().addCooldown(ModItems.LOCKPICK.get(), 4 * 20);
-
-                                event.getEntity().awardStat(Stats.ITEM_USED.get(ModItems.LOCKPICK.get()));
-
-                                CuffedAPI.Lockpicking.sendLockpickUpdatePacket(event.getEntity(), target.getId(),
-                                    event.getEntity().getInventory().selected,
-                                    CuffedMod.CONFIG.lockpickingSettings.lockpickingPhasesForBreakingHandcuffs);
-                            }
-                        } else if (interacting.getMainHandItem().getItem().getFoodProperties(interacting.getMainHandItem(), interacting).getNutrition() > 0) {
-                            if(target.getFoodData().needsFood()) {
-                                target.eat(level, interacting.getMainHandItem());
-                            }
-                        
-                        }else if (interacting.getMainHandItem().isEmpty()) {
-                            if (interacting.isCrouching()) {
-                                if (hadJustSofted <= 0) {
-                                    handcuffed.server_setSoftCuffed(!handcuffed.isSoftCuffed());
-                                    hadJustSofted = 2;
-                                }
-                            }
-                        }
-                    } else {
-                        handcuffed.server_setAnchor(null);
-                    }
-                } else if(!handcuffed.isGettingHandcuffed()) {
-                    if (interacting.getMainHandItem().is(ModItems.HANDCUFFS.get())
-                            && interacting.getCooldowns().getCooldownPercent(ModItems.HANDCUFFS.get(), 20) <= 0) {
-                        interacting.getCooldowns().addCooldown(ModItems.HANDCUFFS.get(), Mth.floor(42f / CuffedMod.CONFIG.handcuffSettings.interuptPhaseSpeed));
-                        handcuffed.server_setCuffingPlayer(interacting);
-                    }
+                    return;
                 }
-            } else if (event.getTarget() instanceof PadlockEntity entity) {
-                if (event.getEntity().getItemInHand(event.getHand()).is(ModItems.LOCKPICK.get())) {
-                    if (!event.getEntity().getCooldowns().isOnCooldown(ModItems.LOCKPICK.get())) {
-                        event.getEntity().getCooldowns().addCooldown(ModItems.LOCKPICK.get(),
-                                (20 * (entity.isReinforced() ? CuffedMod.CONFIG.lockpickingSettings.lockpickingPhasesForBreakingReinforcedPadlocks
-                                        : CuffedMod.CONFIG.lockpickingSettings.lockpickingPhasesForBreakingPadlocks)));
-                        event.getEntity().awardStat(Stats.ITEM_USED.get(ModItems.LOCKPICK.get()));
-                        CuffedAPI.Lockpicking.sendLockpickUpdatePacket(event.getEntity(), entity.getId(),
-                                event.getEntity().getInventory().selected,
-                                entity.isReinforced() ? CuffedMod.CONFIG.lockpickingSettings.lockpickingPhasesForBreakingReinforcedPadlocks
-                                        : CuffedMod.CONFIG.lockpickingSettings.lockpickingPhasesForBreakingPadlocks);
+
+                ArrayList<IAnchorableEntity> entitiesAnchoredToInteractor = new ArrayList<IAnchorableEntity>(0);
+                ServerLevel server = (ServerLevel) event.getLevel();
+                if (server != null)
+                    for (Iterator<Entity> iterator = server.getAllEntities().iterator(); iterator.hasNext();) {
+                        if (iterator.next() instanceof IAnchorableEntity en)
+                            if (en.isAnchored() && en.getAnchor().getUUID() == interacting.getUUID())
+                                entitiesAnchoredToInteractor.add(en);
                     }
+
+                if (((level.getBlockState(event.getPos()).is(Blocks.FENCES)
+                        && CuffedMod.CONFIG.anchoringSettings.allowAnchoringToFences)
+                        || (level.getBlockState(event.getPos()).is(net.minecraft.world.level.block.Blocks.TRIPWIRE_HOOK)
+                                && CuffedMod.CONFIG.anchoringSettings.allowAnchoringToTripwireHook))
+                        && entitiesAnchoredToInteractor.size() > 0) {
+                    for (int i = 0; i < entitiesAnchoredToInteractor.size(); i++)
+                        ChainKnotEntity.bindEntityToNewOrExistingKnot(
+                                (LivingEntity) entitiesAnchoredToInteractor.get(i), level, event.getPos());
+                    event.setCanceled(true);
+                    return;
                 }
             }
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void playerDied(LivingDeathEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
-            CuffedCapability handcuffed = CuffedAPI.Capabilities.getCuffedCapability(player);
-            if (handcuffed.isGettingOrCurrentlyHandcuffed()) {
-                CuffedAPI.Handcuffing.removeHandcuffs(player);
+    @SubscribeEvent
+    public void playerInteractEntity(PlayerInteractEvent.EntityInteract event) {
+        if (event.getSide() == LogicalSide.CLIENT)
+            event.setCanceled(true);
+        if (event.getHand() == InteractionHand.MAIN_HAND) {
+            if (event.getSide() == LogicalSide.SERVER) {
+                ServerPlayer player = (ServerPlayer) event.getEntity();
+                IRestrainableCapability myCap = CuffedAPI.Capabilities.getRestrainableCapability(player);
+                IDetainableEntity detainableEntity = (IDetainableEntity) player;
 
-                // ItemEntity itementity = new ItemEntity(level, player.getX(), player.getY(), player.getZ(),
-                //         new ItemStack(ModItems.HANDCUFFS.get()));
-                // itementity.setDefaultPickUpDelay();
-                // level.addFreshEntity(itementity);
+                if (detainableEntity.getDetained() > -1) {
+                    event.setCancellationResult(InteractionResult.FAIL);
+                    event.setCanceled(true);
+                    return;
+                }
 
-                AttributeInstance playerAtt = player.getAttribute(Attributes.MOVEMENT_SPEED);
-                if (playerAtt != null && playerAtt.hasModifier(ModAttributes.HANDCUFFED_ATTIRBUTE))
-                    playerAtt.removeModifier(ModAttributes.HANDCUFFED_ATTIRBUTE);
+                if (event.getTarget() instanceof ServerPlayer target) {
+                    IRestrainableCapability targetCap = CuffedAPI.Capabilities.getRestrainableCapability(target);
+                    double maxDist = player.getEyePosition().distanceTo(target.position());
+                    Vec3 interactionPos = new Vec3(target.position().x, player.getLookAngle()
+                            .multiply(new Vec3(maxDist, maxDist, maxDist)).add(player.getEyePosition()).y,
+                            target.position().z);
+
+                    if (event.getItemStack().is(ModItems.POSSESSIONSBOX.get()) && targetCap.armsRestrained()) {
+                        PossessionsBox.frisk(player, target, event.getItemStack());
+                        event.setCancellationResult(InteractionResult.SUCCESS);
+                        event.setCanceled(true);
+                        return;
+                    }
+
+                    if (targetCap != null)
+                        targetCap.onInteractedByOther(target, player, interactionPos.y - target.position().y,
+                                event.getItemStack(), event.getHand());
+                }
+
+                if (event.getTarget().getType().is(ModTags.Entities.CHAINABLE_ENTITIES)) {
+                    IAnchorableEntity anchorableEntity = (IAnchorableEntity) event.getTarget();
+
+                    if (anchorableEntity.isAnchored()) {
+                        if (player.getItemInHand(event.getHand()).is(Items.AIR)) {
+                            anchorableEntity.setAnchoredTo(null);
+
+                            player.level().playSound(null, event.getPos(), SoundEvents.CHAIN_BREAK, SoundSource.PLAYERS,
+                                    0.7f, 1);
+
+                            event.setCancellationResult(InteractionResult.SUCCESS);
+                            event.setCanceled(true);
+                            return;
+                        }
+                    } else if (player.getItemInHand(event.getHand()).is(Items.CHAIN)) {
+                        anchorableEntity.setAnchoredTo(player);
+                        player.getItemInHand(InteractionHand.MAIN_HAND).shrink(1);
+
+                        player.level().playSound(null, event.getPos(), SoundEvents.CHAIN_PLACE, SoundSource.PLAYERS,
+                                0.7f, 1);
+
+                        event.setCancellationResult(InteractionResult.SUCCESS);
+                        event.setCanceled(true);
+                        return;
+                    }
+
+                }
+
+                if (event.getTarget() instanceof Animal && myCap != null && myCap.getWhoImEscorting() != null) {
+                    myCap.getWhoImEscorting().startRiding(event.getTarget());
+                    player.sendSystemMessage(
+                            Component.translatable("info.cuffed.forced_ride",
+                                    myCap.getWhoImEscorting().getDisplayName(), event.getTarget().getDisplayName()),
+                            true);
+                    myCap.stopEscortingPlayer();
+                    event.setCancellationResult(InteractionResult.SUCCESS);
+                    event.setCanceled(true);
+                    return;
+                }
             }
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        ServerPlayer p = (ServerPlayer) event.getEntity();
+        if (p != null) {
+            IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(p);
+            cap.onLoginServer(p);
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        ServerPlayer p = (ServerPlayer) event.getEntity();
+        if (p != null) {
+            IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(p);
+            cap.onLogoutServer(p);
+        }
+    }
+
+    HashMap<UUID, CompoundTag> deadEntityRestraintData = new HashMap<UUID, CompoundTag>();
+    HashMap<UUID, String> deadEntityNicknameData = new HashMap<UUID, String>();
+
+    @SubscribeEvent
+    public void onEntityDied(LivingDeathEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(player);
+            if (cap != null) {
+                cap.onDeathServer(player);
+
+                deadEntityRestraintData.put(event.getEntity().getUUID(), cap.serializeNBT());
+            }
+
+            INicknamable nick = (INicknamable) player;
+            if (CuffedMod.CONFIG.nicknameSettings.nicknamePersistsOnDeath)
+                deadEntityNicknameData.put(player.getUUID(), nick.serializeNickname());
+        }
+    }
+
+    @SubscribeEvent
+    public void onLand(LivingFallEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(player);
+            if (cap != null)
+                event.setDamageMultiplier(cap.onLandServer(player, event.getDistance(), event.getDamageMultiplier()));
+        }
+    }
+
+    @SubscribeEvent
+    public void onJump(LivingJumpEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(player);
+            if (cap != null)
+                cap.onJumpServer(player);
+        }
+    }
+
+    @SubscribeEvent
+    public void onLivingDamaged(LivingDamageEvent event) {
+        if (event.getEntity() instanceof Player captor && !event.getEntity().level().isClientSide()) {
+            float originalAmount = event.getAmount();
+
+            ServerLevel level = (ServerLevel) event.getEntity().level();
+            MinecraftServer server = event.getEntity().level().getServer();
+            if (server != null) {
+                boolean activateImbue = true;
+
+                ArrayList<Player> playersToTakeDamage = new ArrayList<>();
+                List<ServerPlayer> players = server.getPlayerList().getPlayers();
+                for (int i = 0; i < players.size(); i++) {
+                    IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(players.get(i));
+                    AbstractArmRestraint arm = cap.getArmRestraint();
+                    if (arm != null && arm.getCaptor(level) == captor)
+                        playersToTakeDamage.add(players.get(i));
+                    AbstractLegRestraint leg = cap.getLegRestraint();
+                    if (leg != null && leg.getCaptor(level) == captor)
+                        playersToTakeDamage.add(players.get(i));
+                }
+
+                if (activateImbue) {
+                    float amountNegated = 0;
+                    for (Player pl : playersToTakeDamage) {
+
+                        IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(pl);
+                        if (cap != null && cap.armsRestrained()
+                                && cap.getArmRestraint() instanceof IEnchantableRestraint e
+                                && e.hasEnchantment(ModEnchantments.IMBUE.get())) {
+                            int enchLevel = e.getEnchantmentLevel(ModEnchantments.IMBUE.get());
+                            float percentage = ((float) enchLevel / 3f) * 0.8f;
+                            amountNegated += (originalAmount * percentage);
+                        }
+                        if (cap != null && cap.legsRestrained()
+                                && cap.getLegRestraint() instanceof IEnchantableRestraint e
+                                && e.hasEnchantment(ModEnchantments.IMBUE.get())) {
+                            int enchLevel = e.getEnchantmentLevel(ModEnchantments.IMBUE.get());
+                            float percentage = ((float) enchLevel / 3f) * 0.8f;
+                            amountNegated += (originalAmount * percentage);
+                        }
+
+                        // each restrained player takes a percentage of the total damage negated by
+                        // imbue
+                        pl.hurt(captor.damageSources().magic(), amountNegated / (float) playersToTakeDamage.size());
+                    }
+
+                    // CuffedMod.LOGGER.info("Imbue activated! -> original: " +originalAmount + ",
+                    // negatedAmount: " + amountNegated + ", amountNegatedPerCaptive: " +
+                    // (amountNegated / 1) + "finalDamageToTake: " + (originalAmount -
+                    // amountNegated));
+                    event.setAmount(Mth.clamp(originalAmount - (amountNegated), 0, originalAmount));
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onTickRide(LivingRideTickEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(player);
+            if (cap != null)
+                event.setCanceled(cap.onTickRideServer(player, event.getVehicle()));
         }
     }
 }

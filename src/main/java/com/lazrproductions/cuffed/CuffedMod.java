@@ -6,25 +6,39 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.lazrproductions.cuffed.api.CuffedAPI;
-import com.lazrproductions.cuffed.api.ICuffedCapability;
-import com.lazrproductions.cuffed.client.render.entity.ChainKnotEntityRenderer;
-import com.lazrproductions.cuffed.client.render.entity.PadlockEntityRenderer;
-import com.lazrproductions.cuffed.client.render.entity.model.ChainKnotEntityModel;
-import com.lazrproductions.cuffed.client.render.entity.model.PadlockEntityModel;
+import com.lazrproductions.cuffed.blocks.entity.renderer.GuillotineBlockEntityRenderer;
+import com.lazrproductions.cuffed.cap.RestrainableCapability;
+import com.lazrproductions.cuffed.client.gui.screen.FriskingScreen;
 import com.lazrproductions.cuffed.command.HandcuffCommand;
+import com.lazrproductions.cuffed.compat.ArsNouveauCompat;
+import com.lazrproductions.cuffed.compat.BetterCombatCompat;
+import com.lazrproductions.cuffed.compat.ElenaiDodge2Compat;
+import com.lazrproductions.cuffed.compat.EpicFightCompat;
+import com.lazrproductions.cuffed.compat.IronsSpellsnSpellbooksCompat;
+import com.lazrproductions.cuffed.compat.ParcoolCompat;
 import com.lazrproductions.cuffed.config.CuffedCommonConfig;
+import com.lazrproductions.cuffed.entity.renderer.ChainKnotEntityRenderer;
+import com.lazrproductions.cuffed.entity.renderer.PadlockEntityRenderer;
+import com.lazrproductions.cuffed.entity.renderer.WeightedAnchorEntityRenderer;
 import com.lazrproductions.cuffed.event.ModClientEvents;
 import com.lazrproductions.cuffed.event.ModServerEvents;
+import com.lazrproductions.cuffed.init.ModBlockEntities;
 import com.lazrproductions.cuffed.init.ModBlocks;
 import com.lazrproductions.cuffed.init.ModCreativeTabs;
+import com.lazrproductions.cuffed.init.ModEffects;
+import com.lazrproductions.cuffed.init.ModEnchantments;
 import com.lazrproductions.cuffed.init.ModEntityTypes;
 import com.lazrproductions.cuffed.init.ModItems;
+import com.lazrproductions.cuffed.init.ModMenuTypes;
+import com.lazrproductions.cuffed.init.ModModelLayers;
 import com.lazrproductions.cuffed.init.ModRecipes;
 import com.lazrproductions.cuffed.init.ModSounds;
 import com.lazrproductions.cuffed.init.ModStatistics;
 import com.lazrproductions.cuffed.inventory.tooltip.PossessionsBoxTooltip;
+import com.lazrproductions.cuffed.items.KeyRingItem;
+import com.lazrproductions.cuffed.items.PossessionsBox;
 
-import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -38,6 +52,7 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -53,16 +68,16 @@ public class CuffedMod {
     public static final Logger LOGGER = LogManager.getLogger(CuffedMod.MODID);
     public static final String MODID = "cuffed";
 
-    // #region Resources
-    public static ResourceLocation[] BREAKCUFFS_GUI;
-    public static ResourceLocation[] PICKLOCK_GUI;
-    public static ResourceLocation CHAINED_OVERLAY_TEXTURE = new ResourceLocation(MODID,
-            "textures/entity/chained_overlay.png");
-    // #endregion
 
-    // #region Configs
     public static CuffedCommonConfig CONFIG;
-    // #endregion
+
+
+    public static boolean BetterCombatInstalled = false;
+    public static boolean EpicFightInstalled = false;
+    public static boolean ParcoolInstalled = false;
+    public static boolean ElenaiDodge2Installed = false;
+    public static boolean IronsSpellsnSpellbooksInstalled = false;
+    public static boolean ArsNouveauInstalled = false;
 
     public CuffedMod() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -71,35 +86,51 @@ public class CuffedMod {
 
         ModEntityTypes.register(modEventBus);
         ModBlocks.register(modEventBus);
+        ModBlockEntities.register(modEventBus);
         ModItems.register(modEventBus);
+        ModEnchantments.register(modEventBus);
         ModCreativeTabs.register(modEventBus);
         ModRecipes.register(modEventBus);
-
+        ModEffects.register(modEventBus);
         ModStatistics.register(modEventBus);
+        ModMenuTypes.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.register(this);
 
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerCaps);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerSounds);
+        modEventBus.addListener(this::registerCaps);
+        modEventBus.addListener(this::registerSounds);
+        modEventBus.addListener(ModEntityTypes::registerAttributes);
 
-        // initialize the resource array for the breaking cuffs GUI
-        BREAKCUFFS_GUI = new ResourceLocation[21];
-        for (int i = 0; i < 21; i++) {
-            BREAKCUFFS_GUI[i] = new ResourceLocation("cuffed",
-                    "textures/gui/interuptbar/interuptbar" + (i + 1) + ".png");
+		if (ModList.get().isLoaded("bettercombat")) {
+            BetterCombatInstalled = true;
+            BetterCombatCompat.load();
         }
-        // initialize the resource array for the lockpicking progress GUI
-        PICKLOCK_GUI = new ResourceLocation[31];
-        for (int i = 0; i < 31; i++) {
-            PICKLOCK_GUI[i] = new ResourceLocation("cuffed",
-                    "textures/gui/interuptbar/pickprogressbar" + (i + 1) + ".png");
+		if (ModList.get().isLoaded("epicfight")) {
+            EpicFightInstalled = true;
+            EpicFightCompat.load();
+        }
+		if (ModList.get().isLoaded("parcool")) {
+            ParcoolInstalled = true;
+            ParcoolCompat.load();
+        }
+		if (ModList.get().isLoaded("elenaidodge2")) {
+            ElenaiDodge2Installed = true;
+            ElenaiDodge2Compat.load();
+        }
+		if (ModList.get().isLoaded("irons_spellbooks")) {
+            IronsSpellsnSpellbooksInstalled = true;
+            IronsSpellsnSpellbooksCompat.load();
+        }
+		if (ModList.get().isLoaded("ars_nouveau")) {
+            ArsNouveauInstalled = true;
+            ArsNouveauCompat.load();
         }
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         LOGGER.info("Running commmon setup for Cuffed");
 
-        CuffedAPI.registerPackets();
+        CuffedAPI.Networking.registerPackets();
 
         ModStatistics.setup();
 
@@ -116,21 +147,21 @@ public class CuffedMod {
     }
     private void registerCaps(RegisterCapabilitiesEvent event) {
         LOGGER.info("Registering Capabilities for Cuffed");
-        event.register(ICuffedCapability.class);
+        event.register(RestrainableCapability.class);
     }
 
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
         LOGGER.info("Running server setup for Cuffed");
-
     }
 
     @SubscribeEvent
     public void registerCommands(RegisterCommandsEvent event) {
-        new HandcuffCommand(event.getDispatcher());
+        new HandcuffCommand(event.getDispatcher(), event.getBuildContext());
 
         ConfigCommand.register(event.getDispatcher());
     }
+
 
     @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents {
@@ -141,25 +172,26 @@ public class CuffedMod {
             ItemProperties.register(ModItems.KEY_RING.get(),
                     new ResourceLocation(MODID, "keys"), (stack, level, living, id) -> {
                         var tag = stack.getTag();
-                        if (tag != null && tag.contains("Keys"))
-                            return tag.getInt("Keys");
+                        if (tag != null && tag.contains(KeyRingItem.TAG_KEYS))
+                            return tag.getInt(KeyRingItem.TAG_KEYS);
                         return 0;
                     });
             ItemProperties.register(ModItems.POSSESSIONSBOX.get(),
                     new ResourceLocation(MODID, "filled"), (stack, level, living, id) -> {
                         CompoundTag compoundtag = stack.getOrCreateTag();
-                        if (!compoundtag.contains("Items")) {
+                        if (!compoundtag.contains(PossessionsBox.TAG_ITEMS)) {
                             return 0;
                         } else {
-                            ListTag listtag = compoundtag.getList("Items", 10);
+                            ListTag listtag = compoundtag.getList(PossessionsBox.TAG_ITEMS, 10);
                             return listtag.size() > 0 ? 1 : 0;
                         }
                     });
+
+            event.enqueueWork(() -> {
+                MenuScreens.register(ModMenuTypes.FRISKING_MENU.get(), FriskingScreen::new);
+            });
+            
             MinecraftForge.EVENT_BUS.register(new ModClientEvents());
-
-            EntityRenderers.register(ModEntityTypes.CHAIN_KNOT.get(), ChainKnotEntityRenderer::new);
-            EntityRenderers.register(ModEntityTypes.PADLOCK.get(), PadlockEntityRenderer::new);
-
         }
 
         @SubscribeEvent
@@ -169,9 +201,16 @@ public class CuffedMod {
 
         @SubscribeEvent
         public static void onRegisterLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
-            event.registerLayerDefinition(ChainKnotEntityModel.LAYER_LOCATION, ChainKnotEntityModel::getModelData);
-            event.registerLayerDefinition(PadlockEntityModel.LAYER_LOCATION, PadlockEntityModel::getModelData);
+            ModModelLayers.registerLayers(event);
         }
 
+        @SubscribeEvent
+        public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
+            event.registerEntityRenderer(ModEntityTypes.CHAIN_KNOT.get(), ChainKnotEntityRenderer::new);
+            event.registerEntityRenderer(ModEntityTypes.PADLOCK.get(), PadlockEntityRenderer::new);
+            event.registerEntityRenderer(ModEntityTypes.WEIGHTED_ANCHOR.get(), WeightedAnchorEntityRenderer::new);
+
+            event.registerBlockEntityRenderer(ModBlockEntities.GUILLOTINE.get(), GuillotineBlockEntityRenderer::new);
+        }
     }
 }

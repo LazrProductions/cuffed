@@ -1,5 +1,7 @@
 package com.lazrproductions.cuffed.blocks;
 
+import javax.annotation.Nonnull;
+
 import com.lazrproductions.cuffed.init.ModBlocks;
 
 import net.minecraft.core.BlockPos;
@@ -27,17 +29,19 @@ public class ReinforcedBarsBlock extends IronBarsBlock {
     }
 
     @Override
-    protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(@Nonnull Builder<Block, BlockState> builder) {
         builder.add(NORTH, EAST, WEST, SOUTH, WATERLOGGED, COLUMN);
     }
 
     @Override
-    public BlockState getStateForPlacement(BlockPlaceContext ctx) {
+    public BlockState getStateForPlacement(@Nonnull BlockPlaceContext ctx) {
         Level level = ctx.getLevel();
         BlockPos pos = ctx.getClickedPos();
 
-        boolean up = level.getBlockState(pos.above()).is(ModBlocks.REINFORCED_BARS.get()) || level.getBlockState(pos.above()).is(ModBlocks.CELL_DOOR.get());
-        boolean down = level.getBlockState(pos.below()).is(ModBlocks.REINFORCED_BARS.get()) || level.getBlockState(pos.below()).is(ModBlocks.CELL_DOOR.get());
+        boolean up = level.getBlockState(pos.above()).is(ModBlocks.REINFORCED_BARS.get())
+                || level.getBlockState(pos.above()).is(ModBlocks.CELL_DOOR.get());
+        boolean down = level.getBlockState(pos.below()).is(ModBlocks.REINFORCED_BARS.get())
+                || level.getBlockState(pos.below()).is(ModBlocks.CELL_DOOR.get());
         int column = 0;
         if (up && down)
             column = 1;
@@ -48,13 +52,16 @@ public class ReinforcedBarsBlock extends IronBarsBlock {
     }
 
     @Override
-    public BlockState updateShape(BlockState state, Direction updateDirection, BlockState otherState,
-            LevelAccessor level,
-            BlockPos pos, BlockPos otherPos) {
+    public BlockState updateShape(@Nonnull BlockState state, @Nonnull Direction updateDirection,
+            @Nonnull BlockState otherState,
+            @Nonnull LevelAccessor level,
+            @Nonnull BlockPos pos, @Nonnull BlockPos otherPos) {
 
         if (updateDirection == Direction.DOWN || updateDirection == Direction.UP) {
-            boolean up = level.getBlockState(pos.above()).is(ModBlocks.REINFORCED_BARS.get()) || level.getBlockState(pos.above()).is(ModBlocks.CELL_DOOR.get());
-            boolean down = level.getBlockState(pos.below()).is(ModBlocks.REINFORCED_BARS.get()) || level.getBlockState(pos.below()).is(ModBlocks.CELL_DOOR.get());
+            boolean up = level.getBlockState(pos.above()).is(ModBlocks.REINFORCED_BARS.get())
+                    || level.getBlockState(pos.above()).is(ModBlocks.CELL_DOOR.get());
+            boolean down = level.getBlockState(pos.below()).is(ModBlocks.REINFORCED_BARS.get())
+                    || level.getBlockState(pos.below()).is(ModBlocks.CELL_DOOR.get());
             int column = 0;
             if (up && down)
                 column = 1;

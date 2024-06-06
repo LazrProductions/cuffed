@@ -1,0 +1,28 @@
+{
+    "variants": {
+      "open=false,facing=north": {
+        "model": "cuffed:block/safe_closed"
+      },
+      "open=false,facing=east": {
+          "model": "cuffed:block/safe_closed", "y": 90
+      },
+      "open=false,facing=south": {
+          "model": "cuffed:block/safe_closed", "y": 180
+      },
+      "open=false,facing=west": {
+          "model": "cuffed:block/safe_closed", "y": 270
+      },
+      "open=true,facing=north": {
+        "model": "cuffed:block/safe_open"
+      },
+      "open=true,facing=east": {
+          "model": "cuffed:block/safe_open", "y": 90
+      },
+      "open=true,facing=south": {
+          "model": "cuffed:block/safe_open", "y": 180
+      },
+      "open=true,facing=west": {
+          "model": "cuffed:block/safe_open", "y": 270
+      }
+  }
+}

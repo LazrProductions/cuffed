@@ -1,0 +1,16 @@
+{
+    "variants": {
+      "facing=north": {
+        "model": "cuffed:block/guillotine"
+      },
+      "facing=east": {
+          "model": "cuffed:block/guillotine", "y": 90
+      },
+      "facing=south": {
+          "model": "cuffed:block/guillotine", "y": 180
+      },
+      "facing=west": {
+          "model": "cuffed:block/guillotine", "y": 270
+      }
+  }
+}

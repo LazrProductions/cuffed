@@ -9,11 +9,11 @@ A simple mod that adds handcuffs, keys, and more.
 
 ## Features:
 
-* Handcuffs that can be applied to players.
-* Chaining and pulling handcuffed players.
-* Seizing handcuffed players' items.
+* Different types of restraints that can be applied to players.
+* Chaining and pulling entities.
+* Seizing restrained players' items.
 * Unbreakable cell doors that can be locked with special keys.
-* Unbreakable cell foundations that can be painted to look like any block.
+* Unbreakable reinforced blocks to use to build impenetrable prisons.
 
 <br>
 

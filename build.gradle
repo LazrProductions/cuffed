@@ -94,6 +94,15 @@ dependencies {
 
     implementation fg.deobf("curse.maven:creativecore-257814:4798202")
 
+    // Optional Dependencies
+    compileOnly fg.deobf("curse.maven:better-combat-by-daedelus-639842:5065424") // Better Combat
+    compileOnly fg.deobf("curse.maven:epic-fight-mod-405076:5159623") // Epic Fight
+    compileOnly fg.deobf("curse.maven:parcool-482378:4944983") // Parcool
+    compileOnly fg.deobf("curse.maven:elenai-dodge-2-442962:4814313") // elenai dodge 2
+    
+    compileOnly fg.deobf("curse.maven:irons-spells-n-spellbooks-855414:5377916") // Iron spell n' spellbooks
+    compileOnly fg.deobf("curse.maven:ars-nouveau-401955:5371927") // Ars Nouveau
+
     // Apply Mixin AP
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }

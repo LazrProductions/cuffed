@@ -1,0 +1,13 @@
+{
+    "replace": false,
+    "values": [
+        "cuffed:reinforced_stone",
+        "cuffed:reinforced_lamp",
+        "cuffed:reinforced_stone_slab",
+        "cuffed:reinforced_stone_stairs",
+        "cuffed:reinforced_smooth_stone",
+        "cuffed:chiseled_reinforced_stone",
+        "cuffed:cell_door",
+        "cuffed:reinforced_bars"
+    ]
+}

@@ -1,5 +1,7 @@
 package com.lazrproductions.cuffed.inventory.tooltip;
 
+import javax.annotation.Nonnull;
+
 import com.lazrproductions.cuffed.CuffedMod;
 
 import net.minecraft.client.gui.Font;
@@ -31,11 +33,11 @@ public class PossessionsBoxTooltip implements ClientTooltipComponent, TooltipCom
         return this.gridSizeY() * 20 + 4;
     }
 
-    public int getWidth(Font p_169901_) {
+    public int getWidth(@Nonnull Font font) {
         return this.gridSizeX() * 18;
     }
 
-    public void renderImage(Font font, int x, int y, GuiGraphics gui) {
+    public void renderImage(@Nonnull Font font, int x, int y, @Nonnull GuiGraphics gui) {
         int horzontalSlots = this.gridSizeX();
         int verticalSlots = this.gridSizeY();
         int k = 0;

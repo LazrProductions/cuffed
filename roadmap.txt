@@ -1,0 +1,148 @@
+ROADMAP for 1.2.0 "Cuffed: Unchained"
+
+HUGE Changes
+- Completely rework handcuffs
+    + Remove soft-cuffing.
+    + Add Two types of handcuffs, for legs and hands.
+
+
+Different Types of handcuffs for legs and arms
+- Ball and Chain : restricts and slows movement but players can still use arm actions. Leg restraint
+- Legcuffs : Heavy-duty cuffs that do not allow movement but allow arm actions. Leg restraint.
+
+- Shackles : Weaker version of handcuffs that allow slowed movement and slowed arm actions. Arm restraint
+- Handcuffs : Heavy-duty cuffs that allow movement but no arm actions. Arm restraint
+
+
+Enchantable Handcuffs
+- Unbreaking : Cuffs break slower
+- Curse of Binding : Cuffs remain on the wearer beyond death.
+- Imbue : The wearer takes up to 80% of their captor's damage for them.
+- Famine : The wearer's constantly has Hunger 1.
+- Shroud : Constantly blinds the wearer.
+- Exhaust : Constantly weakens and applies mining fatigue to the wearer.
+- Drain : Constantly drains the wearer's mana if a magic mod is installed, this enchantment is only available while a magic mod is installed.
+
+- Bouyant : Causes the ball to float in liquids.
+
+All handcuffs now have durability (togglable in configs)
+
+
+Key molds
+- to craft a key mold use a clay ball and a bound key. Then use the mold as fuel in a furnace while smelting an iron ingot to copy the key.
+
+
+Suggestion promises
+- Sleeping & Sitting
+- Forced Riding
+
+- Harder reinforced blocks
+- Lockpickable cell doors
+
+- Lockable Pillorys
+
+- Enchated cuffs/cuff variants
+
+- Parcool compat
+- Epic fight compat
+- Better Compbat compat
+- Elenai Dodge compat
+
+FIXES:
+- /handcuffs can be used without OP.
+- "Breaking Out Destroys Handcuffs" config option doesn't work.
+- Reinforced blocks are transparent?
+- Fix Prisoner Tags. 
+- Add config option for tying anchorable entities to fences.
+
+
+[=------- 1.2.0  C H E C K L I S T -------=]
+
+Major Features
+[✓] - Handcuff Types (Arm & Leg)
+    [✓] - Handcuffs
+    [✓] - Shackles
+    [✓] - Legcuffs
+    [✓] - Ankle Shackles
+    [✓] - Fuzzy Cuffs
+[✓] - Handcuff Enchantments
+    [✓] - Unbreaking
+    [✓] - Curse of Binding 
+    [✓] - Imbue
+    [✓] - Famine
+    [✓] - Shroud
+    [✓] - Exhaust
+    [✓] - Drain
+    [✓] - Bouyant
+[✓] - Handcuff durability & reworked breaking-out mechanic
+[✓] - Key molds
+[✓] - Weighted Anchor
+[✓] - Guillotine
+
+Minor Features
+[✓] - Lockpickable cell doors
+[✓] - Sleeping & Sitting
+[✓] - Forced Riding
+[✓] - Pillory works on any player handcuffed or not
+[✓] - Chain any player or entity, not just handcuffed players.
+[✓] - Lockable Pillories
+[✓] - Booklet with a little wiki.
+[✓] - Shackles Key
+[✓] - Recipes for everything
+[✓] - Revamped Lockpicking System
+
+FIXES 
+[✓] - Harder reinforced blocks
+[✓] - Handcuffs command can be used without op
+[✓] - Prisoner tags are broken and inconsistent
+
+Guide Book Pages
+[✓] - Restraints
+[✓]     - Arm
+[✓]     - Leg
+[✓]     - Keys
+[✓]     - Enchantments
+[✓] - Escorting
+[✓] - Anchoring
+[✓] - Reinforced blocks
+[✓] - Locks
+[✓] - Keys
+[✓] - Lockpicking
+[✓] - Pillory
+[✓] - Guillotine
+[✓] - Prisoner Tag
+[✓] - Encyclopedia
+[✓]     - Handcuffs
+[✓]     - Shackles
+[✓]     - Fuzzy Handcuffs
+[✓]     - Legcuffs
+[✓]     - Leg Shackles
+[✓]     - Handcuff Key
+[✓]     - Shackles Key
+[✓]     - Weighted Anchor
+[✓]     - Unbreaking Enchantment
+[✓]     - Curse of Binding Enchantment
+[✓]     - Imbue Enchantment
+[✓]     - Famine Enchantment
+[✓]     - Shroud Enchantment
+[✓]     - Exhaust Enchantment
+[✓]     - Drain Enchantment
+[✓]     - Bouyant Enchantment
+[✓]     - Possessions Box
+[✓]     - Prisoner Tag
+[✓]     - Padlock
+[✓]     - Key
+[✓]     - Key Ring
+[✓]     - Key Mold
+[✓]     - Baked Key Mold
+[✓]     - Lockpick
+[✓]     - Celldoor
+[✓]     - Reinforced Bars
+[✓]     - Smooth Reinforced Stone
+[✓]     - Reinforced Stone
+[✓]     - Reinforced Stone Slab
+[✓]     - Reinforced Stone Stairs
+[✓]     - Chiseled Reinforced Stone
+[✓]     - Reinforced Lamp
+[✓]     - Pillory
+[✓]     - Guillotine

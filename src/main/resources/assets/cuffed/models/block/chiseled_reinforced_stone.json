@@ -1,8 +1,8 @@
 {
   "parent": "minecraft:block/cube_bottom_top",
   "textures": {
-    "bottom": "cuffed:block/reinforced_stone_top",
-    "top": "cuffed:block/reinforced_stone_top",
+    "bottom": "cuffed:block/chiseled_reinforced_stone_bottom",
+    "top": "cuffed:block/chiseled_reinforced_stone_top",
     "side": "cuffed:block/chiseled_reinforced_stone"
   }
 }

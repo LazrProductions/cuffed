@@ -1,4 +1,50 @@
 CHANGELOG
 
+Additions:
++ Completely reworked handcuffs, now referred to as restraints:
+    - Added Two types of Restraints for hands and legs, leg restraints prevent movement while arm restraints prevent interacting and breaking blocks
+    - Added mutliple types of Restraints for both hands and legs, each perform differently
+    - Added multiple Restraint Enchantments including: Unbreaking, Curse of Binding, Imbue, Famine, Shroud, Exhaust, Silence, and Bouyant
+    - Added the ability to Escort restrained players, allowing captors to force them to ride entities
+    - Reworked break-out mechanic, all restraints have a set durability and spamming the movement keys (for leg restraints) or the interact/attack keys (for arm restraints) will slowly wear them down
+    - Added proper models and animations for all restraints
++ Players no longer have to be restrained to be chained.
++ Added Shackles
++ Added Legcuffs
++ Added Leg Shackles
++ Added Shackles Key
++ Added Raw and Baked Key Molds, which can be used to copy keys
++ Added the ability to chain any* passive entity. (* this can be edited using a datapack, see the WIKI)
++ Added Smooth Reinforced Stone
++ Added Reinforced Lamps
++ Added Guillotine, which can be placed on top of pillories to execute players and gather their heads
++ Added Safe, a lockable unbrekable container
++ Completely reworked Possessions Box, now it opens the other player's inventory and items can be picked out and put into the box
++ Added block tag for Reinforced Blocks to allow any any block to reinforced through datapacks
++ Players can now be detained in pillories without being restrained
++ Compltely revamped Lockpicking skillcheck to be more involved
++ Added seperate config options for lockpicking each lockpickable block and entity
++ Cell Doors can now be lockpicked
++ Nicknames (applied by prisoner tag) now persist on death and logout (configurable in config)
++ Added "A Warden's Guide" an encyclopedia of all of Cuffed's features
++ Added Statistics for each type of restraint (breaking out, time restrainted, times restrained)
++ Renamed /handcuffs command to /cuffed
+
+Removed:
+- Removed soft-cuffing
+
 Fixes:
-- Added missing recipes for the pillory and reinforced bars.
+- Fixed players in pillory remaining in the pillory state after pillory has been destroyed
+- Added compatability for Better Combat, Epic Fight, Parcool, Ars Nouveau, and Iron's Spells n' Spellbooks
+- Slight changes to the textures of Reinforced Bars, Cell Door, Padlocks, and all Reinforced Stone(s)
+- Adjusted the hardness of all reinforced blocks to better represent the strength of reinforced blocks
+- Padlocks now secure both halves of double chests
+- Fixed an issue where players couldn't target entities if there was a reinforced block on the other side of that entity
+- Restrained Players can no longer swim
+- Keys added and taken from a key ring now keep their bindings
+- Added config options to disable anchoring entities to Fences, Tripwire Hooks, and Weighted Anchors
+- Prisoner Tags now function correctly in all circumstances
+- Breaking out of restraints destroys item config option now functions properly
+
+
+BREAKING CHANGES

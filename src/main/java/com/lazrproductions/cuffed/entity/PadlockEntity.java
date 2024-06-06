@@ -1,12 +1,15 @@
 package com.lazrproductions.cuffed.entity;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.lazrproductions.cuffed.CuffedMod;
+import com.lazrproductions.cuffed.api.CuffedAPI;
 import com.lazrproductions.cuffed.init.ModEntityTypes;
 import com.lazrproductions.cuffed.init.ModItems;
 import com.lazrproductions.cuffed.init.ModTags;
-import com.lazrproductions.cuffed.items.Key;
-import com.lazrproductions.cuffed.items.KeyRing;
+import com.lazrproductions.cuffed.items.KeyItem;
+import com.lazrproductions.cuffed.items.KeyRingItem;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -18,6 +21,7 @@ import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
@@ -71,49 +75,41 @@ public class PadlockEntity extends HangingEntity {
     }
 
     @Override
-    public InteractionResult interact(Player interactor, InteractionHand hand) {
-        if (this.level().isClientSide) {
+    public InteractionResult interact(@Nonnull Player interactor, @Nonnull InteractionHand hand) {
+        if (this.level().isClientSide()) {
             return InteractionResult.SUCCESS;
         } else {
             ItemStack stack = interactor.getItemInHand(hand);
             if (stack.is(ModItems.KEY.get())) {
-                if (stack.getTagElement("BoundDoor") != null) {
-                    CompoundTag doorTag = stack.getTagElement("BoundDoor");
-                    if (doorTag != null) {
-                        int[] boundPos = doorTag.getIntArray("Position");
-                        if (boundPos[0] == this.pos.getX() && boundPos[1] == this.pos.getY()
-                                && boundPos[2] == this.pos.getZ()) {
-                            
-                            
-                            interactor.awardStat(Stats.ITEM_USED.get(ModItems.KEY.get()));        
-                            // Toggle locked
-                            if (!interactor.isCrouching()) {
-                                setLocked(!isLocked());
-                                if (isLocked())
-                                    interactor.displayClientMessage(Component.literal("Padlock locked."), true);
-                                else
-                                    interactor.displayClientMessage(Component.literal("Padlock unlocked."), true);
-                                this.playSound(SoundEvents.IRON_TRAPDOOR_OPEN, 1.0F, 1.0F);
-                                return InteractionResult.CONSUME;
-                            } else {
-                                // pickup lock
-                                Key.RemoveBoundDoor(stack);
-                                this.RemoveLock();
-                                return InteractionResult.CONSUME;
-                            }
-                        }
+                if (KeyItem.isBoundToBlock(stack, pos)) {
+                    interactor.awardStat(Stats.ITEM_USED.get(ModItems.KEY.get()));
+                    // Toggle locked
+                    if (!interactor.isCrouching()) {
+                        setLocked(!isLocked());
+                        if (isLocked())
+                            interactor.displayClientMessage(Component.literal("Padlock locked."), true);
+                        else
+                            interactor.displayClientMessage(Component.literal("Padlock unlocked."), true);
+
+                        this.playSound(SoundEvents.IRON_TRAPDOOR_OPEN, 1.0F, 1.0F);
+                        return InteractionResult.SUCCESS;
+                    } else {
+                        // pickup lock
+                        KeyItem.removeBoundBlock(stack);
+                        this.RemoveLock();
+                        return InteractionResult.SUCCESS;
                     }
                 } else if (!hasKey()) {
-                    if (Key.TryToSetBoundDoor(interactor, stack, this.pos)) {
+                    if (KeyItem.tryToSetBoundBlock(interactor, stack, this.pos)) {
                         setHasKey(true);
-                        return InteractionResult.CONSUME;
+                        return InteractionResult.SUCCESS;
                     }
                 }
             }
 
             if (stack.is((ModItems.KEY_RING.get()))) {
-                if (KeyRing.HasBoundDoorAt(stack, this.pos)) {
-                    interactor.awardStat(Stats.ITEM_USED.get(ModItems.KEY_RING.get()));    
+                if (KeyRingItem.hasBoundBlockAt(stack, this.pos)) {
+                    interactor.awardStat(Stats.ITEM_USED.get(ModItems.KEY_RING.get()));
                     // Unlock
                     if (!interactor.isCrouching()) {
                         setLocked(!isLocked());
@@ -125,12 +121,12 @@ public class PadlockEntity extends HangingEntity {
                         return InteractionResult.CONSUME;
                     } else {
                         // pickup lock
-                        KeyRing.RemoveBoundDoorAt(stack, this.pos);
+                        KeyRingItem.removeBoundDoorAt(stack, this.pos);
                         this.RemoveLock();
                         return InteractionResult.CONSUME;
                     }
-                } else if (!hasKey() && KeyRing.CanBindDoor(stack)) {
-                    if (KeyRing.TryToAddBoundDoor(interactor, stack, this.pos)) {
+                } else if (!hasKey() && KeyRingItem.canBindBlock(stack)) {
+                    if (KeyRingItem.tryToAddBoundBlock(interactor, stack, this.pos)) {
                         setHasKey(true);
                         return InteractionResult.CONSUME;
                     }
@@ -143,6 +139,18 @@ public class PadlockEntity extends HangingEntity {
                 stack.shrink(1);
                 this.playSound(SoundEvents.NETHERITE_BLOCK_PLACE, 1, 1);
                 return InteractionResult.CONSUME;
+            }
+
+            if (stack.is(ModItems.LOCKPICK.get())) {
+                CuffedAPI.Networking.sendLockpickBeginPickingLockPacketToClient((ServerPlayer) interactor, this.getId(),
+                        isReinforced()
+                                ? CuffedMod.CONFIG.lockpickingSettings.speedIncreasePerPickForBreakingReinforcedPadlocks
+                                : CuffedMod.CONFIG.lockpickingSettings.speedIncreasePerPickForBreakingPadlocks,
+                        isReinforced()
+                                ? CuffedMod.CONFIG.lockpickingSettings.progressPerPickForBreakingReinforcedPadlocks
+                                : CuffedMod.CONFIG.lockpickingSettings.progressPerPickForBreakingPadlocks);
+
+                return InteractionResult.SUCCESS;
             }
 
             return InteractionResult.FAIL;
@@ -207,7 +215,7 @@ public class PadlockEntity extends HangingEntity {
     }
 
     @Override
-    public boolean hurt(DamageSource source, float amount) {
+    public boolean hurt(@Nonnull DamageSource source, float amount) {
         return false;
     }
 
@@ -227,7 +235,7 @@ public class PadlockEntity extends HangingEntity {
     }
 
     @Override
-    protected float getEyeHeight(Pose p_31839_, EntityDimensions p_31840_) {
+    protected float getEyeHeight(@Nonnull Pose p_31839_, @Nonnull EntityDimensions p_31840_) {
         return 0.0625F;
     }
 
@@ -245,7 +253,7 @@ public class PadlockEntity extends HangingEntity {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
+    public void addAdditionalSaveData(@Nonnull CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         tag.putBoolean("Locked", this.isLocked());
         tag.putBoolean("HasKey", this.hasKey());
@@ -253,7 +261,7 @@ public class PadlockEntity extends HangingEntity {
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
+    public void readAdditionalSaveData(@Nonnull CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         this.entityData.set(DATA_LOCKED, tag.getBoolean("Locked"));
         this.setLocked(tag.getBoolean("Locked"));

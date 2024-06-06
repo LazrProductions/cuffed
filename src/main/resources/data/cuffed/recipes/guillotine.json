@@ -1,0 +1,23 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+      "WBW",
+      "WIW",
+      "W W"
+    ],
+    "key": {
+      "W": {
+        "tag": "minecraft:planks"
+      },
+      "I": {
+        "item": "minecraft:iron_ingot"
+      },
+      "B": {
+        "item": "minecraft:iron_block"
+      }
+    },
+    "result": {
+      "item": "cuffed:guillotine",
+      "count": 1
+    }
+  }

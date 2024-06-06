@@ -1,35 +1,27 @@
 package com.lazrproductions.cuffed.event;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.api.CuffedAPI;
-import com.lazrproductions.cuffed.cap.CuffedCapability;
-import com.lazrproductions.cuffed.client.ChainRenderHelper;
-import com.lazrproductions.cuffed.entity.PadlockEntity;
-import com.lazrproductions.cuffed.init.ModBlocks;
+import com.lazrproductions.cuffed.api.IRestrainableCapability;
+import com.lazrproductions.cuffed.blocks.base.ILockableBlock;
+import com.lazrproductions.cuffed.client.gui.screen.GenericScreen;
+import com.lazrproductions.cuffed.effect.RestrainedEffectInstance;
+import com.lazrproductions.cuffed.entity.base.IRestrainableEntity;
+import com.lazrproductions.cuffed.event.base.LivingRideTickEvent;
+import com.lazrproductions.cuffed.init.ModItems;
 import com.lazrproductions.cuffed.init.ModTags;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.ComputeFovModifierEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.InputEvent.InteractionKeyMappingTriggered;
@@ -38,104 +30,88 @@ import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.ScreenEvent.Opening;
 import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class ModClientEvents {
 
-    public static int maxPhases;
-    public static int pickingSlot;
-    public static boolean isLockpicking;
-    public static float lockpickTick;
-    public static int pickingLock;
-    int pickPhaseTick;
-    int pickProgress;
-    float pickSpeed = 1.4f;
-    int curPhase = -1;
-
-    float pickedLerpedProgress;
-
-    @SubscribeEvent
-    public void clientJoin(ClientPlayerNetworkEvent.LoggingIn event) {
-        if (event.getPlayer() != null) {
-            CuffedCapability cap = CuffedAPI.Capabilities.getCuffedCapability(event.getPlayer());
-            cap.client_joinWorld(event.getPlayer());
-        }
-    }
-
-    @SubscribeEvent
-    public void clientLeave(PlayerEvent.PlayerLoggedOutEvent event) {
-        isLockpicking = false;
-
-        Minecraft inst = Minecraft.getInstance();
-        Player player = inst.player;
-        if (player != null) {
-            CuffedCapability cap = CuffedAPI.Capabilities.getCuffedCapability(player);
-            cap.client_leaveWorld(player);
-        }
-    }
-
-    @SubscribeEvent
-    public void clientInput(InputEvent.Key event) {
-        Minecraft inst = Minecraft.getInstance();
-        Player player = inst.player;
-        if (player != null) {
-            CuffedCapability cap = CuffedAPI.Capabilities.getCuffedCapability(player);
-            cap.client_onKeyPressed(inst, event);
-        }
-    }
-
     @SubscribeEvent
     public void clientTick(ClientTickEvent event) {
         if (event.phase == Phase.END) {
             Minecraft inst = Minecraft.getInstance();
-            LocalPlayer player = inst.player;
-            if (player != null) {
-                CuffedCapability cap = CuffedAPI.Capabilities.getCuffedCapability(player);
-                cap.client_tick(player);
+            if (inst.screen instanceof GenericScreen sc)
+                sc.tick();
 
-                ClientLevel level = inst.level;
-
-                if (level == null)
-                    return;
-
-                if (isLockpicking) {
-                    player.getInventory().selected = pickingSlot;
-
-                    if (pickProgress >= maxPhases) {
-                        isLockpicking = false;
-                        CuffedAPI.Lockpicking.sendLockpickFinishPacket(2, pickingLock, player.getId(),
-                                player.getUUID()); // Success
-                    }
-
-                    lockpickTick += pickSpeed;
-
-                    if (curPhase > pickProgress) {
-                        isLockpicking = false;
-                        CuffedAPI.Lockpicking.sendLockpickFinishPacket(0, pickingLock, player.getId(),
-                                player.getUUID()); // Missed a phase and didnt click.
-                        player.playSound(SoundEvents.ITEM_BREAK);
-                    }
-
-                    curPhase = Mth.floor(lockpickTick / 20);
-
-                    if (lockpickTick > (20 * maxPhases)) {
-                        isLockpicking = false;
-                        CuffedAPI.Lockpicking.sendLockpickFinishPacket(0, pickingLock, player.getId(),
-                                player.getUUID()); // Time ran out (or didnt get make complete enough phases)
-                        player.playSound(SoundEvents.ITEM_BREAK);
-                    }
-                } else {
-                    pickPhaseTick = 0;
-                    pickProgress = 0;
-                    lockpickTick = 0;
-                    pickedLerpedProgress = 0;
-                    maxPhases = 0;
-                    pickSpeed = 1.4f;
-                    curPhase = -1;
-                }
+            if (inst.player != null) {
+                IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(inst.player);
+                cap.tickClient(inst.player);
             }
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        Player p = (Player) event.getEntity();
+        if (p != null) {
+            IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(p);
+            cap.onLoginClient(p);
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        Player p = event.getEntity();
+        if (p != null) {
+            IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(p);
+            cap.onLogoutClient(p);
+        }
+    }
+
+    @SubscribeEvent
+    public void onEntityDied(LivingDeathEvent event) {
+        if (event.getEntity() instanceof Player player) {
+            IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(player);
+            if (cap != null)
+                cap.onDeathClient(player);
+        }
+    }
+
+    @SubscribeEvent
+    public void onLand(LivingFallEvent event) {
+        if (event.getEntity() instanceof Player player) {
+            IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(player);
+            if (cap != null)
+                cap.onLandClient(player, event.getDistance(), event.getDamageMultiplier());
+        }
+    }
+
+    @SubscribeEvent
+    public void onJump(LivingJumpEvent event) {
+        if (event.getEntity() instanceof Player player) {
+            IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(player);
+            if (cap != null)
+                cap.onJumpClient(player);
+
+            IRestrainableEntity res = (IRestrainableEntity) player;
+            if (RestrainedEffectInstance.decodeNoJumping(res.getRestraintCode())) {
+                if (player.isSprinting() && RestrainedEffectInstance.decodeNoMovement(res.getRestraintCode())) {
+                    player.setDeltaMovement(0, -1, 0);
+                } else
+                    player.setDeltaMovement(player.getDeltaMovement().x, -1, player.getDeltaMovement().z);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onTickRide(LivingRideTickEvent event) {
+        if (event.getEntity() instanceof Player player) {
+            IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(player);
+            if (cap != null)
+                event.setCanceled(cap.onTickRideClient(player, event.getVehicle()));
         }
     }
 
@@ -144,23 +120,8 @@ public class ModClientEvents {
         Minecraft inst = Minecraft.getInstance();
         LocalPlayer p = inst.player;
         if (p != null) {
-            CuffedCapability cap = CuffedAPI.Capabilities.getCuffedCapability(p);
-            cap.client_renderOverlay(inst, p, event.getGuiGraphics(), event.getPartialTick(), event.getWindow());
-
-            if (isLockpicking) {
-                pickedLerpedProgress = org.joml.Math.lerp(pickedLerpedProgress, (float) pickProgress * 20f,
-                        event.getPartialTick() / 100);
-
-                List<Component> list = new ArrayList<>();
-                list.add(Component.translatable("Picking lock"));
-                list.add(Component.literal("" + curPhase + "/" + maxPhases));
-                CuffedCapability.renderHandcuffedGUI(inst, event.getGuiGraphics(), list);
-
-                CuffedCapability.renderLockpickGUI(inst, event.getGuiGraphics(), (20 * maxPhases),
-                        Mth.floor((float) pickedLerpedProgress));
-                pickPhaseTick = Mth.floor(lockpickTick) % 20;
-                CuffedCapability.renderHandcuffedGUI(inst, event.getGuiGraphics(), 20, pickPhaseTick);
-            }
+            IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(p);
+            cap.renderOverlay(p, event.getGuiGraphics(), event.getPartialTick(), event.getWindow());
         }
     }
 
@@ -168,197 +129,112 @@ public class ModClientEvents {
 
     @SubscribeEvent
     public void computeFov(ComputeFovModifierEvent event) {
-        CuffedCapability cap = CuffedAPI.Capabilities.getCuffedCapability(event.getPlayer());
-        if (cap.isGettingOrCurrentlyHandcuffed())
+        IRestrainableEntity e = (IRestrainableEntity) event.getPlayer();
+        if (RestrainedEffectInstance.decodeNoMovement(e.getRestraintCode()))
             event.setNewFovModifier(1);
     }
 
     @SubscribeEvent
-    public void openInv(Opening event) {
-        Minecraft inst = Minecraft.getInstance();
-        if (inst != null) {
-            Player player = inst.player;
-            if (player != null) {
-                CuffedCapability cap = CuffedAPI.Capabilities.getCuffedCapability(player);
-                if (cap.isGettingOrCurrentlyHandcuffed() || isLockpicking)
-                    if (event.getScreen() instanceof InventoryScreen)
+    public void onOpenScreen(Opening event) {
+        if (event.getNewScreen() instanceof InventoryScreen) {
+            Minecraft inst = Minecraft.getInstance();
+            if (inst != null) {
+                Player player = inst.player;
+                if (player != null) {
+                    IRestrainableEntity restrainable = (IRestrainableEntity) player;
+                    if (RestrainedEffectInstance.decodeNoItemUse(restrainable.getRestraintCode()))
                         event.setCanceled(true);
+                }
             }
         }
     }
 
     @SubscribeEvent
-    public void click(InteractionKeyMappingTriggered event) {
+    public void onInteractionKeyMappingTriggered(InteractionKeyMappingTriggered event) {
         Minecraft inst = Minecraft.getInstance();
         if (inst != null) {
             Player player = inst.player;
             if (player != null) {
-                CuffedCapability cap = CuffedAPI.Capabilities.getCuffedCapability(player);
-                if (cap.isGettingOrCurrentlyHandcuffed()) {
-                    event.setCanceled(true); // TODO: figure out how to cancel better combat's events
-                } else if (!player.isCreative()
+                Level level = player.level();
+                IRestrainableEntity restrainable = (IRestrainableEntity) player;
+                if (restrainable.isRestrained()) {
+                    if (!event.isAttack()) {
+                        if (RestrainedEffectInstance.decodeNoItemUse(restrainable.getRestraintCode()))
+                            event.setCanceled(true);
+                    } else if (RestrainedEffectInstance.decodeNoMining(restrainable.getRestraintCode()))
+                        event.setCanceled(true);
+                }
+
+                if (!player.isCreative()
                         && !player.getItemInHand(InteractionHand.MAIN_HAND).is(ItemTags.PICKAXES)
                         && event.isAttack()) {
                     BlockState pickresult = GetSelectedBlock(player, false);
-                    if (pickresult != null
-                            && (pickresult.is(ModBlocks.CELL_DOOR.get())
-                                    || pickresult.is(ModBlocks.REINFORCED_STONE.get())
-                                    || pickresult.is(ModBlocks.REINFORCED_STONE_CHISELED.get())
-                                    || pickresult.is(ModBlocks.REINFORCED_STONE_SLAB.get())
-                                    || pickresult.is(ModBlocks.REINFORCED_STONE_STAIRS.get())
-                                    || pickresult.is(ModBlocks.REINFORCED_BARS.get())))
+                    if (pickresult != null && pickresult.is(ModTags.Blocks.REINFORCED_BLOCKS) && !(inst.hitResult instanceof EntityHitResult))
                         event.setCanceled(true);
-                } else if (event.isUseItem() && !(inst.hitResult instanceof EntityHitResult)) {
-
+                } else if (event.isUseItem() && !(inst.hitResult instanceof EntityHitResult) && 
+                        !(player.getItemInHand(event.getHand()).is(ModItems.KEY.get()) || player.getItemInHand(event.getHand()).is(ModItems.KEY_RING.get()))) {
                     BlockState pickresult = GetSelectedBlock(player, false);
                     BlockPos pickpos = GetSelectedBlockPos(player, false);
-                    PadlockEntity padlock = PadlockEntity.getLockAt(player.level(), pickpos);
-
-                    if (pickresult != null) {
-                        boolean isLockedBlock = false;
-                        if (pickresult.is(ModTags.Blocks.LOCKABLE_BLOCKS)) {
-                            if (padlock != null && padlock.isLocked())
-                                isLockedBlock = true;
-                            else if (pickresult.getBlock() instanceof DoorBlock door) {
-                                PadlockEntity eB = PadlockEntity.getLockAt(player.level(), pickpos.below());
-                                PadlockEntity eA = PadlockEntity.getLockAt(player.level(), pickpos.above());
-                                if (player.level().getBlockState(pickpos.below()).is(door) && eB != null
-                                        && eB.isLocked())
-                                    isLockedBlock = true;
-                                else if (player.level().getBlockState(pickpos.above()).is(door) && eA != null
-                                        && eA.isLocked())
-                                    isLockedBlock = true;
-                            }
-                        }
-
-                        if (isLockedBlock)
-                            event.setCanceled(true);
-                    }
-                } else if (event.isAttack()) {
-                    BlockState pickresult = GetSelectedBlock(player, false);
-                    BlockPos pickpos = GetSelectedBlockPos(player, false);
-                    PadlockEntity padlock = PadlockEntity.getLockAt(player.level(), pickpos);
-
-                    if (pickresult != null) {
-                        boolean isLockedBlock = false;
-                        if (pickresult.is(ModTags.Blocks.LOCKABLE_BLOCKS)) {
-                            if (padlock != null && padlock.isLocked())
-                                isLockedBlock = true;
-                            else if (pickresult.getBlock() instanceof DoorBlock door) {
-                                PadlockEntity eB = PadlockEntity.getLockAt(player.level(), pickpos.below());
-                                PadlockEntity eA = PadlockEntity.getLockAt(player.level(), pickpos.above());
-                                if (player.level().getBlockState(pickpos.below()).is(door) && eB != null
-                                        && eB.isLocked())
-                                    isLockedBlock = true;
-                                else if (player.level().getBlockState(pickpos.above()).is(door) && eA != null
-                                        && eA.isLocked())
-                                    isLockedBlock = true;
-                            }
-                        }
-
-                        if (isLockedBlock)
-                            event.setCanceled(true);
-                    }
-                }
-
-                if (isLockpicking) {
-                    if (pickPhaseTick <= 16 && pickPhaseTick >= 10) {
-                        pickProgress++;
-                        pickSpeed += ((float) CuffedMod.CONFIG.lockpickingSettings.lockpickingSpeedIncreasePerPhase)
-                                / 100f;
-                        player.playSound(SoundEvents.IRON_TRAPDOOR_OPEN);
-                    } else {
-                        CuffedAPI.Lockpicking.sendLockpickFinishPacket(1, pickingLock, player.getId(),
-                                player.getUUID()); // missed sweet spot
-                        player.playSound(SoundEvents.ITEM_BREAK);
-                        isLockpicking = false;
-                    }
-                    event.setCanceled(true);
+                    
+                    if(pickresult != null)
+                        if(CuffedAPI.Lockpicking.isLockedAt(level, pickresult, pickpos) && !(pickresult.getBlock() instanceof ILockableBlock))
+                                event.setCanceled(true);
+                    
                 }
             }
         }
     }
 
     @SubscribeEvent
-    public void scroll(InputEvent.MouseScrollingEvent event) {
+    public void onMouseScroll(InputEvent.MouseScrollingEvent event) {
         Minecraft inst = Minecraft.getInstance();
         if (inst != null) {
             Player player = inst.player;
             if (player != null) {
-                CuffedCapability cap = CuffedAPI.Capabilities.getCuffedCapability(player);
-                if (cap.isGettingOrCurrentlyHandcuffed() || isLockpicking)
-                    event.setCanceled(true);
+                IRestrainableEntity restrainable = (IRestrainableEntity) player;
+                if (restrainable.isRestrained()) {
+                    if (RestrainedEffectInstance.decodeNoItemUse(restrainable.getRestraintCode()))
+                        event.setCanceled(true);
+                }
             }
         }
     }
 
     @SubscribeEvent
-    public void interactBlock(PlayerInteractEvent.RightClickBlock event) {
-        Player player = event.getEntity();
+    public void onInteractBlock(PlayerInteractEvent.RightClickBlock event) {
         BlockState pickresult = event.getLevel().getBlockState(event.getPos());
         BlockPos pickpos = event.getPos();
-        PadlockEntity padlock = PadlockEntity.getLockAt(player.level(), pickpos);
 
-        boolean isLockedBlock = false;
-        if (pickresult.is(ModTags.Blocks.LOCKABLE_BLOCKS)) {
-            if (padlock != null && padlock.isLocked())
-                isLockedBlock = true;
-            else if (pickresult.getBlock() instanceof DoorBlock door) {
-                // Block is a door and does not have a lock on it
-                PadlockEntity eB = PadlockEntity.getLockAt(player.level(), pickpos.below());
-                PadlockEntity eA = PadlockEntity.getLockAt(player.level(), pickpos.above());
-                if (player.level().getBlockState(pickpos.below()).is(door) && eB != null && eB.isLocked())
-                    // Block is top part of door with a lock on bottom part
-                    isLockedBlock = true;
-                else if (player.level().getBlockState(pickpos.above()).is(door) && eA != null && eA.isLocked())
-                    // Block is bottom part of door with a lock on top part
-                    isLockedBlock = true;
-            }
-        }
-
-        if (isLockedBlock)
+        if(CuffedAPI.Lockpicking.isLockedAt(event.getLevel(), pickresult, pickpos) && !(pickresult.getBlock() instanceof ILockableBlock))
             event.setCanceled(true);
     }
 
     @SubscribeEvent
-    public void renderPlayer(RenderPlayerEvent event) {
-        Player player = event.getEntity();
-        CuffedCapability cap = CuffedAPI.Capabilities.getCuffedCapability(player);
+    public void onRenderPlayer(RenderPlayerEvent event) {
+        // Player player = event.getEntity();
+        // CuffedCapability cap = CuffedAPI.Capabilities.getCuffedCapability(player);
 
-        Entity e = cap.getAnchor(player.level());
-        if (e != null) {
-            ChainRenderHelper.renderChainTo(player, event.getPartialTick(), event.getPoseStack(),
-                    event.getMultiBufferSource(), e); // render chain from mayself to chained player.
-        }
-    
-        Entity renderedPlayer = event.getEntity();
-        Entity anchoredPlayer = null;
-        for (Player p : renderedPlayer.level().players()) {
-            CuffedCapability c = CuffedAPI.Capabilities.getCuffedCapability(p);
-            Entity a = c.getAnchor(renderedPlayer.level());
-            if(c.isAnchored() && a != null && a.getId() == renderedPlayer.getId())
-                anchoredPlayer = p;
-        }
-        if(anchoredPlayer != null) {
-            ChainRenderHelper.renderChainFrom(anchoredPlayer, event.getPartialTick(), event.getPoseStack(),
-                    event.getMultiBufferSource(), renderedPlayer);
-        }
-    }
+        // Entity e = cap.getAnchor(player.level());
+        // if (e != null) {
+        // ChainRenderHelper.renderChainTo(player, event.getPartialTick(),
+        // event.getPoseStack(),
+        // event.getMultiBufferSource(), e); // render chain from mayself to chained
+        // player.
+        // }
 
-    @SubscribeEvent
-    public void chainKnotRender(RenderChainKnotEntityEvent event) {
-        Entity e = event.getEntity();
-        Player player = null;
-        for (Player p : e.level().players()) {
-            CuffedCapability cap = CuffedAPI.Capabilities.getCuffedCapability(p);
-            Entity _e = cap.getAnchor(e.level());
-            if (cap.isAnchored() && _e != null && _e.getId() == e.getId())
-                player = p;
-        }
-
-        if (player != null)
-            ChainRenderHelper.renderChainFrom(player, event.getPartialTick(), event.getPoseStack(),
-                    event.getMultiBufferSource(), e);
+        // Entity renderedPlayer = event.getEntity();
+        // Entity anchoredPlayer = null;
+        // for (Player p : renderedPlayer.level().players()) {
+        // CuffedCapability c = CuffedAPI.Capabilities.getCuffedCapability(p);
+        // Entity a = c.getAnchor(renderedPlayer.level());
+        // if(c.isAnchored() && a != null && a.getId() == renderedPlayer.getId())
+        // anchoredPlayer = p;
+        // }
+        // if(anchoredPlayer != null) {
+        // ChainRenderHelper.renderChainFrom(anchoredPlayer, event.getPartialTick(),
+        // event.getPoseStack(),
+        // event.getMultiBufferSource(), renderedPlayer);
+        // }
     }
 
     ////////// UTILITY FUNCTIONS FOR GENERAL USE /////////////
@@ -382,7 +258,7 @@ public class ModClientEvents {
         return null;
     }
 
-    public static boolean IsTargettingEntity(Player player, boolean isFluid) {
+    public static boolean isTargettingEntity(Player player, boolean isFluid) {
         HitResult block = player.pick(20.0D, 0.0F, isFluid);
 
         return block.getType() == HitResult.Type.ENTITY;
@@ -400,51 +276,5 @@ public class ModClientEvents {
         }
 
         return false;
-    }
-
-    /**
-     * Sends a debug message with handcuffed information about the current client in
-     * the console.
-     */
-    public static void clientSideHandcuffedCommand() {
-        Minecraft inst = Minecraft.getInstance();
-        if (inst != null && inst.player != null) {
-            CuffedCapability c = CuffedAPI.Capabilities.getCuffedCapability(inst.player);
-            CuffedMod.LOGGER.info("[COMMAND DEBUG] -> Handcuffed Information [CLIENT]:"
-                    + "\n - isHandcuffed: " + c.isHandcuffed()
-                    + "\n - isSoftCuffed: " + c.isSoftCuffed()
-                    + "\n - isDetained: " + c.isDetained()
-                    + "\n -  detainedRot: " + c.getDetainedRotation()
-                    + "\n -  detainedPos: " + c.getDetainedPosition()
-                    + "\n - isAnchored: " + c.isAnchored()
-                    + "\n -  anchor: " + (c.getAnchor() != null ? c.getAnchor().getDisplayName().getString()
-                            : "null"
-                                    + "\n - nbt: " + c.serializeNBT().getAsString()));
-        }
-    }
-
-    /**
-     * Sends a debug message with handcuffed information about a client in the
-     * console.
-     */
-    public static void clientSideHandcuffedCommand(UUID otherUUID) {
-        Minecraft inst = Minecraft.getInstance();
-        if (inst.level != null) {
-            Player player = inst.level.getPlayerByUUID(otherUUID);
-            if (inst != null && player != null) {
-                CuffedCapability c = CuffedAPI.Capabilities.getCuffedCapability(player);
-                CuffedMod.LOGGER.info("[COMMAND DEBUG] -> Handcuffed Information [CLIENT]:"
-                        + "\n - isHandcuffed: " + c.isHandcuffed()
-                        + "\n - isSoftCuffed: " + c.isSoftCuffed()
-                        + "\n - isDetained: " + c.isDetained()
-                        + "\n -  detainedRot: " + c.getDetainedRotation()
-                        + "\n -  detainedPos: " + c.getDetainedPosition()
-                        + "\n - isAnchored: " + c.isAnchored()
-                        + "\n -  anchor: "
-                        + (c.getAnchor() != null ? c.getAnchor().getDisplayName().getString()
-                                : "null"
-                                        + "\n - nbt: " + c.serializeNBT().getAsString()));
-            }
-        }
     }
 }

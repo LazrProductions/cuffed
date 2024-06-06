@@ -1,49 +1,261 @@
 {
     "itemGroup.cuffed": "Cuffed",
 
+
+
     "item.cuffed.key": "Key",
+    "item.cuffed.key.desc": "Keys can be used to lock padlocks and cell doors.",
+    "item.cuffed.key.description.bound": "Bound",
     "item.cuffed.key_ring": "Key Ring",
+    "item.cuffed.key_ring.desc": "Add multiple keys to a key ring to unlock mutliple objects with one item.",
+    "item.cuffed.key_ring.description.amount": "%1$s Keys",
+    "item.cuffed.key_ring.description.bound": "%1$s Bound Keys",
+    "item.cuffed.key_mold": "Raw Key Mold",
+    "item.cuffed.key_mold.desc": "Use a bound key and a key mold in a crafting table to copy keys, then bake it in a furnace to lock the mold.",
+    "item.cuffed.key_mold.description.bound": "Continas a copied binding",
+    "item.cuffed.key_mold.description.unbound": "This mold hasn't been set!",
+    "item.cuffed.baked_key_mold": "Baked Key Mold",
+    "item.cuffed.baked_key_mold.desc": "Use an iron ingot and a baked key mold in a crafting table to create a copy of the molded key.",
+    "item.cuffed.baked_key_mold.description.quality_5": "Perfect",
+    "item.cuffed.baked_key_mold.description.quality_4": "Good",
+    "item.cuffed.baked_key_mold.description.quality_3": "Used",
+    "item.cuffed.baked_key_mold.description.quality_2": "Worn",
+    "item.cuffed.baked_key_mold.description.quality_1": "Diminished",
+    "item.cuffed.baked_key_mold.description.quality_0": "Unusable",
+
     "item.cuffed.handcuffs_key": "Handcuffs Key",
+    "item.cuffed.handcuffs_key.desc": "Used to unlock Handcuffs and Legcuffs",
+    "item.cuffed.shackles_key": "Shackles Key",
+    "item.cuffed.shackles_key.desc": "Used to unlock Shackles and Leg Shackles.",
+
     "item.cuffed.handcuffs": "Handcuffs",
+    "item.cuffed.handcuffs.desc": "An arm restraint that keeps players from mining, using items, and entering their inventories.",
+    "item.cuffed.shackles": "Shackles",
+    "item.cuffed.shackles.desc": "An arm restraint that keeps players from mining blocks, but allows them to use items, interact with blocks, and enter their inventory. Significantly weaker than Handcuffs.",
+    "item.cuffed.fuzzy_handcuffs": "Fuzzy Handcuffs",
+    "item.cuffed.fuzzy_handcuffs.desc": "A fancy fun-time arm restraint that keeps players from mining, using items, and entering their inventories. Given exclusively to our supporters in our discord.",
+    "item.cuffed.legcuffs": "Legcuffs",
+    "item.cuffed.legcuffs.desc": "A leg restraint that keeps players from moving, jumping, and controlling mounts.",
+    "item.cuffed.leg_shackles": "Leg Shackles",
+    "item.cuffed.leg_shackles.desc": "A leg restraint that keeps players from moving, jumping, and controlling mounts. Significantly weaker than Legcuffs.",
+
+    "item.cuffed.weighted_anchor": "Weighted Anchor",
+    "item.cuffed.weighted_anchor.desc": "A heavy anchor that entities can be anchored to. Can be enchanted with Buoyant to make it float in water.",
+
+    "item.cuffed.information_booklet": "A Warden's Guide",
+    "item.cuffed.information_booklet.desc": "by Lazr",
+
+    "item.cuffed.possessions_box": "Box of Possessions",
+    "item.cuffed.possessions_box.desc": "A simple box that can store many items. Use an Empty box on a player to frisk them, then choose items to store in the box.",
     "item.cuffed.possessions_box.empty": "Empty Box",
     "item.cuffed.possessions_box.full": "Box of Possessions",
+
     "item.cuffed.padlock": "Padlock",
+    "item.cuffed.padlock.desc": "A simple lock that can be applied to any block to stop ALL interaction with that block. Can be locked with a key and lockpicked. Use a diamond on a padlock to reinforce it.",
     "item.cuffed.lockpick": "Lockpick",
+    "item.cuffed.lockpick.desc": "A lock-cracking device that can be used to break locks, cell doors, and to break restraints.",
+
     "item.cuffed.prisoner_tag": "Prisoner Tag",
+    "item.cuffed.prisoner_tag.desc": "Similar to a Name Tag but can be used on players to change their name.",
+
+
 
     "block.cuffed.cell_door": "Cell Door",
-    "block.cuffed.reinforced_stone": "Reinforced Stone",
-    "block.cuffed.chiseled_reinforced_stone": "Chiseled Reinforced Stone",
-    "block.cuffed.reinforced_stone_slab": "Reinforced Stone Slab",
-    "block.cuffed.reinforced_stone_stairs": "Reinforced Stone Stairs",
+    "block.cuffed.cell_door.desc": "A lockable door that can only be broken with a pickaxe. Is reinforced.",
     "block.cuffed.reinforced_bars": "Reinforced Bars",
+    "block.cuffed.reinforced_bars.desc": "A simple decorational block that can only be broken with a pickaxe. Is reinforced.",
+    "block.cuffed.reinforced_smooth_stone": "Smooth Reinforced Stone",
+    "block.cuffed.reinforced_smooth_stone.desc": "A simple decorational block that can only be broken with a pickaxe. Is reinforced.",
+    "block.cuffed.reinforced_stone": "Reinforced Stone",
+    "block.cuffed.reinforced_stone.desc": "A simple decorational block that can only be broken with a pickaxe. Is reinforced.",
+    "block.cuffed.reinforced_stone_slab": "Reinforced Stone Slab",
+    "block.cuffed.reinforced_stone_slab.desc": "A simple decorational block that can only be broken with a pickaxe. Is reinforced.",
+    "block.cuffed.reinforced_stone_stairs": "Reinforced Stone Stairs",
+    "block.cuffed.reinforced_stone_stairs.desc": "A simple decorational block that can only be broken with a pickaxe. Is reinforced.",
+    "block.cuffed.chiseled_reinforced_stone": "Chiseled Reinforced Stone",
+    "block.cuffed.chiseled_reinforced_stone.desc": "A simple decorational block that can only be broken with a pickaxe. Is reinforced.",
+    "block.cuffed.reinforced_lamp": "Reinforced Lamp",
+    "block.cuffed.reinforced_lamp.desc": "A simple decorational block that emits light and can only be broken with a pickaxe. Is reinforced.",
     "block.cuffed.pillory": "Pillory",
+    "block.cuffed.pillory.desc": "Position players in front of a pillory and interact with the pillory to detain them in it. Detained players cannot move or interact with blocks or their inventories until released. Can be placed to face in any direction.",
+    "block.cuffed.guillotine": "Guillotine",
+    "block.cuffed.guillotine.desc": "Place a guillotine over a pillory. Then, while a player is detained in the pillory, interact with the guillotine to execute the detained player, interact with the guillotine again to reset it.",
+    "block.cuffed.safe": "Safe",
+    "block.cuffed.safe.desc": "A secure place to store your items, can be locked with a key and lockpicked.",
+
+    
+    "entity.cuffed.weighted_anchor": "Weighted Anchor",
+    "entity.cuffed.padlock": "Padlock",
+    "entity.cuffed.chain_knot": "Chain Knot",
+
+
+
+    "enchantment.cuffed.unbreaking": "Unbreaking",
+    "enchantment.cuffed.unbreaking.desc": "Decreases the chance of damaging a restraint, and increases the cooldown after damaging a restraint when breaking out.",
+    "enchantment.cuffed.curse_of_binding": "Curse of Binding",
+    "enchantment.cuffed.curse_of_binding.desc": "Restraints stay on after death.",
+    "enchantment.cuffed.exhaust": "Exhaust",
+    "enchantment.cuffed.exhaust.desc": "Inflicts weakness and mining fatigue on the wearer at all times.",
+    "enchantment.cuffed.famine": "Famine",
+    "enchantment.cuffed.famine.desc": "Inflicts hunger on the wearer at all times.",
+    "enchantment.cuffed.imbue": "Imbue",
+    "enchantment.cuffed.imbue.desc": "Redirects a percentage of damage taken by your captor to the wearer.",
+    "enchantment.cuffed.shroud": "Shroud",
+    "enchantment.cuffed.shroud.desc": "Inflicts blindness on the wearer at all times.",
+    "enchantment.cuffed.silence": "Silence",
+    "enchantment.cuffed.silence.desc": "Drains all mana from the wearer.",
+    "enchantment.cuffed.buoyant": "Buoyant",
+    "enchantment.cuffed.buoyant.desc": "Can be applied to Weighted Anchors to make them float in water.",
+
+
+
+    "effect.cuffed.restrained": "Restrained",
+
+
 
     "death.attack.hang": "%1$s fell victim to capital punishment",
 
-    "info.cuffed.inProgress": "You are Getting Handcuffed",
-    "info.cuffed.handcuffed": "You are Handcuffed",
-    "info.cuffed.anchored": "You are Chained",
-    "info.cuffed.detained": "You are Detained",
-    "info.cuffed.softcuffed": "You are Handcuffed, but free to move.",
 
-    "stat.cuffed.players_handcuffed": "Players Handcuffed",
-    "stat.cuffed.times_handcuffed": "Times Handcuffed",
+    
+    "info.lock.toggle_on": "Locked",    
+    "info.lock.toggle_off": "Unlocked",    
+    
+    "info.cuffed.restraint_type.arm": "Arm Restraint",
+    "info.cuffed.restraint_type.leg": "Leg Restraint",
+
+    "info.cuffed.restraints.handcuffs.name": "Handcuffs",
+    "info.cuffed.restraints.handcuffs.action_bar": "You are handcuffed!",
+
+    "info.cuffed.restraints.shackles.name": "Shackles",
+    "info.cuffed.restraints.shackles.action_bar": "You are shackled!",
+
+    "info.cuffed.restraints.fuzzy_handcuffs.name": "Fuzzy Handcuffs",
+    "info.cuffed.restraints.fuzzy_handcuffs.action_bar": "You are handcuffed! ;)",
+
+    "info.cuffed.restraints.legcuffs.name": "Legcuffs",
+    "info.cuffed.restraints.legcuffs.action_bar": "You are leg-cuffed!",
+
+    "info.cuffed.restraints.leg_shackles.name": "Leg Shackles",
+    "info.cuffed.restraints.leg_shackles.action_bar": "Your legs are shackled!",
+
+    "info.cuffed.escorting": "You are escorting ",
+    "info.cuffed.cancel_escorting": "You stopped escorting ",
+    "info.cuffed.forced_ride": "You force %1$s to ride %2$s",
+
+    "info.cuffed.reinforced_item": "Reinforced",
+
+
+
+    "stat.cuffed.handcuffs_times_restrained": "Players Restrained with Handcuffs",
     "stat.cuffed.handcuffs_broken": "Handcuffs Broken",
-    "stat.cuffed.handcuffs_interupted": "Handcuffs Interupted",
-    "stat.cuffed.time_spent_handcuffed": "Time Spent Handcuffed",
+    "stat.cuffed.handcuffs_time_spent_restrained": "Time Spent in Handcuffs",
+
+    "stat.cuffed.fuzzy_handcuffs_times_restrained": "Players Restrained with Fuzzy Handcuffs",
+    "stat.cuffed.fuzzy_handcuffs_broken": "Fuzzy Handcuffs Broken",
+    "stat.cuffed.fuzzy_handcuffs_time_spent_restrained": "Time Spent in Fuzzy Handcuffs",
+
+    "stat.cuffed.shackles_times_restrained": "Players Restrained with Shackles",
+    "stat.cuffed.shackles_broken": "Shackles Broken",
+    "stat.cuffed.shackles_time_spent_restrained": "Time Spent in Shackles",
+
+    "stat.cuffed.legcuffs_times_restrained": "Players Restrained with Legcuffs",
+    "stat.cuffed.legcuffs_broken": "Legcuffs Broken",
+    "stat.cuffed.legcuffs_time_spent_restrained": "Time Spent in Legcuffs",
+
+    "stat.cuffed.leg_shackles_times_restrained": "Players Restrained with Leg Shackles",
+    "stat.cuffed.leg_shackles_broken": "Leg Shackles Broken",
+    "stat.cuffed.leg_shackles_time_spent_restrained": "Time Spent in Leg Shackles",
+
+    "stat.cuffed.times_nicknamed": "Times Nicknamed",
+
     "stat.cuffed.successful_lockpicks": "Successful Lockpicks",
     "stat.cuffed.lockpicks_broken": "Lockpicks Broken",
 
-    "command.cuffed.notcuffed": "%1$s is not in handcuffs.",
-    "command.cuffed.alreadycuffed": "%1$s is already handcuffed.",
-    "command.cuffed.toggle.softcuffed.on": "%1$s is now soft-cuffed.",
-    "command.cuffed.toggle.softcuffed.off": "%1$s is no longer soft-cuffed.",
+    "stat.cuffed.open_safe": "Safes Opened",
+
+
+
+    "command.cuffed.apply.arms.success": "Equipped %2$s on %1$s's arms.",
+    "command.cuffed.apply.arms.failure.alreadyrestrained": "%1$s's arms are already restrained!",
+    "command.cuffed.apply.legs.success": "Equipped %2$s on %1$s's legs.",
+    "command.cuffed.apply.legs.failure.alreadyrestrained": "%1$s's legs are already restrained!",
+    "command.cuffed.apply.failure.invaliditem": "%1$s is not a restraint!",
+
+    "command.cuffed.remove.success": "Removed the restraints from %1$s's %2$ss",
+    "command.cuffed.remove.failure": "%1$s does not have restraints on their %2$ss",
+
     "command.cuffed.nickname.set": "Set %1$s's nickname to %2$s.",
     "command.cuffed.nickname.reset": "Reset %1$s's nickname.",
-    "command.cuffed.handcuff.on": "%1$s is now in Handcuffs",
-    "command.cuffed.handcuff.off": "%1$s is no longer in Handcuffs",
-    "command.cuffed.get.on": "%1$s is in handcuffs.",
-    "command.cuffed.get.off": "%1$s is not in handcuffs.",
-    "command.cuffed.debug": "Sent debug sync packet to %1$s."
+
+    
+
+    "guide.cuffed.title_page.info": "A complete encyclopedia of restraints, locks, and everything else.",
+    
+    "guide.cuffed.toc_page.content_0": "Restraints",
+    "guide.cuffed.toc_page.content_1": "Escorting",
+    "guide.cuffed.toc_page.content_2": "Anchoring",
+    "guide.cuffed.toc_page.content_3": "Reinforced Blocks",
+    "guide.cuffed.toc_page.content_4": "Locks",
+    "guide.cuffed.toc_page.content_5": "Keys",
+    "guide.cuffed.toc_page.content_6": "Lockpicking",
+    "guide.cuffed.toc_page.content_7": "Pillory",
+    "guide.cuffed.toc_page.content_8": "Guillotine",
+    "guide.cuffed.toc_page.content_9": "Prisoner Tag",
+    
+    "guide.cuffed.restraints_page.title": "Restraints",
+    "guide.cuffed.restraints_page.info": "Restraints are the backbone of any enforcer's arsenal. There are two types of restraints: ",
+    "guide.cuffed.restraints_page.arm": "Arm",
+    "guide.cuffed.restraints_page.leg": "Leg",
+    "guide.cuffed.restraints_page.info2": "Restraints can be equipped on players forcibly by right clicking them with a restraint. Clicking their legs will equip",
+    "guide.cuffed.restraints_page.info3": "the held leg restraint on them. Clicking their arms will equip the held arm restriants on them. Restraints can be taken off with their respective",
+    "guide.cuffed.restraints_page.info4": "Restraints can also be enchanted with a few new",
+    
+    "guide.cuffed.restraints_page.restraint_key": "Restraint Key",
+    "guide.cuffed.restraints_page.restraint_key.info": "Restraint keys are items that can be used to unlock a given restraint.",
+
+    "guide.cuffed.restraints_page.enchantments": "Enchantments",
+
+    "guide.cuffed.arm_restraints_page.info" :"Arm restraints can be equipped to player's arms. Arm restraints can keep players from mining, using items, and entering their inventory.",
+    "guide.cuffed.leg_restraints_page.info" :"Leg restraints can be equipped to player's legs. Leg restraints can keep players from moving, and jumping.",
+
+    "guide.cuffed.restraint_enchantments.info" :"Most restraints can be enchanted with a few new enchantments.",
+
+    "guide.cuffed.escorting_page.title": "Escorting",
+    "guide.cuffed.escorting_page.info": "When a player is restraint, Sneak+Interact with them to begin escorting them, then right click a seat or entity to force the escorted player to sit or ride that entity.",
+
+    "guide.cuffed.anchoring_page.title": "Anchoring",
+    "guide.cuffed.anchoring_page.info": "Use a chain on any passive mob or player to chain them to yourself, then interact with a ",
+    "guide.cuffed.anchoring_page.info2": "to anchor them there. They are then bound to that anchor until the anchor breaks or",
+    "guide.cuffed.anchoring_page.info3": "an unanchored player releases them by right clicking them.",
+    "guide.cuffed.anchoring_page.fence": "Fence",
+
+    "guide.cuffed.reinforced_page.title": "Reinforced Blocks",
+    "guide.cuffed.reinforced_page.info": "Reinforced blocks are unbreakable without a pickaxe, perfect for making prisons.",
+
+    "guide.cuffed.locks_page.title": "Locks",
+    "guide.cuffed.locks_page.info": "Use a Padlock on any block to restrict all interactions with that block, use an unbound",
+    "guide.cuffed.locks_page.info2": "on the lock to bind it, then use that bound key to toggle the lock locked or unlocked.",
+    "guide.cuffed.locks_page.info3": "Locks can be lockpicked with a",
+    "guide.cuffed.locks_page.info4": "Then right click on a padlock with a lockpick to perform a skill-check to break the lock.",
+    "guide.cuffed.locks_page.info5": "Use a diamond on a padlock to reinforce it, making it more resistant to lockpicking.",
+
+    "guide.cuffed.keys_page.title": "Keys",
+    "guide.cuffed.keys_page.info": "Keys can be used to lock padlocks and cell doors. Keys are first unbound, and must be bound to a lock by interacting with one. A bound key cannot be changed and no other key can be bound to that key's lock. The key can be copied by crafting a",
+    
+    "guide.cuffed.copying_keys_page.title": "Copying Keys",
+    "guide.cuffed.copying_keys_page.info": "Craft a key mold with a bound key and a clay ball, then bake the mold in a furnace to lock it. Then craft copies of the original key with an iron ingot and the baked key mold. A baked key mold only has a few uses, then another mold will need to be made.",
+
+    "guide.cuffed.lockpicking_page.title": "Lockpicking",
+    "guide.cuffed.lockpicking_page.info": "Lockpicks can be used to break padlocks, unlock cell doors, or break-out handcuffed players. Interact with a padlock, celldoor, or a restraint player to perform a skillcheck to successfully lockpick.",
+
+    "guide.cuffed.pillory_page.title": "Pillory",
+    "guide.cuffed.pillory_page.info": "Position a player in front of a pillory then interact with the pillory to close it on the player detaining them in it. The player cannot interact, move, use items, or enter their inventory while detained.",
+
+    "guide.cuffed.guillotine_page.title": "Guillotine",
+    "guide.cuffed.guillotine_page.info": "Place a guillotine over a pillory. Then, while a player is detained in it, interact with the guillotine to execute the detained player, interact with the guillotine again to reset it.",
+
+    "guide.cuffed.prisoner_tag_page.title": "Prisoner Tag",
+    "guide.cuffed.prisoner_tag_page.info": "Craft and rename a prisoner tag, then interact with a player while holding the tag to nickname that player, use an unnamed prisoner tag on a player to remove the nickname.",
+
+    "guide.cuffed.encyclopedia_page.title": "Encyclopedia"
 }
