@@ -76,7 +76,7 @@ public class PossessionsBox extends Item {
    }
 
    public static ItemStack add(ItemStack stack, ItemStack stackToAdd) {
-      if (!stackToAdd.isEmpty() && stackToAdd.getItem().canFitInsideContainerItems()) {
+      if (!stackToAdd.isEmpty()) {
          CompoundTag compoundtag = stack.getOrCreateTag();
          if (!compoundtag.contains(TAG_ITEMS)) {
             compoundtag.put(TAG_ITEMS, new ListTag());
