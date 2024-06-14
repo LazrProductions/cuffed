@@ -1,0 +1,17 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+      "  N",
+      " NN",
+      "N  "
+    ],
+    "key": {
+      "N": {
+        "tag": "forge:cobblestone"
+      }
+    },
+    "result": {
+      "item": "cuffed:shackles_key",
+      "count": 1
+    }
+  }

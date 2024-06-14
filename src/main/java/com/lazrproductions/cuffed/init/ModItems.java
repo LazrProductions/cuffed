@@ -1,13 +1,20 @@
 package com.lazrproductions.cuffed.init;
 
 import com.lazrproductions.cuffed.CuffedMod;
-import com.lazrproductions.cuffed.items.Key;
-import com.lazrproductions.cuffed.items.KeyRing;
-import com.lazrproductions.cuffed.items.Handcuffs;
-import com.lazrproductions.cuffed.items.HandcuffsKey;
+import com.lazrproductions.cuffed.items.KeyItem;
+import com.lazrproductions.cuffed.items.KeyMoldItem;
+import com.lazrproductions.cuffed.items.KeyRingItem;
+import com.lazrproductions.cuffed.items.LegShacklesItem;
+import com.lazrproductions.cuffed.items.LegcuffsItem;
+import com.lazrproductions.cuffed.items.BakedKeyMoldItem;
+import com.lazrproductions.cuffed.items.HandcuffsItem;
+import com.lazrproductions.cuffed.items.InformationBookletItem;
 import com.lazrproductions.cuffed.items.Padlock;
 import com.lazrproductions.cuffed.items.PossessionsBox;
 import com.lazrproductions.cuffed.items.PrisonerTagItem;
+import com.lazrproductions.cuffed.items.ShacklesItem;
+import com.lazrproductions.cuffed.items.WeightedAnchorItem;
+import com.lazrproductions.cuffed.items.base.AbstractRestraintKeyItem;
 
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -22,14 +29,50 @@ public class ModItems {
 
         // Normal Items
         public static final RegistryObject<Item> KEY = ITEMS.register("key",
-                        () -> new Key(new Item.Properties().stacksTo(16)));
+                        () -> new KeyItem(new Item.Properties().stacksTo(1)));
         public static final RegistryObject<Item> KEY_RING = ITEMS.register("key_ring",
-                        () -> new KeyRing(new Item.Properties().stacksTo(1)));
-
+                        () -> new KeyRingItem(new Item.Properties().stacksTo(1)));
+        public static final RegistryObject<Item> KEY_MOLD = ITEMS.register("key_mold",
+                        () -> new KeyMoldItem(new Item.Properties().stacksTo(1)));
+        public static final RegistryObject<Item> BAKED_KEY_MOLD = ITEMS.register("baked_key_mold",
+                        () -> new BakedKeyMoldItem(new Item.Properties().stacksTo(1)));
+                        
+                        
         public static final RegistryObject<Item> HANDCUFFS_KEY = ITEMS.register("handcuffs_key",
-                        () -> new HandcuffsKey(new Item.Properties().stacksTo(16)));
+                        () -> new AbstractRestraintKeyItem(new Item.Properties().stacksTo(1)));
+        public static final RegistryObject<Item> SHACKLES_KEY = ITEMS.register("shackles_key",
+                        () -> new AbstractRestraintKeyItem(new Item.Properties().stacksTo(1)));
+
+
         public static final RegistryObject<Item> HANDCUFFS = ITEMS.register("handcuffs",
-                        () -> new Handcuffs(new Item.Properties().stacksTo(1)));
+                        () -> new HandcuffsItem(new Item.Properties().stacksTo(1)
+                                .durability(40)
+                                .defaultDurability(40)));
+        public static final RegistryObject<Item> FUZZY_HANDCUFFS = ITEMS.register("fuzzy_handcuffs",
+                        () -> new HandcuffsItem(new Item.Properties().stacksTo(1)
+                                .durability(30)
+                                .defaultDurability(30)));
+        public static final RegistryObject<Item> SHACKLES = ITEMS.register("shackles",
+                        () -> new ShacklesItem(new Item.Properties().stacksTo(1)
+                                .durability(15)
+                                .defaultDurability(15)));
+                        
+        public static final RegistryObject<Item> LEGCUFFS = ITEMS.register("legcuffs",
+                        () -> new LegcuffsItem(new Item.Properties().stacksTo(1)
+                                .durability(40)
+                                .defaultDurability(40)));
+        public static final RegistryObject<Item> LEG_SHACKLES = ITEMS.register("leg_shackles",
+                        () -> new LegShacklesItem(new Item.Properties().stacksTo(1)
+                                .durability(15)
+                                .defaultDurability(15)));
+
+
+        public static final RegistryObject<Item> WEIGHTED_ANCHOR_ITEM = ITEMS.register("weighted_anchor",
+                        () -> new WeightedAnchorItem(new Item.Properties().stacksTo(1)));
+
+        public static final RegistryObject<Item> INFORMATION_BOOKLET = ITEMS.register("information_booklet",
+                        () -> new InformationBookletItem(new Item.Properties().stacksTo(1)));
+
         public static final RegistryObject<Item> POSSESSIONSBOX = ITEMS.register("possessions_box",
                         () -> new PossessionsBox(new Item.Properties().stacksTo(1)));
 
@@ -49,6 +92,10 @@ public class ModItems {
                         
         public static final RegistryObject<Item> REINFORCED_STONE_ITEM = ITEMS.register("reinforced_stone",
                         () -> new BlockItem(ModBlocks.REINFORCED_STONE.get(), new Item.Properties()));
+        public static final RegistryObject<Item> REINFORCED_SMOOTH_STONE_ITEM = ITEMS.register("reinforced_smooth_stone",
+                        () -> new BlockItem(ModBlocks.REINFORCED_SMOOTH_STONE.get(), new Item.Properties()));
+        public static final RegistryObject<Item> REINFORCED_LAMP_ITEM = ITEMS.register("reinforced_lamp",
+                        () -> new BlockItem(ModBlocks.REINFORCED_LAMP.get(), new Item.Properties()));
         public static final RegistryObject<Item> REINFORCED_STONE_CHISELED_ITEM = ITEMS.register("chiseled_reinforced_stone",
                         () -> new BlockItem(ModBlocks.REINFORCED_STONE_CHISELED.get(), new Item.Properties()));
         public static final RegistryObject<Item> REINFORCED_STONE_SLAB_ITEM = ITEMS.register("reinforced_stone_slab",
@@ -60,6 +107,11 @@ public class ModItems {
 
         public static final RegistryObject<Item> PILLORY_ITEM = ITEMS.register("pillory",
                 () -> new BlockItem(ModBlocks.PILLORY.get(), new Item.Properties()));
+        public static final RegistryObject<Item> GUILLOTINE_ITEM = ITEMS.register("guillotine",
+                () -> new BlockItem(ModBlocks.GUILLOTINE.get(), new Item.Properties()));
+        
+        public static final RegistryObject<Item> SAFE_ITEM = ITEMS.register("safe",
+                () -> new BlockItem(ModBlocks.SAFE.get(), new Item.Properties()));
         
         public static void register(IEventBus bus) {
                 ITEMS.register(bus);

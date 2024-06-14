@@ -2,10 +2,15 @@ package com.lazrproductions.cuffed.blocks;
 
 import java.util.Random;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.joml.Vector3f;
+
 import com.lazrproductions.cuffed.api.CuffedAPI;
-import com.lazrproductions.cuffed.cap.CuffedCapability;
+import com.lazrproductions.cuffed.api.IRestrainableCapability;
+import com.lazrproductions.cuffed.blocks.base.DetentionBlock;
+import com.lazrproductions.cuffed.entity.base.IDetainableEntity;
 import com.lazrproductions.cuffed.init.ModSounds;
 
 import net.minecraft.core.BlockPos;
@@ -40,14 +45,14 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class PilloryBlock extends Block {
+public class PilloryBlock extends DetentionBlock {
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     protected static final BooleanProperty CLOSED = BooleanProperty.create("closed");
     public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
 
     protected static final VoxelShape SHAPE_NS_CLOSED = Shapes.or(
-            Block.box(16 * -0.0625, 16 * 0, 16 * 0.375,16 * 0.125, 16 * 0.5625, 16 * 0.625),
+            Block.box(16 * -0.0625, 16 * 0, 16 * 0.375, 16 * 0.125, 16 * 0.5625, 16 * 0.625),
             Block.box(16 * 0.875, 16 * 0, 16 * 0.375, 16 * 1.0625, 16 * 0.5625, 16 * 0.625),
             Block.box(16 * 0.125, 16 * 0, 16 * 0.4375, 16 * 0.875, 16 * 0.25, 16 * 0.5625));
     protected static final VoxelShape SHAPE_NS_OPEN = Shapes.or(
@@ -72,7 +77,6 @@ public class PilloryBlock extends Block {
             Block.box(16 * 0.375, 16 * 0, 16 * -0.0625, 16 * 0.625, 16 * 1, 16 * 0.125),
             Block.box(16 * 0.4375, 16 * 0.625, 16 * 0.125, 16 * 0.5625, 16 * 0.9375, 16 * 0.875));
 
-
     public PilloryBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.defaultBlockState().setValue(FACING, Direction.NORTH).setValue(CLOSED, false)
@@ -81,12 +85,12 @@ public class PilloryBlock extends Block {
 
     @Override
     @Nullable
-    public BlockState getStateForPlacement(BlockPlaceContext p_52739_) {
-        BlockPos blockpos = p_52739_.getClickedPos();
-        Level level = p_52739_.getLevel();
+    public BlockState getStateForPlacement(@Nonnull BlockPlaceContext ctx) {
+        BlockPos blockpos = ctx.getClickedPos();
+        Level level = ctx.getLevel();
         if (blockpos.getY() < level.getMaxBuildHeight() - 1
-                && level.getBlockState(blockpos.above()).canBeReplaced(p_52739_)) {
-            return this.defaultBlockState().setValue(FACING, p_52739_.getHorizontalDirection()).setValue(HALF,
+                && level.getBlockState(blockpos.above()).canBeReplaced(ctx)) {
+            return this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection()).setValue(HALF,
                     DoubleBlockHalf.LOWER);
         } else {
             return null;
@@ -94,48 +98,50 @@ public class PilloryBlock extends Block {
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, BlockGetter getter, BlockPos pos,
-            CollisionContext ctx) {
-        if(state.getValue(HALF) == DoubleBlockHalf.LOWER)
-             return (state.getValue(FACING) == Direction.NORTH || state.getValue(FACING) == Direction.SOUTH)
-                ? SHAPE_NS_BASE
-                : SHAPE_EW_BASE;
+    public VoxelShape getShape(@Nonnull BlockState state, @Nonnull BlockGetter getter, @Nonnull BlockPos pos,
+            @Nonnull CollisionContext ctx) {
+        if (state.getValue(HALF) == DoubleBlockHalf.LOWER)
+            return (state.getValue(FACING) == Direction.NORTH || state.getValue(FACING) == Direction.SOUTH)
+                    ? SHAPE_NS_BASE
+                    : SHAPE_EW_BASE;
         return (state.getValue(FACING) == Direction.NORTH || state.getValue(FACING) == Direction.SOUTH)
                 ? (state.getValue(CLOSED)) ? SHAPE_NS_CLOSED : SHAPE_NS_OPEN
                 : (state.getValue(CLOSED)) ? SHAPE_EW_CLOSED : SHAPE_EW_OPEN;
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState state, BlockGetter getter, BlockPos pos,
-            CollisionContext ctx) {
+    public VoxelShape getCollisionShape(@Nonnull BlockState state, @Nonnull BlockGetter getter, @Nonnull BlockPos pos,
+            @Nonnull CollisionContext ctx) {
         return getShape(state, getter, pos, ctx);
     }
 
     @Override
-    public BlockState rotate(BlockState state, Rotation r) {
+    public BlockState rotate(@Nonnull BlockState state, @Nonnull Rotation r) {
         return state.setValue(FACING, r.rotate(state.getValue(FACING)));
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public BlockState mirror(BlockState state, Mirror m) {
+    public BlockState mirror(@Nonnull BlockState state, @Nonnull Mirror m) {
         return state.rotate(m.getRotation(state.getValue(FACING)));
     }
 
     @Override
-    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity,
-            ItemStack stack) {
+    public void setPlacedBy(@Nonnull Level level, @Nonnull BlockPos pos, @Nonnull BlockState state,
+            @Nullable LivingEntity entity,
+            @Nonnull ItemStack stack) {
         level.setBlock(pos.above(), state.setValue(HALF, DoubleBlockHalf.UPPER), 3);
     }
 
     @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState otherState, LevelAccessor level,
-            BlockPos pos, BlockPos otherPos) {
+    public BlockState updateShape(@Nonnull BlockState state, @Nonnull Direction direction,
+            @Nonnull BlockState otherState, @Nonnull LevelAccessor level,
+            @Nonnull BlockPos pos, @Nonnull BlockPos otherPos) {
         DoubleBlockHalf thisHalf = state.getValue(HALF);
         if (direction.getAxis() == Direction.Axis.Y
                 && thisHalf == DoubleBlockHalf.LOWER == (direction == Direction.UP)) {
             return otherState.is(this) && otherState.getValue(HALF) != thisHalf
-                    ? state.setValue(FACING, otherState.getValue(FACING)).setValue(CLOSED,otherState.getValue(CLOSED))
+                    ? state.setValue(FACING, otherState.getValue(FACING)).setValue(CLOSED, otherState.getValue(CLOSED))
                     : Blocks.AIR.defaultBlockState();
         } else {
             return thisHalf == DoubleBlockHalf.LOWER && direction == Direction.DOWN
@@ -144,7 +150,7 @@ public class PilloryBlock extends Block {
     }
 
     @Override
-    public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+    public boolean canSurvive(@Nonnull BlockState state, @Nonnull LevelReader level, @Nonnull BlockPos pos) {
         BlockPos blockpos = pos.below();
         BlockState blockstate = level.getBlockState(blockpos);
         return state.getValue(HALF) == DoubleBlockHalf.LOWER
@@ -153,78 +159,54 @@ public class PilloryBlock extends Block {
     }
 
     @Override
-    public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-        if (!level.isClientSide && player.isCreative()) {
-            preventCreativeDropFromBottomPart(level, pos, state, player);
+    public void playerWillDestroy(@Nonnull Level level, @Nonnull BlockPos pos, @Nonnull BlockState state,
+            @Nonnull Player player) {
+        if (!level.isClientSide) {
+            if (player.isCreative())
+                preventCreativeDropFromBottomPart(level, pos, state, player);
         }
 
         super.playerWillDestroy(level, pos, state, player);
     }
 
     @Override
-    protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(@Nonnull Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(FACING, HALF, CLOSED);
     }
 
+
     @SuppressWarnings("deprecation")
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
-            InteractionHand hand, BlockHitResult hit) {
-        if(!player.isCrouching() && state.getValue(HALF) == DoubleBlockHalf.LOWER)
-            if(!level.isClientSide) {
+    public InteractionResult use(@Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos,
+            @Nonnull Player player,
+            @Nonnull InteractionHand hand, @Nonnull BlockHitResult hit) {
+        if (!player.isCrouching() && state.getValue(HALF) == DoubleBlockHalf.LOWER)
+            if (!level.isClientSide) {
                 BlockState state1 = level.getBlockState(pos.above());
                 state.getBlock().use(state1, level, pos.above(), player, hand, hit);
                 return InteractionResult.SUCCESS;
             } else
-                return InteractionResult.SUCCESS; 
+                return InteractionResult.SUCCESS;
 
-        if(!player.isCrouching() && state.getValue(HALF) == DoubleBlockHalf.UPPER && !level.isClientSide) {
+        if (!player.isCrouching() && !level.isClientSide) {
             Random r = new Random();
-            level.playSound(null, pos, ModSounds.PILLORY_USE_SOUND, SoundSource.BLOCKS, 1, (state.getValue(CLOSED) ? 1.0F : 0.8F) + (r.nextFloat() * 0.1F));
+            level.playSound(null, pos, ModSounds.PILLORY_USE, SoundSource.BLOCKS, 1,
+                    (state.getValue(CLOSED) ? 1.0F : 0.8F) + (r.nextFloat() * 0.1F));
 
-            boolean closed = getClosed(state);
+            boolean wasOpen = !getClosed(state);
 
-            //Will close, so capture person behind to detain them
-            if (!getClosed(state)) {
+            boolean shouldBeOpen = attemptToToggleDetained(level, wasOpen, state, pos);
 
-                Vec3 behind = getPositionBehind(state, pos);
-                Player p = level.getNearestPlayer(TargetingConditions.forNonCombat(), behind.x, behind.y, behind.z);
-                if (p != null) {
-                    double dist = Math.sqrt(Math.pow(behind.z-p.position().z,2) + Math.pow(behind.x-p.position().x, 2));
-                    if(dist<0.3f) { // make sure the player is close enough
-                        CuffedCapability cuffed = CuffedAPI.Capabilities.getCuffedCapability(p);
-                        if (cuffed.isHandcuffed() && cuffed.isDetained() == -1&& !cuffed.isAnchored()) {
-                            p.teleportTo(behind.x, behind.y, behind.z);
-                            p.setYRot(getFacingRotation(state, pos));
-                            cuffed.server_setDetained(0);
-                        }
-                    }
-                }
-            } else {
-                //Will open, so release person behind
-                Vec3 behind = getPositionBehind(state, pos);
-                Player p = level.getNearestPlayer(TargetingConditions.forNonCombat(), behind.x, behind.y, behind.z);
-                if (p != null) {
-                    double dist = Math
-                            .sqrt(Math.pow(behind.z - p.position().z, 2) + Math.pow(behind.x - p.position().x, 2));
-                    if (dist < 0.3f) { // make sure the player is close enough
-                        CuffedCapability cuffed = CuffedAPI.Capabilities.getCuffedCapability(p);
-                        if (cuffed.isHandcuffed() && cuffed.isDetained() == 0) {
-                            cuffed.server_setDetained(-1);
-                        }
-                    }
-                }
-            }
-
-            level.setBlock(pos, state.setValue(CLOSED, !closed), UPDATE_ALL_IMMEDIATE);
+            level.setBlock(pos, state.setValue(CLOSED, !shouldBeOpen), UPDATE_ALL_IMMEDIATE);
 
             return InteractionResult.SUCCESS;
-        } else if(!player.isCrouching() && state.getValue(HALF) == DoubleBlockHalf.UPPER && level.isClientSide)
+        } else if (!player.isCrouching() && state.getValue(HALF) == DoubleBlockHalf.UPPER && level.isClientSide)
             return InteractionResult.SUCCESS;
         else
             return InteractionResult.PASS;
     }
+
 
     public void setClosed(Level level, BlockPos pos, BlockState state, boolean v) {
         level.setBlock(pos, state.setValue(CLOSED, v), UPDATE_NEIGHBORS);
@@ -234,17 +216,17 @@ public class PilloryBlock extends Block {
         return state.getValue(CLOSED);
     }
 
-    protected static void preventCreativeDropFromBottomPart(Level p_52904_, BlockPos p_52905_, BlockState p_52906_,
-            Player p_52907_) {
-        DoubleBlockHalf doubleblockhalf = p_52906_.getValue(HALF);
+    protected static void preventCreativeDropFromBottomPart(Level level, BlockPos pos, BlockState state,
+            Player player) {
+        DoubleBlockHalf doubleblockhalf = state.getValue(HALF);
         if (doubleblockhalf == DoubleBlockHalf.UPPER) {
-            BlockPos blockpos = p_52905_.below();
-            BlockState blockstate = p_52904_.getBlockState(blockpos);
-            if (blockstate.is(p_52906_.getBlock()) && blockstate.getValue(HALF) == DoubleBlockHalf.LOWER) {
+            BlockPos blockpos = pos.below();
+            BlockState blockstate = level.getBlockState(blockpos);
+            if (blockstate.is(state.getBlock()) && blockstate.getValue(HALF) == DoubleBlockHalf.LOWER) {
                 BlockState blockstate1 = blockstate.getFluidState().is(Fluids.WATER) ? Blocks.WATER.defaultBlockState()
                         : Blocks.AIR.defaultBlockState();
-                p_52904_.setBlock(blockpos, blockstate1, 35);
-                p_52904_.levelEvent(p_52907_, 2001, blockpos, Block.getId(blockstate));
+                level.setBlock(blockpos, blockstate1, 35);
+                level.levelEvent(player, 2001, blockpos, Block.getId(blockstate));
             }
         }
 
@@ -254,9 +236,68 @@ public class PilloryBlock extends Block {
         return state.getValue(FACING).toYRot();
     }
 
-    public Vec3 getPositionBehind(BlockState state, BlockPos pos) {
-        double xOffset = (state.getValue(FACING)==Direction.EAST) ? -0.363d : (state.getValue(FACING)==Direction.WEST) ? 0.363d : 0;
-        double zOffset = (state.getValue(FACING)==Direction.SOUTH) ? -0.363d : (state.getValue(FACING)==Direction.NORTH) ? 0.363d : 0;
+    public static Vec3 getPositionBehind(BlockState state, BlockPos pos) {
+        double xOffset = (state.getValue(FACING) == Direction.EAST) ? -0.363d
+                : (state.getValue(FACING) == Direction.WEST) ? 0.363d : 0;
+        double zOffset = (state.getValue(FACING) == Direction.SOUTH) ? -0.363d
+                : (state.getValue(FACING) == Direction.NORTH) ? 0.363d : 0;
         return pos.getCenter().add(new Vec3(xOffset, -1.5F, zOffset));
+    }
+
+
+    /**
+     * Attempt to toggle this block as opened or closed, returning whether or not it should be OPEN
+     */
+    public boolean attemptToToggleDetained(@Nonnull Level level, boolean wasOpen, BlockState state, BlockPos pos) {
+        if (state.getValue(HALF) == DoubleBlockHalf.UPPER) {
+            Vec3 behind = getPositionBehind(state, pos);
+            Player p = level.getNearestPlayer(TargetingConditions.forNonCombat(), behind.x, behind.y, behind.z);
+            if (p != null) {
+                double dist = Math.sqrt(Math.pow(behind.z - p.position().z, 2) + Math.pow(behind.x - p.position().x, 2));
+
+                if (dist < 0.3f) {
+                    IDetainableEntity detainableEntity = (IDetainableEntity)p;
+                    if(!wasOpen) {
+                        if (detainableEntity.getDetained() == 0) {
+                            detainableEntity.undetain();
+                            return true; // should become openned
+                        }
+                    } else {
+                        if (detainableEntity.getDetained() == -1) {
+                            detainableEntity.detainToBlock(level, new Vector3f((float)behind.x(), (float)behind.y(), (float)behind.z()), pos, 0, getFacingRotation(state, pos));
+                            return false; // should become closed
+                        }
+                    }
+                }
+            } else 
+                return !wasOpen; // if no player is in the pillory, just toggle the state.
+        }
+        return true;
+    }
+
+    public static Player getDetainedEntity(@Nonnull Level level, @Nonnull BlockState state, @Nonnull BlockPos pos) {
+        Vec3 behind = getPositionBehind(state, pos);
+        Player p = level.getNearestPlayer(TargetingConditions.forNonCombat(), behind.x, behind.y, behind.z);
+        if (p != null) {
+            IDetainableEntity detain = (IDetainableEntity)p;
+            if(detain.getDetained() > -1) {
+                double dist = Math.sqrt(Math.pow(behind.z - p.position().z, 2) + Math.pow(behind.x - p.position().x, 2));
+
+                if (dist < 0.3f) {
+                        return p;
+                }
+            }
+        }
+        
+        return null;
+    }
+
+
+    public boolean canDetainPlayer(@Nonnull Level level, @Nonnull BlockState state, @Nonnull BlockPos pos,
+            @Nonnull Player player) {
+        IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(player);
+        if(cap.armsRestrained())
+            return false;
+        return getClosed(state);
     }
 }

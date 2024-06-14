@@ -1,0 +1,11 @@
+{
+    "ambientocclusion": false,
+    "textures": {
+        "particle": "cuffed:block/reinforced_bars_top",
+        "edge": "cuffed:block/reinforced_bars_top"
+    },
+    "elements": [
+        
+    ],
+    "render_type": "cutout"
+}

@@ -6,10 +6,15 @@
     "server": [
     ],
     "mixins": [
-        "HumanoidModelMixin",
-        "PlayerMixin"
+        "PlayerMixin",
+        "ItemMixin",
+        "LivingEntityMixin",
+        "EntityMixin"
     ],
     "client": [
+        "HumanoidModelMixin",
+        "PlayerRendererMixin",
+        "EntityRendererMixin"
     ],
     "minVersion": "0.8"
 }

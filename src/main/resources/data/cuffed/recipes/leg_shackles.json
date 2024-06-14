@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "III",
+    "N N"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:chain"
+    },
+    "N": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "item": "cuffed:leg_shackles",
+    "count": 1
+  }
+}

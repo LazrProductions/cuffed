@@ -2,9 +2,14 @@ package com.lazrproductions.cuffed.recipes;
 
 import java.util.ArrayList;
 
+import javax.annotation.Nonnull;
+
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.init.ModItems;
 import com.lazrproductions.cuffed.init.ModRecipes;
+import com.lazrproductions.cuffed.items.KeyItem;
+import com.lazrproductions.cuffed.items.KeyRingItem;
+import com.lazrproductions.cuffed.utils.TagUtils;
 
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
@@ -22,7 +27,7 @@ public class KeyRingAddRecipe extends CustomRecipe {
     }
 
     @Override
-    public boolean matches(CraftingContainer inv, Level level) {
+    public boolean matches(@Nonnull CraftingContainer inv, @Nonnull Level level) {
         ItemStack ringStack = null;
         ArrayList<ItemStack> keyStack = new ArrayList<ItemStack>(0);
 
@@ -55,8 +60,9 @@ public class KeyRingAddRecipe extends CustomRecipe {
         return ringStack != null && keyStack.size() > 0;
     }
 
+    @SuppressWarnings("null")
     @Override
-    public ItemStack assemble(CraftingContainer inv, RegistryAccess access) {
+    public ItemStack assemble(@Nonnull CraftingContainer inv, @Nonnull RegistryAccess access) {
 
         ItemStack ringStack = null;
         ArrayList<ItemStack> keyStacks = new ArrayList<ItemStack>(0);
@@ -78,15 +84,21 @@ public class KeyRingAddRecipe extends CustomRecipe {
             }
 
             if (ringStack != null) {
-                ItemStack s = ringStack.copy();
-                s.setCount(1);
+                ItemStack newStack = ringStack.copy();
+                newStack.setCount(1);
                 int keys = 2;
-                if (s.getTag() != null) {
-                    keys = s.getOrCreateTag().getInt("Keys");
-                }
-                s.getOrCreateTag().putInt("Keys", keys + keyStacks.size());
+                if (newStack.getTag() != null)
+                    keys = newStack.getOrCreateTag().getInt("Keys");
 
-                return s;
+                for (ItemStack stack : keyStacks) {
+                    if(stack.getOrCreateTag().contains(KeyItem.TAG_BOUND_BLOCK)) {
+                        KeyRingItem.addBoundBlock(newStack, TagUtils.getBlockPos(stack.getOrCreateTag().getCompound(KeyItem.TAG_BOUND_BLOCK)));
+                    }
+                }
+                
+                newStack.getOrCreateTag().putInt("Keys", keys + keyStacks.size());
+
+                return newStack;
             }
         }
 

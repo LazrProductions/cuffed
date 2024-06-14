@@ -1,0 +1,20 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+      " I ",
+      "IBI",
+      " I "
+    ],
+    "key": {
+      "I": {
+        "item": "minecraft:iron_ingot"
+      },
+      "B": {
+        "item": "minecraft:glowstone"
+      }
+    },
+    "result": {
+      "item": "cuffed:reinforced_smooth_stone",
+      "count": 8
+    }
+  }
