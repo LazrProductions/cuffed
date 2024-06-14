@@ -7,7 +7,7 @@
     "item.cuffed.key.desc": "Keys can be used to lock padlocks and cell doors.",
     "item.cuffed.key.description.bound": "Bound",
     "item.cuffed.key_ring": "Key Ring",
-    "item.cuffed.key_ring.desc": "Add multiple keys to a key ring to unlock mutliple objects with one item.",
+    "item.cuffed.key_ring.desc": "Add multiple keys to a key ring to unlock multiple objects with one item.",
     "item.cuffed.key_ring.description.amount": "%1$s Keys",
     "item.cuffed.key_ring.description.bound": "%1$s Bound Keys",
     "item.cuffed.key_mold": "Raw Key Mold",
