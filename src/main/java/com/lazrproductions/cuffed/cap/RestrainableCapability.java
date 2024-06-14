@@ -86,6 +86,8 @@ public class RestrainableCapability implements IRestrainableCapability {
 
             if (!armsOrLegsRestrained()) {
                 CuffedAPI.Capabilities.getRestrainableCapability(playerEscortingMe).stopEscortingPlayer();
+            } else if (playerEscortingMe == null || playerEscortingMe.isRemoved()) {
+                playerEscortingMe = null;
             } else if (playerEscortingMe.distanceTo(player) > 3.5f) {
                 playerEscortingMe.sendSystemMessage(Component.translatable("info.cuffed.cancel_escorting")
                         .append(player.getDisplayName()), true);
@@ -93,6 +95,9 @@ public class RestrainableCapability implements IRestrainableCapability {
             } else if (playerEscortingMe != null && playerEscortingMe.isRemoved() || player.isRemoved())
                 CuffedAPI.Capabilities.getRestrainableCapability(playerEscortingMe).stopEscortingPlayer();
         }
+
+        if(whoImEscorting == null || whoImEscorting.isRemoved())
+            whoImEscorting = null;
 
         // ---
 
@@ -396,8 +401,6 @@ public class RestrainableCapability implements IRestrainableCapability {
     // #region Escort Management
 
     public void startEscortingPlayer(@Nonnull ServerPlayer self, @Nonnull ServerPlayer playerToEscort) {
-        CuffedMod.LOGGER.info("Attempting to start escorting player: " + playerToEscort.getName() + ", escorted by: " + self.getName());
-
         CuffedAPI.Capabilities.getRestrainableCapability(playerToEscort).startGettingEscortedByPlayer(self);
         whoImEscorting = playerToEscort;
     }

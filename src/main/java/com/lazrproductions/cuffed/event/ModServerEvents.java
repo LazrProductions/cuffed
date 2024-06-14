@@ -9,12 +9,14 @@ import java.util.UUID;
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.api.CuffedAPI;
 import com.lazrproductions.cuffed.api.IRestrainableCapability;
+import com.lazrproductions.cuffed.blocks.PilloryBlock;
 import com.lazrproductions.cuffed.cap.provider.RestrainableCapabilityProvider;
 import com.lazrproductions.cuffed.entity.ChainKnotEntity;
 import com.lazrproductions.cuffed.entity.base.IAnchorableEntity;
 import com.lazrproductions.cuffed.entity.base.IDetainableEntity;
 import com.lazrproductions.cuffed.entity.base.INicknamable;
 import com.lazrproductions.cuffed.event.base.LivingRideTickEvent;
+import com.lazrproductions.cuffed.init.ModBlocks;
 import com.lazrproductions.cuffed.init.ModEnchantments;
 import com.lazrproductions.cuffed.init.ModItems;
 import com.lazrproductions.cuffed.init.ModTags;
@@ -137,8 +139,12 @@ public class ModServerEvents {
             if (!level.isClientSide()) {
 
                 Player interacting = event.getEntity();
+                IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(interacting);
 
                 IDetainableEntity detainableEntity = (IDetainableEntity) interacting;
+
+                BlockPos pos = event.getPos();
+                BlockState state = level.getBlockState(pos);
 
                 if (detainableEntity.getDetained() > -1) {
                     event.setCancellationResult(InteractionResult.FAIL);
@@ -155,9 +161,9 @@ public class ModServerEvents {
                                 entitiesAnchoredToInteractor.add(en);
                     }
 
-                if (((level.getBlockState(event.getPos()).is(Blocks.FENCES)
+                if (((state.is(Blocks.FENCES)
                         && CuffedMod.CONFIG.anchoringSettings.allowAnchoringToFences)
-                        || (level.getBlockState(event.getPos()).is(net.minecraft.world.level.block.Blocks.TRIPWIRE_HOOK)
+                        || (state.is(net.minecraft.world.level.block.Blocks.TRIPWIRE_HOOK)
                                 && CuffedMod.CONFIG.anchoringSettings.allowAnchoringToTripwireHook))
                         && entitiesAnchoredToInteractor.size() > 0) {
                     for (int i = 0; i < entitiesAnchoredToInteractor.size(); i++)
@@ -165,6 +171,16 @@ public class ModServerEvents {
                                 (LivingEntity) entitiesAnchoredToInteractor.get(i), level, event.getPos());
                     event.setCanceled(true);
                     return;
+                }
+            
+                if(state.is(ModBlocks.PILLORY.get())) {
+                    if(level.getBlockState(pos.above()).is(ModBlocks.PILLORY.get()))
+                        state = level.getBlockState(pos.above());
+                    
+                    if(cap.getWhoImEscorting() != null) {
+                        cap.getWhoImEscorting().moveTo(PilloryBlock.getPositionBehind(state, pos));
+                        cap.stopEscortingPlayer();
+                    }
                 }
             }
         }
