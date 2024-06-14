@@ -112,11 +112,11 @@ public interface IRestrainableCapability {
     /**
      * Start escorting another player, and notify them that they are being escorted.
      */
-    public void startEscortingPlayer(ServerPlayer self, ServerPlayer other);
+    public void startEscortingPlayer(@Nonnull ServerPlayer self, @Nonnull ServerPlayer other);
     /**
      * Notify this player that they have started to be escorted..
      */
-    public void startGettingEscortedByPlayer(ServerPlayer other);
+    public void startGettingEscortedByPlayer(@Nonnull ServerPlayer other);
 
     /**
      * Stop escorting who you were, and notify them that they are no longer being escorted.

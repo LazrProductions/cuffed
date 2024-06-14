@@ -82,14 +82,13 @@ public class RestrainableCapability implements IRestrainableCapability {
         // --- HANDLE ESCORTING
 
         if (playerEscortingMe != null) {
-            playerEscortingMe.sendSystemMessage(
-                    Component.translatable("info.cuffed.escorting").append(playerEscortingMe.getDisplayName()), true);
+            playerEscortingMe.sendSystemMessage(Component.translatable("info.cuffed.escorting").append(player.getDisplayName()), true);
 
             if (!armsOrLegsRestrained()) {
                 CuffedAPI.Capabilities.getRestrainableCapability(playerEscortingMe).stopEscortingPlayer();
             } else if (playerEscortingMe.distanceTo(player) > 3.5f) {
                 playerEscortingMe.sendSystemMessage(Component.translatable("info.cuffed.cancel_escorting")
-                        .append(playerEscortingMe.getDisplayName()), true);
+                        .append(player.getDisplayName()), true);
                 CuffedAPI.Capabilities.getRestrainableCapability(playerEscortingMe).stopEscortingPlayer();
             } else if (playerEscortingMe != null && playerEscortingMe.isRemoved() || player.isRemoved())
                 CuffedAPI.Capabilities.getRestrainableCapability(playerEscortingMe).stopEscortingPlayer();
@@ -396,12 +395,14 @@ public class RestrainableCapability implements IRestrainableCapability {
 
     // #region Escort Management
 
-    public void startEscortingPlayer(ServerPlayer self, ServerPlayer other) {
-        CuffedAPI.Capabilities.getRestrainableCapability(other).startGettingEscortedByPlayer(self);
-        whoImEscorting = other;
+    public void startEscortingPlayer(@Nonnull ServerPlayer self, @Nonnull ServerPlayer playerToEscort) {
+        CuffedMod.LOGGER.info("Attempting to start escorting player: " + playerToEscort.getName() + ", escorted by: " + self.getName());
+
+        CuffedAPI.Capabilities.getRestrainableCapability(playerToEscort).startGettingEscortedByPlayer(self);
+        whoImEscorting = playerToEscort;
     }
 
-    public void startGettingEscortedByPlayer(ServerPlayer other) {
+    public void startGettingEscortedByPlayer(@Nonnull ServerPlayer other) {
         playerEscortingMe = other;
     }
 
