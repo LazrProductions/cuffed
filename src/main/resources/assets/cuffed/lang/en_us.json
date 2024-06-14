@@ -12,7 +12,7 @@
     "item.cuffed.key_ring.description.bound": "%1$s Bound Keys",
     "item.cuffed.key_mold": "Raw Key Mold",
     "item.cuffed.key_mold.desc": "Use a bound key and a key mold in a crafting table to copy keys, then bake it in a furnace to lock the mold.",
-    "item.cuffed.key_mold.description.bound": "Continas a copied binding",
+    "item.cuffed.key_mold.description.bound": "Contains a copied binding",
     "item.cuffed.key_mold.description.unbound": "This mold hasn't been set!",
     "item.cuffed.baked_key_mold": "Baked Key Mold",
     "item.cuffed.baked_key_mold.desc": "Use an iron ingot and a baked key mold in a crafting table to create a copy of the molded key.",
