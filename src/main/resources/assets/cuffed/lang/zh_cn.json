@@ -1,0 +1,261 @@
+{
+    "itemGroup.cuffed": "监禁",
+
+
+
+    "item.cuffed.key": "钥匙",
+    "item.cuffed.key.desc": "用于解开或上锁挂锁和监狱门。",
+    "item.cuffed.key.description.bound": "已绑定",
+    "item.cuffed.key_ring": "钥匙串",
+    "item.cuffed.key_ring.desc": "串上多把钥匙，优化你的开锁效率。",
+    "item.cuffed.key_ring.description.amount": "%1$s 把钥匙",
+    "item.cuffed.key_ring.description.bound": "%1$s 把已绑定的钥匙",
+    "item.cuffed.key_mold": "钥匙模具胚",
+    "item.cuffed.key_mold.desc": "将已绑定的钥匙和模具胚和粘土球一同合成，而后在熔炉中煅烧模具胚以得到钥匙模具，用以复制钥匙。",
+    "item.cuffed.key_mold.description.bound": "对应一把已绑定的钥匙",
+    "item.cuffed.key_mold.description.unbound": "不对应任何已绑定的钥匙！",
+    "item.cuffed.baked_key_mold": "钥匙模具",
+    "item.cuffed.baked_key_mold.desc": "用铁锭和模具一同合成，以得到一把复制的钥匙。",
+    "item.cuffed.baked_key_mold.description.quality_5": "完美",
+    "item.cuffed.baked_key_mold.description.quality_4": "不错",
+    "item.cuffed.baked_key_mold.description.quality_3": "能用",
+    "item.cuffed.baked_key_mold.description.quality_2": "粗制",
+    "item.cuffed.baked_key_mold.description.quality_1": "破旧",
+    "item.cuffed.baked_key_mold.description.quality_0": "废物",
+
+    "item.cuffed.handcuffs_key": "铐锁钥匙",
+    "item.cuffed.handcuffs_key.desc": "用于解开或上锁手铐和足铐。",
+    "item.cuffed.shackles_key": "枷锁钥匙",
+    "item.cuffed.shackles_key.desc": "用于解开或上锁手枷与足枷。",
+
+    "item.cuffed.handcuffs": "手铐",
+    "item.cuffed.handcuffs.desc": "拘束上肢，使玩家无法挖掘、使用物品、打开背包。",
+    "item.cuffed.shackles": "手枷",
+    "item.cuffed.shackles.desc": "拘束上肢，使玩家无法挖掘，但玩家可以使用物品、与方块交互、打开背包。效果比手铐更轻。",
+    "item.cuffed.fuzzy_handcuffs": "毛绒手铐",
+    "item.cuffed.fuzzy_handcuffs.desc": "拘束上肢，使玩家无法挖掘、使用物品、打开背包。外观更有趣，仅限贡献者使用。",
+    "item.cuffed.legcuffs": "足铐",
+    "item.cuffed.legcuffs.desc": "拘束下肢，使玩家无法移动、跳跃、攀爬。",
+    "item.cuffed.leg_shackles": "足枷",
+    "item.cuffed.leg_shackles.desc": "拘束下肢，使玩家无法移动、跳跃、攀爬。效果比足铐更轻。",
+
+    "item.cuffed.weighted_anchor": "重锚",
+    "item.cuffed.weighted_anchor.desc": "可以固定实体。附魔“漂浮”后可以在水中浮起。",
+
+    "item.cuffed.information_booklet": "漫游者的教程",
+    "item.cuffed.information_booklet.desc": "Lazr 著",
+
+    "item.cuffed.possessions_box": "储物盒",
+    "item.cuffed.possessions_box.desc": "对玩家使用以搜身。",
+    "item.cuffed.possessions_box.empty": "空储物盒",
+    "item.cuffed.possessions_box.full": "装有物品的储物盒",
+
+    "item.cuffed.padlock": "挂锁",
+    "item.cuffed.padlock.desc": "对方块使用以禁用所有与该方块的互动。可以用钥匙或撬锁器解锁。对挂锁使用钻石以加固。",
+    "item.cuffed.lockpick": "撬锁器",
+    "item.cuffed.lockpick.desc": "可以暴力破解挂锁、监狱门以及对玩家的拘束。",
+
+    "item.cuffed.prisoner_tag": "犯人名牌",
+    "item.cuffed.prisoner_tag.desc": "与命名牌相似，用于修改玩家的名称。",
+
+
+
+    "block.cuffed.cell_door": "监狱门",
+    "block.cuffed.cell_door.desc": "已加固过，仅能用镐子破坏的上锁门。",
+    "block.cuffed.reinforced_bars": "加固栅栏",
+    "block.cuffed.reinforced_bars.desc": "已加固过，仅能用镐子破坏的装饰性方块。",
+    "block.cuffed.reinforced_smooth_stone": "平滑加固石头",
+    "block.cuffed.reinforced_smooth_stone.desc": "已加固过，仅能用镐子破坏的装饰性方块。",
+    "block.cuffed.reinforced_stone": "加固石头",
+    "block.cuffed.reinforced_stone.desc": "已加固过，仅能用镐子破坏的装饰性方块。",
+    "block.cuffed.reinforced_stone_slab": "加固石头台阶",
+    "block.cuffed.reinforced_stone_slab.desc": "已加固过，仅能用镐子破坏的装饰性方块。",
+    "block.cuffed.reinforced_stone_stairs": "加固石头楼梯",
+    "block.cuffed.reinforced_stone_stairs.desc": "已加固过，仅能用镐子破坏的装饰性方块。",
+    "block.cuffed.chiseled_reinforced_stone": "錾制加固石头",
+    "block.cuffed.chiseled_reinforced_stone.desc": "已加固过，仅能用镐子破坏的装饰性方块。",
+    "block.cuffed.reinforced_lamp": "加固灯",
+    "block.cuffed.reinforced_lamp.desc": "已加固过，仅能用镐子破坏的装饰性方块，可发光。",
+    "block.cuffed.pillory": "颈手枷",
+    "block.cuffed.pillory.desc": "将玩家放在颈手枷前面，与颈手枷交互以固定玩家。被固定的玩家无法移动、无法与方块交互、无法打开背包。",
+    "block.cuffed.guillotine": "断头台",
+    "block.cuffed.guillotine.desc": "将断头台置于颈手枷上方，当颈手枷有固定的玩家时与断头台交互以处决玩家，再次交互以复位断头台。",
+    "block.cuffed.safe": "保险箱",
+    "block.cuffed.safe.desc": "储存物品用，可用钥匙或撬锁器解锁。",
+
+
+    "entity.cuffed.weighted_anchor": "重锚",
+    "entity.cuffed.padlock": "挂锁",
+    "entity.cuffed.chain_knot": "锁结",
+
+
+
+    "enchantment.cuffed.unbreaking": "牢固",
+    "enchantment.cuffed.unbreaking.desc": "降低对拥有效果者的拘束造成破坏的概率，增加对拘束造成破坏后再次破坏的冷却时间。",
+    "enchantment.cuffed.curse_of_binding": "绑定诅咒",
+    "enchantment.cuffed.curse_of_binding.desc": "在拥有效果者死亡重生后仍然保留拘束。",
+    "enchantment.cuffed.exhaust": "疲劳",
+    "enchantment.cuffed.exhaust.desc": "对拥有效果者施加永久虚弱和挖掘疲劳效果。",
+    "enchantment.cuffed.famine": "饥辘",
+    "enchantment.cuffed.famine.desc": "对拥有效果者施加永久饥饿效果。",
+    "enchantment.cuffed.imbue": "感染",
+    "enchantment.cuffed.imbue.desc": "将对拥有效果者的押运者的伤害按一定比例转移到拥有效果者身上。",
+    "enchantment.cuffed.shroud": "遮蔽",
+    "enchantment.cuffed.shroud.desc": "对拥有效果者施加永久失明效果。",
+    "enchantment.cuffed.silence": "寂灭",
+    "enchantment.cuffed.silence.desc": "使拥有效果者的所有魔力干涸。",
+    "enchantment.cuffed.buoyant": "漂浮",
+    "enchantment.cuffed.buoyant.desc": "可用于重锚，使其能在水中漂浮。",
+
+
+
+    "effect.cuffed.restrained": "受拘束",
+
+
+
+    "death.attack.hang": "%1$s 被处以极刑",
+
+
+
+    "info.lock.toggle_on": "已上锁",
+    "info.lock.toggle_off": "已解锁",
+
+    "info.cuffed.restraint_type.arm": "上肢受拘束",
+    "info.cuffed.restraint_type.leg": "下肢受拘束",
+
+    "info.cuffed.restraints.handcuffs.name": "手铐",
+    "info.cuffed.restraints.handcuffs.action_bar": "你被戴上了手铐！",
+
+    "info.cuffed.restraints.shackles.name": "手枷",
+    "info.cuffed.restraints.shackles.action_bar": "你被戴上了手枷！",
+
+    "info.cuffed.restraints.fuzzy_handcuffs.name": "毛绒手铐",
+    "info.cuffed.restraints.fuzzy_handcuffs.action_bar": "你被戴上了手铐哦～ ;)",
+
+    "info.cuffed.restraints.legcuffs.name": "足铐",
+    "info.cuffed.restraints.legcuffs.action_bar": "你被戴上了足铐！",
+
+    "info.cuffed.restraints.leg_shackles.name": "足枷",
+    "info.cuffed.restraints.leg_shackles.action_bar": "你被戴上了足枷！",
+
+    "info.cuffed.escorting": "你正在押运 ",
+    "info.cuffed.cancel_escorting": "你停止押运 ",
+    "info.cuffed.forced_ride": "你强迫 %1$s 骑上 %2$s",
+
+    "info.cuffed.reinforced_item": "已加固",
+
+
+
+    "stat.cuffed.handcuffs_times_restrained": "被手铐拘束的次数",
+    "stat.cuffed.handcuffs_broken": "破坏手铐的次数",
+    "stat.cuffed.handcuffs_time_spent_restrained": "被手铐拘束的总时长",
+
+    "stat.cuffed.fuzzy_handcuffs_times_restrained": "被毛绒手铐拘束的次数",
+    "stat.cuffed.fuzzy_handcuffs_broken": "破坏毛绒手铐的次数",
+    "stat.cuffed.fuzzy_handcuffs_time_spent_restrained": "被毛绒手铐拘束的总时长",
+
+    "stat.cuffed.shackles_times_restrained": "被手枷拘束的次数",
+    "stat.cuffed.shackles_broken": "破坏手枷的次数",
+    "stat.cuffed.shackles_time_spent_restrained": "被手枷拘束的总时长",
+
+    "stat.cuffed.legcuffs_times_restrained": "被足铐拘束的次数",
+    "stat.cuffed.legcuffs_broken": "破坏足铐的次数",
+    "stat.cuffed.legcuffs_time_spent_restrained": "被足铐拘束的总时长",
+
+    "stat.cuffed.leg_shackles_times_restrained": "被足枷拘束的次数",
+    "stat.cuffed.leg_shackles_broken": "破坏足枷的次数",
+    "stat.cuffed.leg_shackles_time_spent_restrained": "被足枷拘束的总时长",
+
+    "stat.cuffed.times_nicknamed": "被改名的次数",
+
+    "stat.cuffed.successful_lockpicks": "撬锁成功的次数",
+    "stat.cuffed.lockpicks_broken": "撬锁失败的次数",
+
+    "stat.cuffed.open_safe": "打开保险柜的次数",
+
+
+
+    "command.cuffed.apply.arms.success": "给 %1s 的上肢戴上了%2$s。",
+    "command.cuffed.apply.arms.failure.alreadyrestrained": "%1$s的上肢已经受拘束！",
+    "command.cuffed.apply.legs.success": "给 %1s 的下肢戴上了%2$s。",
+    "command.cuffed.apply.legs.failure.alreadyrestrained": "%1$s的下肢已经受拘束！",
+    "command.cuffed.apply.failure.invaliditem": "%1$s 并未受拘束！",
+
+    "command.cuffed.remove.success": "从 %1$s 的%2$s移除了拘束。",
+    "command.cuffed.remove.failure": "%1$s 的%2$s上没有拘束。",
+
+    "command.cuffed.nickname.set": "将 %1$s 的昵称设为 %2$s。",
+    "command.cuffed.nickname.reset": "重设 %1$s 的昵称。",
+
+
+
+    "guide.cuffed.title_page.info": "关于拘束、锁具及其他内容的百科全书。",
+
+    "guide.cuffed.toc_page.content_0": "拘束",
+    "guide.cuffed.toc_page.content_1": "押运",
+    "guide.cuffed.toc_page.content_2": "锚定",
+    "guide.cuffed.toc_page.content_3": "加固方块",
+    "guide.cuffed.toc_page.content_4": "锁具",
+    "guide.cuffed.toc_page.content_5": "钥匙",
+    "guide.cuffed.toc_page.content_6": "撬锁",
+    "guide.cuffed.toc_page.content_7": "颈手枷",
+    "guide.cuffed.toc_page.content_8": "断头台",
+    "guide.cuffed.toc_page.content_9": "犯人名牌",
+
+    "guide.cuffed.restraints_page.title": "拘束物",
+    "guide.cuffed.restraints_page.info": "拘束物是强者用来限制弱者的装备。模组中有两类拘束：",
+    "guide.cuffed.restraints_page.arm": "上肢",
+    "guide.cuffed.restraints_page.leg": "下肢",
+    "guide.cuffed.restraints_page.info2": "手持拘束物右键交互玩家可以强行拘束对方。",
+    "guide.cuffed.restraints_page.info3": "手持下肢拘束物交互对方的腿部，可以拘束对方的下肢；上肢拘束物同理。移除拘束需要用对应的",
+    "guide.cuffed.restraints_page.info4": "拘束也可以被附魔上许多本模组新增的",
+
+    "guide.cuffed.restraints_page.restraint_key": "拘束物钥匙",
+    "guide.cuffed.restraints_page.restraint_key.info": "拘束物钥匙可以用来解开对应的拘束。",
+
+    "guide.cuffed.restraints_page.enchantments": "附魔",
+
+    "guide.cuffed.arm_restraints_page.info" :"上肢拘束物可以戴在玩家的手上，拘束上肢会使玩家无法挖掘、使用物品、打开背包。",
+    "guide.cuffed.leg_restraints_page.info" :"下肢拘束物可以戴在玩家的腿上，拘束下肢会使玩家无法移动、跳跃、攀爬。",
+
+    "guide.cuffed.restraint_enchantments.info" :"大多数拘束物可以被附魔上许多本模组新增的魔咒。",
+
+    "guide.cuffed.escorting_page.title": "押运",
+    "guide.cuffed.escorting_page.info": "对方玩家被拘束时，你潜行同时右键交互对方，可以进入押运模式，再次右键交互其他座位可以强制让对方坐下，右键交互实体可以强制让对方骑上实体。",
+
+    "guide.cuffed.anchoring_page.title": "锚定",
+    "guide.cuffed.anchoring_page.info": "手持锁链右键交互任意中立或友好生物或玩家可以栓住对方，再次交互",
+    "guide.cuffed.anchoring_page.info2": "可以将对方固定在当前位置，直到重锚损坏或对方被其他玩家释放。",
+    "guide.cuffed.anchoring_page.info3": "",
+    "guide.cuffed.anchoring_page.fence": "栅栏",
+
+    "guide.cuffed.reinforced_page.title": "加固方块",
+    "guide.cuffed.reinforced_page.info": "加固方块只能用镐子破坏，是打造监狱的绝佳材料。",
+
+    "guide.cuffed.locks_page.title": "锁具",
+    "guide.cuffed.locks_page.info": "手持挂锁右键交互方块，可以禁用所有与该方块的互动。手持未绑定的",
+    "guide.cuffed.locks_page.info2": "右键交互挂锁以绑定。使用已绑定的钥匙右键交互挂锁以解开或上锁。",
+    "guide.cuffed.locks_page.info3": "锁具可以被撬开，只需使用",
+    "guide.cuffed.locks_page.info4": "手持撬锁器右键交互锁具，将进行技能鉴定，并有概率破坏锁具。",
+    "guide.cuffed.locks_page.info5": "手持钻石右键交互挂锁可以加固挂锁，增加对撬锁器的抗性。",
+
+    "guide.cuffed.keys_page.title": "钥匙",
+    "guide.cuffed.keys_page.info": "钥匙可以用于解开或上锁挂锁与监狱门。钥匙起初未绑定任何锁具，手持钥匙右键交互锁具以绑定。已绑定的钥匙无法修改绑定对象，也无法将另一钥匙绑定到这一锁具上。钥匙可以复制，只需使用",
+
+    "guide.cuffed.copying_keys_page.title": "复制钥匙",
+    "guide.cuffed.copying_keys_page.info": "将已绑定的钥匙和模具胚和粘土球一同合成，而后在熔炉中煅烧模具胚以得到钥匙模具。然后用铁锭和模具一同合成，以得到一把复制的钥匙。注意钥匙模具的使用寿命并不长。",
+
+    "guide.cuffed.lockpicking_page.title": "撬锁",
+    "guide.cuffed.lockpicking_page.info": "撬锁器可以暴力破解挂锁、监狱门以及对玩家的拘束。只需手持撬锁器右键以上对象，将在进行技能鉴定后有概率破坏锁具。",
+
+    "guide.cuffed.pillory_page.title": "颈手枷",
+    "guide.cuffed.pillory_page.info": "将玩家放在颈手枷前面，与颈手枷交互以固定玩家。被固定的玩家无法移动、无法与方块交互、无法打开背包。",
+
+    "guide.cuffed.guillotine_page.title": "断头台",
+    "guide.cuffed.guillotine_page.info": "将断头台置于颈手枷上方，当颈手枷有固定的玩家时与断头台交互以处决玩家，再次交互以复位断头台。",
+
+    "guide.cuffed.prisoner_tag_page.title": "犯人名牌",
+    "guide.cuffed.prisoner_tag_page.info": "类似命名牌。手持改名后的犯人名牌右键交互玩家将修改对方昵称，手持未命名的犯人名牌右键交互玩家将恢复玩家名称。",
+
+    "guide.cuffed.encyclopedia_page.title": "百科全书"
+}
