@@ -263,14 +263,15 @@ public class PadlockEntity extends HangingEntity {
     @Override
     public void readAdditionalSaveData(@Nonnull CompoundTag tag) {
         super.readAdditionalSaveData(tag);
+
         this.entityData.set(DATA_LOCKED, tag.getBoolean("Locked"));
         this.setLocked(tag.getBoolean("Locked"));
 
         this.entityData.set(DATA_HAS_KEY, tag.getBoolean("HasKey"));
-        this.setLocked(tag.getBoolean("HasKey"));
+        this.setHasKey(tag.getBoolean("HasKey"));
 
         this.entityData.set(DATA_REINFORCED, tag.getBoolean("Reinforced"));
-        this.setLocked(tag.getBoolean("Reinforced"));
+        this.setReinforced(tag.getBoolean("Reinforced"));
     }
 
     @Override

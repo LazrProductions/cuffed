@@ -166,6 +166,8 @@ public class ChainKnotEntity extends HangingEntity {
         return newKnot;
     }
 
+
+    
     @Override
     public void setPos(double x, double y, double z) {
         super.setPos((double) Mth.floor(x) + 0.5D, (double) Mth.floor(y) + 0.5D, (double) Mth.floor(z) + 0.5D);

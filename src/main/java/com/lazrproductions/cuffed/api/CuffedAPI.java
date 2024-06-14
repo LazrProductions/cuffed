@@ -265,24 +265,30 @@ public class CuffedAPI {
                 PadlockEntity padlock = PadlockEntity.getLockAt(level, pos);
                 if (padlock != null && padlock.isLocked())
                     isLockedBlock = true;
-                else if (state.getBlock() instanceof ILockableBlock)
+
+                if (state.getBlock() instanceof ILockableBlock)
                     if (ILockableBlock.isLocked(state))
                         isLockedBlock = true;
-                else if (state.getBlock() instanceof DoorBlock door) {
+                
+                if (state.getBlock() instanceof DoorBlock door) {
                     PadlockEntity eB = PadlockEntity.getLockAt(level, pos.below());
                     PadlockEntity eA = PadlockEntity.getLockAt(level, pos.above());
                     if (level.getBlockState(pos.below()).is(door) && eB != null && eB.isLocked())
                         isLockedBlock = true;
                     else if (level.getBlockState(pos.above()).is(door) && eA != null && eA.isLocked())
                         isLockedBlock = true;
-                } else if (state.getBlock() instanceof PilloryBlock pillory) {
+                }
+
+                if (state.getBlock() instanceof PilloryBlock pillory) {
                     PadlockEntity eB = PadlockEntity.getLockAt(level, pos.below());
                     PadlockEntity eA = PadlockEntity.getLockAt(level, pos.above());
                     if (level.getBlockState(pos.below()).is(pillory) && eB != null && eB.isLocked())
                         isLockedBlock = true;
                     else if (level.getBlockState(pos.above()).is(pillory) && eA != null && eA.isLocked())
                         isLockedBlock = true;
-                } else if (state.getBlock() instanceof ChestBlock) { // Handle double chests
+                }
+                
+                if (state.getBlock() instanceof ChestBlock) {
                     Direction dir = ChestBlock.getConnectedDirection(state);
                     BlockPos otherPos = pos.relative(dir);
                     PadlockEntity otherPadlock = PadlockEntity.getLockAt(level, otherPos);
