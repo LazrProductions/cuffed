@@ -188,8 +188,8 @@ public class ModServerEvents {
 
     @SubscribeEvent
     public void playerInteractEntity(PlayerInteractEvent.EntityInteract event) {
-        if (event.getSide() == LogicalSide.CLIENT)
-            event.setCanceled(true);
+        if(event.getSide() == LogicalSide.CLIENT)
+            return;
         if (event.getHand() == InteractionHand.MAIN_HAND) {
             if (event.getSide() == LogicalSide.SERVER) {
                 ServerPlayer player = (ServerPlayer) event.getEntity();
