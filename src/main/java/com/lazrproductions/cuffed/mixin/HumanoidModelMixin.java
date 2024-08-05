@@ -50,7 +50,8 @@ public class HumanoidModelMixin<T extends LivingEntity> {
             head.z = 0;
             body.z = 0;
 
-            if (p.isLocalPlayer() && Minecraft.getInstance().options.getCameraType().isFirstPerson()) {
+            Minecraft instance = Minecraft.getInstance();
+            if (p.isLocalPlayer() && instance.options.getCameraType().isFirstPerson()) {
                 if (detained == 0) {
                     HumanoidAnimationHelper.animatePilloryDetainedAnimation(entity, model, f1, f2, f3, headYRot,
                             headXRot, detainableEntity.getDetainedRotation());

@@ -1,0 +1,51 @@
+{
+	"render_type": "cutout",
+	"textures": {
+		"0": "cuffed:block/reinforced_bars_gapped",
+		"particle": "cuffed:block/reinforced_bars_gapped"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 8],
+			"to": [16, 16, 8],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 0, 8]},
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#0"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#0"}
+			}
+		},
+		{
+			"from": [1, 2, 8],
+			"to": [15, 3, 10],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 0, 10]},
+			"faces": {
+				"east": {"uv": [4, 2, 6, 3], "texture": "#0"},
+				"south": {"uv": [0, 2, 14, 3], "texture": "#0"},
+				"west": {"uv": [2, 1, 4, 2], "texture": "#0"},
+				"up": {"uv": [1, 1, 15, 3], "texture": "#0"},
+				"down": {"uv": [1, 1, 15, 3], "texture": "#0"}
+			}
+		},
+		{
+			"from": [1, 2, 6],
+			"to": [15, 3, 8],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 0, 8]},
+			"faces": {
+				"north": {"uv": [2, 1, 16, 2], "texture": "#0"},
+				"east": {"uv": [2, 1, 4, 2], "texture": "#0"},
+				"west": {"uv": [2, 1, 4, 2], "texture": "#0"},
+				"up": {"uv": [15, 3, 1, 1], "texture": "#0"},
+				"down": {"uv": [1, 1, 15, 3], "texture": "#0"}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "block",
+			"origin": [0, 0, 8],
+			"color": 0,
+			"nbt": "{}",
+			"children": [0, 1, 2]
+		}
+	]
+}

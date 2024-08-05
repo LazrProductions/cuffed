@@ -1,33 +1,39 @@
 package com.lazrproductions.cuffed.packet;
 
+import javax.annotation.Nonnull;
+
 import com.lazrproductions.cuffed.api.CuffedAPI;
 import com.lazrproductions.cuffed.api.IRestrainableCapability;
 import com.lazrproductions.cuffed.restraints.base.AbstractRestraint;
 import com.lazrproductions.cuffed.restraints.base.RestraintType;
+import com.lazrproductions.lazrslib.common.network.packet.ParameterizedLazrPacket;
 
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import team.creative.creativecore.common.network.CreativePacket;
 
-public class RestraintUtilityPacket extends CreativePacket {
+public class RestraintUtilityPacket extends ParameterizedLazrPacket {
 
-    public int restraintType = 0;
-    public int utiltiyCode = 0;
+    int restraintType;
+    int utiltiyCode;
 
-    public int integerArg;
-    public boolean booleanArg;
-    public double doubleArg;
-    public String stringArg;
+    int integerArg;
+    boolean booleanArg;
+    double doubleArg;
+    String stringArg;
 
-    public RestraintUtilityPacket() {
+    public RestraintUtilityPacket(FriendlyByteBuf buf) {
+        super(buf);
     }
 
     public RestraintUtilityPacket(int restraintType, int utiltiyCode) {
+        super(restraintType, utiltiyCode, 0, false, 0.0D, "");
         this.restraintType = restraintType;
         this.utiltiyCode = utiltiyCode;
     }
 
     public RestraintUtilityPacket(int restraintType, int utiltiyCode, int iArg, boolean bArg, double dArg, String sArg) {
+        super(restraintType, utiltiyCode, iArg, bArg, dArg, sArg);
         this.restraintType = restraintType;
         this.utiltiyCode = utiltiyCode;
 
@@ -38,14 +44,25 @@ public class RestraintUtilityPacket extends CreativePacket {
     }
 
     @Override
-    public void executeClient(Player arg0) {
+    public void loadValues(Object[] arg0) {
+        restraintType = (int)arg0[0];
+        utiltiyCode = (int)arg0[1];
+
+        integerArg = (int)arg0[2];
+        booleanArg = (Boolean)arg0[3];
+        doubleArg = (Double)arg0[4];
+        stringArg = (String)arg0[5];
+    }
+
+    @Override
+    public void handleClientside(@Nonnull Player arg0) {
         IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(arg0);
         AbstractRestraint res = cap.getRestraint(RestraintType.fromInteger(restraintType));
         if(res != null) res.receiveUtilityPacketClient(arg0, utiltiyCode, integerArg, booleanArg, doubleArg, stringArg);
     }
 
     @Override
-    public void executeServer(ServerPlayer arg0) {
+    public void handleServerside(@Nonnull ServerPlayer arg0) {
         IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(arg0);
         AbstractRestraint res = cap.getRestraint(RestraintType.fromInteger(restraintType));
         if(res != null) res.receiveUtilityPacketServer(arg0, utiltiyCode, integerArg, booleanArg, doubleArg, stringArg);

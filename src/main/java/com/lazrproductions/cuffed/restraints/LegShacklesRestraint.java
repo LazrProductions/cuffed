@@ -13,10 +13,10 @@ import com.lazrproductions.cuffed.restraints.base.AbstractLegRestraint;
 import com.lazrproductions.cuffed.restraints.base.IBreakableRestraint;
 import com.lazrproductions.cuffed.restraints.base.IEnchantableRestraint;
 import com.lazrproductions.cuffed.restraints.base.RestraintType;
-import com.lazrproductions.cuffed.utils.MathUtils;
-import com.lazrproductions.cuffed.utils.ScreenUtils;
-import com.lazrproductions.cuffed.utils.ScreenUtils.BlitCoordinates;
-import com.lazrproductions.cuffed.utils.ScreenUtils.Texture;
+import com.lazrproductions.lazrslib.client.screen.ScreenUtilities;
+import com.lazrproductions.lazrslib.client.screen.base.BlitCoordinates;
+import com.lazrproductions.lazrslib.client.screen.base.ScreenTexture;
+import com.lazrproductions.lazrslib.common.math.MathUtilities;
 import com.mojang.blaze3d.platform.Window;
 
 import net.minecraft.client.Options;
@@ -40,7 +40,7 @@ import net.minecraft.world.item.enchantment.Enchantments;
 public class LegShacklesRestraint extends AbstractLegRestraint implements IBreakableRestraint, IEnchantableRestraint {
     static final ResourceLocation WIDGETS = new ResourceLocation(CuffedMod.MODID, "textures/gui/widgets.png");
     
-    static final Texture CHAIN_ICON = new Texture(WIDGETS, 44, 24, 16, 16, 192, 192);
+    static final ScreenTexture CHAIN_ICON = new ScreenTexture(WIDGETS, 44, 24, 16, 16, 192, 192);
     
     public LegShacklesRestraint() {
         enchantments = new ListTag();
@@ -92,20 +92,23 @@ public class LegShacklesRestraint extends AbstractLegRestraint implements IBreak
         return true;
     }
     public boolean AllowMovement() {
-        return false;
+        return true;
     }
     public boolean AllowJumping() {
         return false;
     }
 
+    public boolean getCanBeBrokenOutOf() {
+        return CuffedMod.SERVER_CONFIG.LEG_SHACKLES_SETTINGS.canBeBrokenOutOf.get();
+    }
     public boolean getLockpickable() {
-        return CuffedMod.CONFIG.legShacklesConfig.lockpickable;
+        return CuffedMod.SERVER_CONFIG.LEG_SHACKLES_SETTINGS.lockpickable.get();
     }
     public int getLockpickingProgressPerPick() {
-        return CuffedMod.CONFIG.legShacklesConfig.lockpickingProgressPerPick;
+        return CuffedMod.SERVER_CONFIG.LEG_SHACKLES_SETTINGS.lockpickingProgressPerPick.get();
     }
     public int getLockpickingSpeedIncreasePerPick() {
-        return CuffedMod.CONFIG.legShacklesConfig.lockpickingSpeedIncreasePerPick;
+        return CuffedMod.SERVER_CONFIG.LEG_SHACKLES_SETTINGS.lockpickingSpeedIncreasePerPick.get();
     }
     // #endregion
 
@@ -192,12 +195,12 @@ public class LegShacklesRestraint extends AbstractLegRestraint implements IBreak
         y = (window.getGuiScaledHeight() / 2) - (screenHeight) - 50;
         if(CuffedAPI.Capabilities.getRestrainableCapability(player).armsRestrained())
             x -= 16;
-        ScreenUtils.drawTexture(graphics, new BlitCoordinates(x, y, screenWidth, screenHeight), CHAIN_ICON);
+        ScreenUtilities.drawTexture(graphics, new BlitCoordinates(x, y, screenWidth, screenHeight), CHAIN_ICON);
         graphics.setColor(1, 1, 1, 1);
 
         // Display break progress
         float p = Mth.clamp((float)clientSidedDurability / (float)getMaxDurability(), 0, 1);
-        ScreenUtils.drawGenericProgressBar(graphics, new BlitCoordinates(x, y+screenHeight+2, screenWidth, screenHeight), p);
+        ScreenUtilities.drawGenericProgressBar(graphics, new BlitCoordinates(x, y+screenHeight+2, screenWidth, screenHeight), p);
     }
 
     public void onKeyInput(Player player, int keyCode, int action) {
@@ -229,7 +232,7 @@ public class LegShacklesRestraint extends AbstractLegRestraint implements IBreak
     }
 
     public boolean dropItemOnBroken() {
-        return CuffedMod.CONFIG.legShacklesConfig.dropItemWhenBroken;
+        return CuffedMod.SERVER_CONFIG.LEG_SHACKLES_SETTINGS.dropItemWhenBroken.get();
     }
 
     /** Changed only server-side. changes are synced to client. */
@@ -251,7 +254,7 @@ public class LegShacklesRestraint extends AbstractLegRestraint implements IBreak
                     double cooldownMultiplier = 1;
                     if(this instanceof IEnchantableRestraint && hasEnchantment(Enchantments.UNBREAKING)) {
                         double d = getEnchantmentLevel(Enchantments.UNBREAKING) / 3d;
-                        chance = ((MathUtils.invert01(d / 3d) * 0.7d) + 0.3d)  * 0.5f;
+                        chance = ((MathUtilities.invert01(d / 3d) * 0.7d) + 0.3d)  * 0.5f;
                         cooldownMultiplier = 1 + d;
                     }
                     if (r.nextDouble() < chance) {

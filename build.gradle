@@ -92,7 +92,8 @@ dependencies {
 
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    implementation fg.deobf("curse.maven:creativecore-257814:4798202")
+    // Require Lazr's Lib
+    implementation fg.deobf("curse.maven:lazrs-lib-${lazrslib_maven}")
 
     // Optional Dependencies
     compileOnly fg.deobf("curse.maven:better-combat-by-daedelus-639842:5065424") // Better Combat
@@ -119,7 +120,7 @@ def replaceProperties = [
         forge_version: forge_version, forge_version_range: forge_version_range,
         loader_version_range: loader_version_range,
         mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
-        mod_authors: mod_authors, mod_description: mod_description
+        mod_authors: mod_authors, mod_description: mod_description, lazrslib_maven:lazrslib_maven
 ]
 
 processResources {

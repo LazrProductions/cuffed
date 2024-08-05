@@ -1,0 +1,28 @@
+{
+    "variants": {
+      "part=head,facing=north": {
+        "model": "cuffed:block/bunk_left", "y": 270
+      },
+      "part=head,facing=east": {
+          "model": "cuffed:block/bunk_left"
+      },
+      "part=head,facing=south": {
+          "model": "cuffed:block/bunk_left", "y": 90
+      },
+      "part=head,facing=west": {
+          "model": "cuffed:block/bunk_left", "y": 180
+      },
+      "part=foot,facing=north": {
+        "model": "cuffed:block/bunk_right", "y": 270
+      },
+      "part=foot,facing=east": {
+          "model": "cuffed:block/bunk_right"
+      },
+      "part=foot,facing=south": {
+          "model": "cuffed:block/bunk_right", "y": 90
+      },
+      "part=foot,facing=west": {
+          "model": "cuffed:block/bunk_right", "y": 180
+      }
+  }
+}

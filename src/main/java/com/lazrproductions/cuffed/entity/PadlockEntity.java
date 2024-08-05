@@ -144,11 +144,11 @@ public class PadlockEntity extends HangingEntity {
             if (stack.is(ModItems.LOCKPICK.get())) {
                 CuffedAPI.Networking.sendLockpickBeginPickingLockPacketToClient((ServerPlayer) interactor, this.getId(),
                         isReinforced()
-                                ? CuffedMod.CONFIG.lockpickingSettings.speedIncreasePerPickForBreakingReinforcedPadlocks
-                                : CuffedMod.CONFIG.lockpickingSettings.speedIncreasePerPickForBreakingPadlocks,
+                                ? CuffedMod.SERVER_CONFIG.LOCKPICKING_SPEED_INCREASE_PER_PICK_FOR_BREAKING_REINFORCED_PADLOCKS.get()
+                                : CuffedMod.SERVER_CONFIG.LOCKPICKING_SPEED_INCREASE_PER_PICK_FOR_BREAKING_PADLOCKS.get(),
                         isReinforced()
-                                ? CuffedMod.CONFIG.lockpickingSettings.progressPerPickForBreakingReinforcedPadlocks
-                                : CuffedMod.CONFIG.lockpickingSettings.progressPerPickForBreakingPadlocks);
+                                ? CuffedMod.SERVER_CONFIG.LOCKPICKING_PROGRESS_PER_PICK_FOR_BREAKING_REINFORCED_PADLOCKS.get()
+                                : CuffedMod.SERVER_CONFIG.LOCKPICKING_PROGRESS_PER_PICK_FOR_BREAKING_PADLOCKS.get());
 
                 return InteractionResult.SUCCESS;
             }

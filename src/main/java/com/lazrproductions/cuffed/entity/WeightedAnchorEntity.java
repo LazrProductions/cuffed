@@ -133,9 +133,9 @@ public class WeightedAnchorEntity extends LivingEntity {
         if (this.level().isClientSide()) {
             return InteractionResult.SUCCESS;
         } else if(hand == InteractionHand.MAIN_HAND) {
-            if(!interactor.isCrouching() && CuffedMod.CONFIG.anchoringSettings.allowAnchoringToWeightedAnchors) {
+            if(!interactor.isCrouching() && CuffedMod.SERVER_CONFIG.ANCHORING_ALLOW_ANCHORING_TO_WEIGHTED_ANCHORS.get()) {
                 boolean flag = false;
-                double maxDist = CuffedMod.CONFIG.anchoringSettings.chainSuffocateLength + 5;
+                double maxDist = CuffedMod.SERVER_CONFIG.ANCHORING_SUFFOCATION_LENGTH.get() + 5;
                 List<LivingEntity> list = this.level().getEntitiesOfClass(LivingEntity.class,
                         new AABB(this.getX() - maxDist - 2.0D, this.getY() - maxDist - 2.0D, this.getZ() - maxDist - 2.0D,
                                 this.getX() + maxDist + 2.0D, this.getY() + maxDist + 2.0D, this.getZ() + maxDist + 2.0D));

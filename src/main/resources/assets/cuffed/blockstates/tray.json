@@ -1,0 +1,19 @@
+{
+    "variants": {
+        "facing=north": {
+            "model": "cuffed:block/tray"
+        },
+        "facing=east": {
+            "model": "cuffed:block/tray",
+            "y": 90
+        },
+        "facing=south": {
+            "model": "cuffed:block/tray",
+            "y": 180
+        },
+        "facing=west": {
+            "model": "cuffed:block/tray",
+            "y": 270
+        }
+    }
+}

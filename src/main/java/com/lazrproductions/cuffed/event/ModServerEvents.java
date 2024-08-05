@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import com.lazrproductions.cuffed.CuffedMod;
@@ -12,10 +13,10 @@ import com.lazrproductions.cuffed.api.IRestrainableCapability;
 import com.lazrproductions.cuffed.blocks.PilloryBlock;
 import com.lazrproductions.cuffed.cap.provider.RestrainableCapabilityProvider;
 import com.lazrproductions.cuffed.entity.ChainKnotEntity;
+import com.lazrproductions.cuffed.entity.CrumblingBlockEntity;
 import com.lazrproductions.cuffed.entity.base.IAnchorableEntity;
 import com.lazrproductions.cuffed.entity.base.IDetainableEntity;
 import com.lazrproductions.cuffed.entity.base.INicknamable;
-import com.lazrproductions.cuffed.event.base.LivingRideTickEvent;
 import com.lazrproductions.cuffed.init.ModBlocks;
 import com.lazrproductions.cuffed.init.ModEnchantments;
 import com.lazrproductions.cuffed.init.ModItems;
@@ -43,8 +44,10 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.Tags.Blocks;
@@ -116,8 +119,6 @@ public class ModServerEvents {
                 return;
             }
 
-        
-
         Level level = (Level) event.getLevel();
         BlockPos pickpos = event.getPos();
 
@@ -162,9 +163,9 @@ public class ModServerEvents {
                     }
 
                 if (((state.is(Blocks.FENCES)
-                        && CuffedMod.CONFIG.anchoringSettings.allowAnchoringToFences)
+                        && CuffedMod.SERVER_CONFIG.ANCHORING_ALLOW_ANCHORING_TO_FENCES.get())
                         || (state.is(net.minecraft.world.level.block.Blocks.TRIPWIRE_HOOK)
-                                && CuffedMod.CONFIG.anchoringSettings.allowAnchoringToTripwireHook))
+                                && CuffedMod.SERVER_CONFIG.ANCHORING_ALLOW_ANCHORING_TO_TRIPWIRE_HOOKS.get()))
                         && entitiesAnchoredToInteractor.size() > 0) {
                     for (int i = 0; i < entitiesAnchoredToInteractor.size(); i++)
                         ChainKnotEntity.bindEntityToNewOrExistingKnot(
@@ -172,14 +173,35 @@ public class ModServerEvents {
                     event.setCanceled(true);
                     return;
                 }
-            
-                if(state.is(ModBlocks.PILLORY.get())) {
-                    if(level.getBlockState(pos.above()).is(ModBlocks.PILLORY.get()))
+
+                if (state.is(ModBlocks.PILLORY.get())) {
+                    if (level.getBlockState(pos.above()).is(ModBlocks.PILLORY.get()))
                         state = level.getBlockState(pos.above());
-                    
-                    if(cap.getWhoImEscorting() != null) {
+
+                    if (cap.getWhoImEscorting() != null) {
                         cap.getWhoImEscorting().moveTo(PilloryBlock.getPositionBehind(state, pos));
                         cap.stopEscortingPlayer();
+                    }
+                }
+
+                if (state.is(ModTags.Blocks.REINFORCED_BLOCKS) && Block.isShapeFullBlock(state.getShape(level, pos))) {
+                    ItemStack stack = event.getItemStack();
+                    if (stack.is(ModItems.FORK.get()) || stack.is(ModItems.SPOON.get())) {
+                        Random r = new Random();
+                        if (r.nextFloat() < 0.25f)
+                            CrumblingBlockEntity.crumbleBlock(level, pos, state, 1);
+
+                        level.playSound(null, pos, SoundEvents.STONE_HIT, SoundSource.BLOCKS, 1f,
+                                (r.nextFloat() * 0.2f) + 0.9f);
+
+                        level.levelEvent(null, 2001, pos, Block.getId(state));
+
+                        stack.hurtAndBreak(1, interacting, (f) -> {
+                            f.broadcastBreakEvent(event.getHand());
+                        });
+
+                        event.setCancellationResult(InteractionResult.SUCCESS);
+                        event.setCanceled(true);
                     }
                 }
             }
@@ -188,7 +210,7 @@ public class ModServerEvents {
 
     @SubscribeEvent
     public void playerInteractEntity(PlayerInteractEvent.EntityInteract event) {
-        if(event.getSide() == LogicalSide.CLIENT)
+        if (event.getSide() == LogicalSide.CLIENT)
             return;
         if (event.getHand() == InteractionHand.MAIN_HAND) {
             if (event.getSide() == LogicalSide.SERVER) {
@@ -223,6 +245,14 @@ public class ModServerEvents {
 
                 if (event.getTarget().getType().is(ModTags.Entities.CHAINABLE_ENTITIES)) {
                     IAnchorableEntity anchorableEntity = (IAnchorableEntity) event.getTarget();
+
+                    if(CuffedMod.SERVER_CONFIG.ANCHORING_ANCHOR_ONLY_WHEN_RESTRAINED.get()) {
+                        if(event.getTarget() instanceof Player p) {
+                            IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(p);
+                            if(!cap.armsOrLegsRestrained())
+                                return;
+                        }
+                    }
 
                     if (anchorableEntity.isAnchored()) {
                         if (player.getItemInHand(event.getHand()).is(Items.AIR)) {
@@ -264,6 +294,10 @@ public class ModServerEvents {
         }
     }
 
+    public void onPlayerDismount() {
+
+    }
+
     @SubscribeEvent
     public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         ServerPlayer p = (ServerPlayer) event.getEntity();
@@ -296,7 +330,7 @@ public class ModServerEvents {
             }
 
             INicknamable nick = (INicknamable) player;
-            if (CuffedMod.CONFIG.nicknameSettings.nicknamePersistsOnDeath)
+            if (CuffedMod.SERVER_CONFIG.NICKNAME_PERSISTS_ON_DEATH.get())
                 deadEntityNicknameData.put(player.getUUID(), nick.serializeNickname());
         }
     }
@@ -373,15 +407,6 @@ public class ModServerEvents {
                     event.setAmount(Mth.clamp(originalAmount - (amountNegated), 0, originalAmount));
                 }
             }
-        }
-    }
-
-    @SubscribeEvent
-    public void onTickRide(LivingRideTickEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
-            IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(player);
-            if (cap != null)
-                event.setCanceled(cap.onTickRideServer(player, event.getVehicle()));
         }
     }
 }

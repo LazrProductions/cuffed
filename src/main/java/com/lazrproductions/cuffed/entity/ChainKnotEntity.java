@@ -20,6 +20,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
@@ -46,7 +47,6 @@ public class ChainKnotEntity extends HangingEntity {
         this.setPos((double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D);
     }
 
-
     /**
      * Get whether or not this knot is on a fence block.
      * 
@@ -59,16 +59,13 @@ public class ChainKnotEntity extends HangingEntity {
     @Override
     public void dropItem(@Nullable Entity p_31837_) {
         this.playSound(SoundEvents.CHAIN_BREAK, 1.0F, 1.0F);
-        //for (int i = 0; i < anchoredEntities.size(); i++) {
-        //    ((IAnchorableEntity)anchoredEntities.get(i)).setAnchoredTo(null);
-        //}
-        
-        // Chains are dropped from the method(s) above, so this isn't needed.
-        // ItemEntity itementity = new ItemEntity(this.level(), this.pos.getX() + 0.5f,
-        // this.pos.getY() + 0.5f,
-        // this.pos.getZ() + 0.5f, new ItemStack(Items.CHAIN));
-        // itementity.setDefaultPickUpDelay();
-        // this.level().addFreshEntity(itementity);
+    }
+
+    public boolean hurt(@Nonnull DamageSource source, float f) {
+        if (source.getEntity() instanceof IAnchorableEntity a)
+            if (a.getAnchor() == this)
+                return false;
+        return super.hurt(source, f);
     }
 
     @Override
@@ -76,8 +73,11 @@ public class ChainKnotEntity extends HangingEntity {
         if (this.level().isClientSide()) {
             return InteractionResult.SUCCESS;
         } else {
+            if (((IAnchorableEntity) interactor).isAnchored())
+                return InteractionResult.PASS;
+
             boolean flag = false;
-            double maxDist = CuffedMod.CONFIG.anchoringSettings.chainSuffocateLength + 5;
+            double maxDist = CuffedMod.SERVER_CONFIG.ANCHORING_SUFFOCATION_LENGTH.get() + 5;
             List<LivingEntity> list = this.level().getEntitiesOfClass(LivingEntity.class,
                     new AABB(this.getX() - maxDist - 2.0D, this.getY() - maxDist - 2.0D, this.getZ() - maxDist - 2.0D,
                             this.getX() + maxDist + 2.0D, this.getY() + maxDist + 2.0D, this.getZ() + maxDist + 2.0D));
@@ -85,7 +85,7 @@ public class ChainKnotEntity extends HangingEntity {
             for (LivingEntity entity : list) {
                 IAnchorableEntity anchorableEntity = (IAnchorableEntity) entity;
                 if (anchorableEntity.getAnchor() == interactor) {
-                    //anchoredEntities.add(entity);
+                    // anchoredEntities.add(entity);
                     anchorableEntity.setAnchoredTo(this);
                     flag = true;
                 }
@@ -97,7 +97,7 @@ public class ChainKnotEntity extends HangingEntity {
                 for (LivingEntity entity : list) {
                     IAnchorableEntity anchorableEntity = (IAnchorableEntity) entity;
                     if (anchorableEntity.isAnchored() && anchorableEntity.getAnchor() == this) {
-                        //anchoredEntities.remove(entity);
+                        // anchoredEntities.remove(entity);
                         anchorableEntity.setAnchoredTo(null);
                         flag1 = true;
                     }
@@ -105,9 +105,9 @@ public class ChainKnotEntity extends HangingEntity {
                 this.discard();
             }
 
-            if(flag)
+            if (flag)
                 level().playSound(null, pos, SoundEvents.CHAIN_PLACE, SoundSource.PLAYERS, 0.7f, 1);
-            if(flag1)
+            if (flag1)
                 level().playSound(null, pos, SoundEvents.CHAIN_BREAK, SoundSource.PLAYERS, 0.7f, 1);
 
             if (flag || flag1) {
@@ -150,24 +150,20 @@ public class ChainKnotEntity extends HangingEntity {
                         (double) k + 1.0D))) {
             if (knot.getPos().equals(pos)) {
                 ((IAnchorableEntity) entity).setAnchor(knot);
-                //knot.addAnchored(entity);
+                // knot.addAnchored(entity);
                 return knot;
             }
         }
 
-
-
         ChainKnotEntity newKnot = new ChainKnotEntity(level, pos);
 
-        //newKnot.addAnchored(entity);
+        // newKnot.addAnchored(entity);
         ((IAnchorableEntity) entity).setAnchor(newKnot);
 
         level.addFreshEntity(newKnot);
         return newKnot;
     }
 
-
-    
     @Override
     public void setPos(double x, double y, double z) {
         super.setPos((double) Mth.floor(x) + 0.5D, (double) Mth.floor(y) + 0.5D, (double) Mth.floor(z) + 0.5D);

@@ -22,6 +22,7 @@ import com.lazrproductions.cuffed.packet.RestraintSyncPacket;
 import com.lazrproductions.cuffed.packet.RestraintUtilityPacket;
 import com.lazrproductions.cuffed.restraints.base.AbstractRestraint;
 import com.lazrproductions.cuffed.restraints.base.RestraintType;
+import com.lazrproductions.lazrslib.common.network.LazrNetwork;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -43,20 +44,18 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.server.ServerLifecycleHooks;
-import team.creative.creativecore.common.network.CreativeNetwork;
 
 public class CuffedAPI {
     public static class Networking {
 
-        public static final CreativeNetwork NETWORK = new CreativeNetwork(1, CuffedMod.LOGGER,
-                new ResourceLocation(CuffedMod.MODID, "main"));
+        public static final LazrNetwork NETWORK = new LazrNetwork(new ResourceLocation(CuffedMod.MODID, "main"), 1);
 
 
         public static void sendRestraintSyncPacket(@Nonnull ServerPlayer client) {
             IRestrainableCapability cap = Capabilities.getRestrainableCapability(client);
             RestraintSyncPacket packet = new RestraintSyncPacket(client.getId(), client.getUUID().toString(),
                     cap.serializeNBT());
-            NETWORK.sendToClient(packet, client); // sends the sync packet to the client we want.
+            NETWORK.sendTo(packet, client); // sends the sync packet to the client we want.
         }
         
 
@@ -67,19 +66,19 @@ public class CuffedAPI {
                     type, oldRestraint != null ? oldRestraint.serializeNBT() : null,
                     newRestraint != null ? newRestraint.serializeNBT() : null,
                     captor != null ? captor.getUUID().toString() : "null");
-            NETWORK.sendToClient(packet, client); // sends the sync packet to the client we want.
+            NETWORK.sendTo(packet, client); // sends the sync packet to the client we want.
         }
 
 
         public static void sendRestraintUtilityPacketToClient(ServerPlayer client, RestraintType restraintType,
                 int utiltiyCode, int integerArg, boolean booleanArg, double doubleArg, String stringArg) {
-            RestraintUtilityPacket packet = new RestraintUtilityPacket(RestraintType.toInteger(restraintType),
+            RestraintUtilityPacket packet = new RestraintUtilityPacket(restraintType.toInteger(),
                     utiltiyCode, integerArg, booleanArg, doubleArg, stringArg);
-            NETWORK.sendToClient(packet, client);
+            NETWORK.sendTo(packet, client);
         }
         public static void sendRestraintUtilityPacketToServer(RestraintType restraintType, int utiltiyCode,
                 int integerArg, boolean booleanArg, double doubleArg, String stringArg) {
-            RestraintUtilityPacket packet = new RestraintUtilityPacket(RestraintType.toInteger(restraintType),
+            RestraintUtilityPacket packet = new RestraintUtilityPacket(restraintType.toInteger(),
                     utiltiyCode, integerArg, booleanArg, doubleArg, stringArg);
             NETWORK.sendToServer(packet);
         }
@@ -101,26 +100,26 @@ public class CuffedAPI {
 
         public static void sendLockpickBeginPickingLockPacketToClient(@Nonnull ServerPlayer player, int lockId, int speedIncreasePerPhase, int progressPerPick) {
             LockpickLockPacket packet = new LockpickLockPacket(lockId, speedIncreasePerPhase, progressPerPick, player.getUUID().toString());
-            Networking.NETWORK.sendToClient(packet, player);
+            Networking.NETWORK.sendTo(packet, player);
         }
         public static void sendLockpickBeginPickingRestraintPacketToClient(@Nonnull ServerPlayer player, String restrainedUUID, int restraintType, int speedIncreasePerPhase, int progressPerPick) {
             LockpickRestraintPacket packet = new LockpickRestraintPacket(restrainedUUID, restraintType, speedIncreasePerPhase, progressPerPick, player.getUUID().toString());
-            Networking.NETWORK.sendToClient(packet, player);
+            Networking.NETWORK.sendTo(packet, player);
         }
         public static void sendLockpickBeginPickingCellDoorPacketToClient(@Nonnull ServerPlayer player, BlockPos pos, int speedIncreasePerPhase, int progressPerPick) {
             LockpickBlockPacket packet = new LockpickBlockPacket(pos, speedIncreasePerPhase, progressPerPick, player.getUUID().toString());
-            Networking.NETWORK.sendToClient(packet, player);
+            Networking.NETWORK.sendTo(packet, player);
         }
 
 
         public static void registerPackets() {
-            NETWORK.registerType(LockpickLockPacket.class, LockpickLockPacket::new);
-            NETWORK.registerType(LockpickRestraintPacket.class, LockpickRestraintPacket::new);
-            NETWORK.registerType(LockpickBlockPacket.class, LockpickBlockPacket::new);
+            NETWORK.registerPacket(LockpickLockPacket.class, LockpickLockPacket::new);
+            NETWORK.registerPacket(LockpickRestraintPacket.class, LockpickRestraintPacket::new);
+            NETWORK.registerPacket(LockpickBlockPacket.class, LockpickBlockPacket::new);
 
-            NETWORK.registerType(RestraintSyncPacket.class, RestraintSyncPacket::new);
-            NETWORK.registerType(RestraintEquippedPacket.class, RestraintEquippedPacket::new);
-            NETWORK.registerType(RestraintUtilityPacket.class, RestraintUtilityPacket::new);
+            NETWORK.registerPacket(RestraintSyncPacket.class, RestraintSyncPacket::new);
+            NETWORK.registerPacket(RestraintEquippedPacket.class, RestraintEquippedPacket::new);
+            NETWORK.registerPacket(RestraintUtilityPacket.class, RestraintUtilityPacket::new);
         }
     }
 

@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.lazrproductions.cuffed.entity.base.IAnchorableEntity;
-import com.lazrproductions.cuffed.utils.RenderUtils;
+import com.lazrproductions.cuffed.utils.ChainUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,6 +21,6 @@ public class EntityRendererMixin<T extends Entity> {
     public void render(T entity, float p_114486_, float p_114487_, PoseStack stack, MultiBufferSource buffer,
             int light, CallbackInfo callback) {
         if(entity instanceof IAnchorableEntity anchorable && anchorable.getAnchorClientSide() != null )
-            RenderUtils.renderChainTo(entity, p_114487_, stack, buffer, anchorable.getAnchorClientSide());
+            ChainUtils.renderChainTo(entity, p_114487_, stack, buffer, anchorable.getAnchorClientSide());
     }
 }

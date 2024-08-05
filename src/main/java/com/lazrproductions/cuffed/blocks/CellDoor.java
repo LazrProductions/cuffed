@@ -171,8 +171,8 @@ public class CellDoor extends DoorBlock implements ILockableBlock{
                 }
             } else {
                 CuffedAPI.Networking.sendLockpickBeginPickingCellDoorPacketToClient((ServerPlayer)player, pos,
-                        CuffedMod.CONFIG.lockpickingSettings.speedIncreasePerPickForBreakingCellDoors, 
-                        CuffedMod.CONFIG.lockpickingSettings.progressPerPickForBreakingCellDoors);
+                        CuffedMod.SERVER_CONFIG.LOCKPICKING_SPEED_INCREASE_PER_PICK_FOR_BREAKING_CELL_DOORS.get(), 
+                        CuffedMod.SERVER_CONFIG.LOCKPICKING_PROGRESS_PER_PICK_FOR_BREAKING_CELL_DOORS.get());
                 return InteractionResult.sidedSuccess(level.isClientSide);
             }
         }

@@ -6,7 +6,7 @@ import com.lazrproductions.cuffed.init.ModItems;
 import com.lazrproductions.cuffed.init.ModRecipes;
 import com.lazrproductions.cuffed.items.KeyItem;
 import com.lazrproductions.cuffed.items.KeyRingItem;
-import com.lazrproductions.cuffed.utils.TagUtils;
+import com.lazrproductions.lazrslib.common.tag.TagUtilities;
 
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
@@ -67,7 +67,7 @@ public class KeyRingDisassembleRecipe extends CustomRecipe {
                     if (boundKeysTag.size() > 0) {
                         ItemStack stack = ModItems.KEY.get().getDefaultInstance();
                         stack.setCount(1);
-                        KeyItem.setBoundBlock(stack, TagUtils.getBlockPos(boundKeysTag.getCompound(boundKeysTag.size() - 1)));
+                        KeyItem.setBoundBlock(stack, TagUtilities.fromTag(boundKeysTag.getCompound(boundKeysTag.size() - 1)));
 
                         return stack;
                     }

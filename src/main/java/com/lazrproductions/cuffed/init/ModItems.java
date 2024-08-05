@@ -4,6 +4,7 @@ import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.items.KeyItem;
 import com.lazrproductions.cuffed.items.KeyMoldItem;
 import com.lazrproductions.cuffed.items.KeyRingItem;
+import com.lazrproductions.cuffed.items.KnifeItem;
 import com.lazrproductions.cuffed.items.LegShacklesItem;
 import com.lazrproductions.cuffed.items.LegcuffsItem;
 import com.lazrproductions.cuffed.items.BakedKeyMoldItem;
@@ -11,8 +12,10 @@ import com.lazrproductions.cuffed.items.HandcuffsItem;
 import com.lazrproductions.cuffed.items.InformationBookletItem;
 import com.lazrproductions.cuffed.items.Padlock;
 import com.lazrproductions.cuffed.items.PossessionsBox;
+import com.lazrproductions.cuffed.items.PosterBlockItem;
 import com.lazrproductions.cuffed.items.PrisonerTagItem;
 import com.lazrproductions.cuffed.items.ShacklesItem;
+import com.lazrproductions.cuffed.items.TrayItem;
 import com.lazrproductions.cuffed.items.WeightedAnchorItem;
 import com.lazrproductions.cuffed.items.base.AbstractRestraintKeyItem;
 
@@ -84,7 +87,15 @@ public class ModItems {
         public static final RegistryObject<Item> PRISONER_TAG = ITEMS.register("prisoner_tag",
                         () -> new PrisonerTagItem(new Item.Properties().stacksTo(1)));
 
+
                         
+        public static final RegistryObject<Item> FORK = ITEMS.register("fork",
+                        () -> new Item(new Item.Properties().stacksTo(1).durability(5)));
+        public static final RegistryObject<Item> SPOON = ITEMS.register("spoon",
+                        () -> new Item(new Item.Properties().stacksTo(1).durability(5)));
+        public static final RegistryObject<Item> KNIFE = ITEMS.register("knife",
+                        () -> new KnifeItem(new Item.Properties().stacksTo(1).durability(5)));
+                                
 
         // Block Items
         public static final RegistryObject<Item> CELL_DOOR_ITEM = ITEMS.register("cell_door",
@@ -104,6 +115,8 @@ public class ModItems {
                         () -> new BlockItem(ModBlocks.REINFORCED_STONE_STAIRS.get(), new Item.Properties()));
         public static final RegistryObject<Item> REINFORCED_BARS_ITEM = ITEMS.register("reinforced_bars",
                         () -> new BlockItem(ModBlocks.REINFORCED_BARS.get(), new Item.Properties()));
+        public static final RegistryObject<Item> REINFORCED_BARS_GAPPED_ITEM = ITEMS.register("reinforced_bars_gap",
+                        () -> new BlockItem(ModBlocks.REINFORCED_BARS_GAPPED.get(), new Item.Properties()));
 
         public static final RegistryObject<Item> PILLORY_ITEM = ITEMS.register("pillory",
                 () -> new BlockItem(ModBlocks.PILLORY.get(), new Item.Properties()));
@@ -113,6 +126,18 @@ public class ModItems {
         public static final RegistryObject<Item> SAFE_ITEM = ITEMS.register("safe",
                 () -> new BlockItem(ModBlocks.SAFE.get(), new Item.Properties()));
         
+        public static final RegistryObject<Item> BUNK_ITEM = ITEMS.register("bunk",
+                () -> new BlockItem(ModBlocks.BUNK.get(), new Item.Properties().stacksTo(1)));
+                
+        public static final RegistryObject<Item> POSTER_ITEM = ITEMS.register("poster",
+                () -> new PosterBlockItem(ModBlocks.POSTER.get(), new Item.Properties().stacksTo(1)));
+        
+        public static final RegistryObject<Item> TRAY = ITEMS.register("tray",
+                () -> new TrayItem(ModBlocks.TRAY.get(), new Item.Properties().stacksTo(1)));
+                
+        //public static final RegistryObject<Item> TOILET_ITEM = ITEMS.register("toilet",
+        //        () -> new BlockItem(ModBlocks.TOILET.get(), new Item.Properties()));
+
         public static void register(IEventBus bus) {
                 ITEMS.register(bus);
         }

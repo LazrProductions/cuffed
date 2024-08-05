@@ -6,10 +6,10 @@ import org.joml.Random;
 
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.api.CuffedAPI;
-import com.lazrproductions.cuffed.utils.MathUtils;
-import com.lazrproductions.cuffed.utils.ScreenUtils;
-import com.lazrproductions.cuffed.utils.ScreenUtils.BlitCoordinates;
-import com.lazrproductions.cuffed.utils.ScreenUtils.Texture;
+import com.lazrproductions.lazrslib.client.screen.ScreenUtilities;
+import com.lazrproductions.lazrslib.client.screen.base.BlitCoordinates;
+import com.lazrproductions.lazrslib.client.screen.base.ScreenTexture;
+import com.lazrproductions.lazrslib.common.math.MathUtilities;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.Minecraft;
@@ -107,12 +107,12 @@ public class LockpickingScreen extends GenericScreen{
         int scale = 3;
         int originalSize = 32;
         int finalSize = originalSize * scale;
-        ScreenUtils.drawTexture(graphics, new BlitCoordinates(centerScreenX - (finalSize/2) + shakeOffset, centerScreenY - (16 * scale), finalSize, finalSize), 
-            new Texture(new ResourceLocation(CuffedMod.MODID, "textures/item/padlock.png"), 0, 0, 16, 16, 16, 16));
+        ScreenUtilities.drawTexture(graphics, new BlitCoordinates(centerScreenX - (finalSize/2) + shakeOffset, centerScreenY - (16 * scale), finalSize, finalSize), 
+            new ScreenTexture(new ResourceLocation(CuffedMod.MODID, "textures/item/padlock.png"), 0, 0, 16, 16, 16, 16));
 
         
         // draw time left bar
-        ScreenUtils.drawGenericProgressBarUpright(graphics, 
+        ScreenUtilities.drawGenericProgressBarUpright(graphics, 
             new BlitCoordinates(centerScreenX - finalSize, Mth.floor(centerScreenY - (finalSize / 2f)), 
             4, finalSize), (ticksLeftToPick / 40f), partialTick);
 
@@ -135,16 +135,16 @@ public class LockpickingScreen extends GenericScreen{
             // Render ghost lockpick
             RenderSystem.setShaderColor(1f, 1f, 1f, 0.5f);
             RenderSystem.enableBlend();
-            ScreenUtils.drawTexture(graphics, new BlitCoordinates(pickPosX, pickPosY, finalSize, finalSize), 
+            ScreenUtilities.drawTexture(graphics, new BlitCoordinates(pickPosX, pickPosY, finalSize, finalSize), 
                 lerpedGhostAngle, 26 * scale, 8 * scale,
-                new Texture(new ResourceLocation(CuffedMod.MODID, "textures/item/lockpick.png"), 0, 0, 16, 16, 16, 16));
+                new ScreenTexture(new ResourceLocation(CuffedMod.MODID, "textures/item/lockpick.png"), 0, 0, 16, 16, 16, 16));
        
             
             // render lockpick
-            RenderSystem.setShaderColor(1f, 1f, 1f, (float)MathUtils.invert01(animationTick / 5d));
-            ScreenUtils.drawTexture(graphics, new BlitCoordinates(pickPosX, pickPosY, finalSize, finalSize), 
+            RenderSystem.setShaderColor(1f, 1f, 1f, (float)MathUtilities.invert01(animationTick / 5d));
+            ScreenUtilities.drawTexture(graphics, new BlitCoordinates(pickPosX, pickPosY, finalSize, finalSize), 
                 angleToMouse, 26 * scale, 8 * scale,
-                new Texture(new ResourceLocation(CuffedMod.MODID, "textures/item/lockpick.png"), 0, 0, 16, 16, 16, 16));
+                new ScreenTexture(new ResourceLocation(CuffedMod.MODID, "textures/item/lockpick.png"), 0, 0, 16, 16, 16, 16));
         }
 
 

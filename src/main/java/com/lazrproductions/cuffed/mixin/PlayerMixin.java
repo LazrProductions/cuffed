@@ -143,6 +143,13 @@ public class PlayerMixin extends LivingEntity implements IRestrainableEntity, ID
         }
     }
 
+    @Inject(at = @At("HEAD"), method = "wantsToStopRiding", cancellable = true)
+    protected void wantsToStopRiding(CallbackInfoReturnable<Boolean> callback) {
+        IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability((Player)(Object)this);
+        if(cap.restraintsDisabledMovement())
+            callback.setReturnValue(false);
+    }
+
     @Inject(method = "addAdditionalSaveData", at = @At("HEAD"))
     public void onAddAdditionalSaveData(CompoundTag tag, CallbackInfo callback) {
         CompoundTag detainedTag = new CompoundTag();
@@ -157,7 +164,7 @@ public class PlayerMixin extends LivingEntity implements IRestrainableEntity, ID
         
         tag.put(DETAINED_TAG, detainedTag);
 
-        if(CuffedMod.CONFIG.nicknameSettings.nicknamePersistsOnLogout && getNickname() != null)
+        if(CuffedMod.SERVER_CONFIG.NICKNAME_PERSISTS_ON_LOGOUT.get() && getNickname() != null)
             tag.putString(NICKNAME_TAG, serializeNickname());
         
         tag.put(TAG_RESTRICTIONS, serializeRestrictions());
@@ -173,7 +180,7 @@ public class PlayerMixin extends LivingEntity implements IRestrainableEntity, ID
             setDetainedPosition(new Vector3f(t.getFloat(DETAINED_POSITION_X_TAG), t.getFloat(DETAINED_POSITION_Y_TAG), t.getFloat(DETAINED_POSITION_Z_TAG)));
         }
 
-        if(CuffedMod.CONFIG.nicknameSettings.nicknamePersistsOnLogout && tag.contains(NICKNAME_TAG))
+        if(CuffedMod.SERVER_CONFIG.NICKNAME_PERSISTS_ON_LOGOUT.get() && tag.contains(NICKNAME_TAG))
             setNickname(Component.Serializer.fromJson(tag.getString(NICKNAME_TAG)));
         else
             setNickname(null);

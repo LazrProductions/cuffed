@@ -14,7 +14,8 @@
     "client": [
         "HumanoidModelMixin",
         "PlayerRendererMixin",
-        "EntityRendererMixin"
+        "EntityRendererMixin",
+        "EffectRenderingInventoryScreenMixin"
     ],
     "minVersion": "0.8"
 }

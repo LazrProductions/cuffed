@@ -11,21 +11,24 @@ import org.joml.Vector2i;
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.init.ModEnchantments;
 import com.lazrproductions.cuffed.init.ModItems;
-import com.lazrproductions.cuffed.utils.ScreenUtils;
-import com.lazrproductions.cuffed.utils.ScreenUtils.BlitCoordinates;
-import com.lazrproductions.cuffed.utils.ScreenUtils.Rect;
-import com.lazrproductions.cuffed.utils.ScreenUtils.Texture;
-import com.lazrproductions.cuffed.utils.ScreenUtils.UI.BlankElement;
-import com.lazrproductions.cuffed.utils.ScreenUtils.UI.BulletLinkListElement;
-import com.lazrproductions.cuffed.utils.ScreenUtils.UI.BulletListElement;
-import com.lazrproductions.cuffed.utils.ScreenUtils.UI.HorizontalElement;
-import com.lazrproductions.cuffed.utils.ScreenUtils.UI.ItemStackElement;
-import com.lazrproductions.cuffed.utils.ScreenUtils.UI.LinkElement;
-import com.lazrproductions.cuffed.utils.ScreenUtils.UI.OnClickFunction;
-import com.lazrproductions.cuffed.utils.ScreenUtils.UI.ScaledTextureElement;
-import com.lazrproductions.cuffed.utils.ScreenUtils.UI.TextElement;
-import com.lazrproductions.cuffed.utils.ScreenUtils.UI.TextureElement;
-import com.lazrproductions.cuffed.utils.ScreenUtils.UI.VerticalElement;
+import com.lazrproductions.lazrslib.client.font.FontUtilities;
+import com.lazrproductions.lazrslib.client.screen.ScreenUtilities;
+import com.lazrproductions.lazrslib.client.screen.base.BlitCoordinates;
+import com.lazrproductions.lazrslib.client.screen.base.ScreenRect;
+import com.lazrproductions.lazrslib.client.screen.base.ScreenTexture;
+import com.lazrproductions.lazrslib.client.ui.Alignment;
+import com.lazrproductions.lazrslib.client.ui.OnClickFunction;
+import com.lazrproductions.lazrslib.client.ui.UIUtilities;
+import com.lazrproductions.lazrslib.client.ui.element.BlankElement;
+import com.lazrproductions.lazrslib.client.ui.element.BulletLinkListElement;
+import com.lazrproductions.lazrslib.client.ui.element.BulletListElement;
+import com.lazrproductions.lazrslib.client.ui.element.HorizontalElement;
+import com.lazrproductions.lazrslib.client.ui.element.ItemIconElement;
+import com.lazrproductions.lazrslib.client.ui.element.LinkElement;
+import com.lazrproductions.lazrslib.client.ui.element.ScaledTextureElement;
+import com.lazrproductions.lazrslib.client.ui.element.TextElement;
+import com.lazrproductions.lazrslib.client.ui.element.TextureElement;
+import com.lazrproductions.lazrslib.client.ui.element.VerticalElement;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.datafixers.util.Pair;
 
@@ -52,26 +55,26 @@ public class InformationBookletScreen extends GenericScreen {
 
     private static final int FIXED_PAGE_HEIGHT = 202;
 
-    private static final Texture FRONT_COVER_PAGE = new Texture(TEXTURE_LOCATION, 146, 0, 146, 180, 512, 512);
-    private static final Texture BACK_COVER_PAGE = new Texture(TEXTURE_LOCATION, 0, 0, 146, 180, 512, 512);
+    private static final ScreenTexture FRONT_COVER_PAGE = new ScreenTexture(TEXTURE_LOCATION, 146, 0, 146, 180, 512, 512);
+    private static final ScreenTexture BACK_COVER_PAGE = new ScreenTexture(TEXTURE_LOCATION, 0, 0, 146, 180, 512, 512);
 
-    private static final Texture BASIC_LEFT_PAGE = new Texture(TEXTURE_LOCATION, 0, 180, 146, 180, 512, 512);
-    private static final Texture BASIC_RIGHT_PAGE = new Texture(TEXTURE_LOCATION, 146, 180, 146, 180, 512, 512);
+    private static final ScreenTexture BASIC_LEFT_PAGE = new ScreenTexture(TEXTURE_LOCATION, 0, 180, 146, 180, 512, 512);
+    private static final ScreenTexture BASIC_RIGHT_PAGE = new ScreenTexture(TEXTURE_LOCATION, 146, 180, 146, 180, 512, 512);
 
 
-    private static final Texture RIGHT_BUTTON = new Texture(TEXTURE_LOCATION, 0, 360, 18, 10, 512, 512);
-    private static final Texture RIGHT_BUTTON_HIGHLIGHTED = new Texture(TEXTURE_LOCATION, 18, 360, 18, 10, 512, 512);
+    private static final ScreenTexture RIGHT_BUTTON = new ScreenTexture(TEXTURE_LOCATION, 0, 360, 18, 10, 512, 512);
+    private static final ScreenTexture RIGHT_BUTTON_HIGHLIGHTED = new ScreenTexture(TEXTURE_LOCATION, 18, 360, 18, 10, 512, 512);
 
-    private static final Texture LEFT_BUTTON = new Texture(TEXTURE_LOCATION, 0, 370, 18, 10, 512, 512);
-    private static final Texture LEFT_BUTTON_HIGHLIGHTED = new Texture(TEXTURE_LOCATION, 18, 370, 18, 10, 512, 512);
+    private static final ScreenTexture LEFT_BUTTON = new ScreenTexture(TEXTURE_LOCATION, 0, 370, 18, 10, 512, 512);
+    private static final ScreenTexture LEFT_BUTTON_HIGHLIGHTED = new ScreenTexture(TEXTURE_LOCATION, 18, 370, 18, 10, 512, 512);
     
-    private static final Texture BACK_BUTTON = new Texture(TEXTURE_LOCATION, 35, 399, 18, 10, 512, 512);
-    private static final Texture BACK_BUTTON_HIGHLIGHTED = new Texture(TEXTURE_LOCATION, 53, 399, 18, 10, 512, 512);
+    private static final ScreenTexture BACK_BUTTON = new ScreenTexture(TEXTURE_LOCATION, 35, 399, 18, 10, 512, 512);
+    private static final ScreenTexture BACK_BUTTON_HIGHLIGHTED = new ScreenTexture(TEXTURE_LOCATION, 53, 399, 18, 10, 512, 512);
 
-    private static final Texture HOME_BUTTON = new Texture(TEXTURE_LOCATION, 0, 381, 11, 11, 512, 512);
-    private static final Texture HOME_BUTTON_HIGHLIGHTED = new Texture(TEXTURE_LOCATION, 11, 381, 11, 11, 512, 512);
+    private static final ScreenTexture HOME_BUTTON = new ScreenTexture(TEXTURE_LOCATION, 0, 381, 11, 11, 512, 512);
+    private static final ScreenTexture HOME_BUTTON_HIGHLIGHTED = new ScreenTexture(TEXTURE_LOCATION, 11, 381, 11, 11, 512, 512);
 
-    private static final Texture BULLET_LIST_ITEM_ICON = new Texture(TEXTURE_LOCATION, 0, 395, 16, 16, 512, 512);
+    private static final ScreenTexture BULLET_LIST_ITEM_ICON = new ScreenTexture(TEXTURE_LOCATION, 0, 395, 16, 16, 512, 512);
     
     static final int WRITING_COLOR = ARGB32.color(255, 148, 116, 90);
     static final int HIGHLIGHTED_COLOR = 0xFF009FFF;
@@ -86,8 +89,6 @@ public class InformationBookletScreen extends GenericScreen {
 
     public InformationBookletScreen(Minecraft instance) {
         super(instance);
-
-        ScreenUtils.UI.DRAW_DEBUG_WIDGETS = false;
     }
 
     @Override
@@ -128,14 +129,14 @@ public class InformationBookletScreen extends GenericScreen {
             int l_h = Mth.floor(minecraft.font.lineHeight), l_w = Mth.floor(minecraft.font.width(l_pageNumber));
             int l_x = Mth.floor(page.getPageRect().getFromX() + 26);
             int l_y = Mth.floor(page.getPageRect().getToY() - l_h - 12);
-            ScreenUtils.drawText(minecraft, graphics, new BlitCoordinates(l_x, l_y, l_w, l_h), l_pageNumber, WRITING_COLOR, false);
+            FontUtilities.drawText(minecraft, graphics, new BlitCoordinates(l_x, l_y, l_w, l_h), l_pageNumber, WRITING_COLOR, false);
 
             //RIGHT PAGE NUMBER
             Component r_pageNumber = Component.literal("" + r_pN);
             int r_h = Mth.floor(minecraft.font.lineHeight), r_w = Mth.floor(minecraft.font.width(l_pageNumber));
             int r_x = Mth.floor(page.getPageRect().getToX() - r_w - 26);
             int r_y = Mth.floor(page.getPageRect().getToY() - r_h - 12);
-            ScreenUtils.drawText(minecraft, graphics, new BlitCoordinates(r_x, r_y, r_w, r_h), r_pageNumber, WRITING_COLOR, false);
+            FontUtilities.drawText(minecraft, graphics, new BlitCoordinates(r_x, r_y, r_w, r_h), r_pageNumber, WRITING_COLOR, false);
         }
 
         
@@ -146,7 +147,7 @@ public class InformationBookletScreen extends GenericScreen {
             int x = Mth.floor(page.getPageRect().getFromX() + (pageWidth/2) - (Mth.floor(10 * (18 / (float) 10))) / 2) - 4 - w;
             int y = Mth.floor(page.getPageRect().getToY() - h - 12);
 
-            if (ScreenUtils.drawButton(graphics, new BlitCoordinates(x, y, w, h), HOME_BUTTON, HOME_BUTTON_HIGHLIGHTED,
+            if (drawButton(graphics, new BlitCoordinates(x, y, w, h), HOME_BUTTON, HOME_BUTTON_HIGHLIGHTED,
                     mouseX, mouseY, (lastMouseInput.getAction() == 1 && lastMouseInput.getInput() == 0))) {
                 setPage(minecraft, 1);
                 pageWasChanged = true;
@@ -159,7 +160,7 @@ public class InformationBookletScreen extends GenericScreen {
             int x = Mth.floor(page.getPageRect().getFromX() + 18);
             int y = Mth.floor(page.getPageRect().getFromY() + 14);
 
-            if (ScreenUtils.drawButton(graphics, new BlitCoordinates(x, y, w, h), BACK_BUTTON, BACK_BUTTON_HIGHLIGHTED,
+            if (drawButton(graphics, new BlitCoordinates(x, y, w, h), BACK_BUTTON, BACK_BUTTON_HIGHLIGHTED,
                     mouseX, mouseY, (lastMouseInput.getAction() == 1 && lastMouseInput.getInput() == 0))) {
                 setPage(minecraft, previousPage);
                 previousPage = -1;
@@ -173,7 +174,7 @@ public class InformationBookletScreen extends GenericScreen {
             int x = Mth.floor(page.getPageRect().getFromX() + (pageWidth/2) - (w/2));
             int y = Mth.floor(page.getPageRect().getToY() - h - 12);
 
-            if (ScreenUtils.drawButton(graphics, new BlitCoordinates(x, y, w, h), LEFT_BUTTON, LEFT_BUTTON_HIGHLIGHTED,
+            if (drawButton(graphics, new BlitCoordinates(x, y, w, h), LEFT_BUTTON, LEFT_BUTTON_HIGHLIGHTED,
                     mouseX, mouseY, (lastMouseInput.getAction() == 1 && lastMouseInput.getInput() == 0))) {
                 currentPage--;
                 previousPage = -1;
@@ -188,7 +189,7 @@ public class InformationBookletScreen extends GenericScreen {
             int x = Mth.floor(page.getPageRect().getToX() - (pageWidth/2) - (w/2));
             int y = Mth.floor(page.getPageRect().getToY() - h - 12);
 
-            if (ScreenUtils.drawButton(graphics, new BlitCoordinates(x, y, w, h), RIGHT_BUTTON,
+            if (drawButton(graphics, new BlitCoordinates(x, y, w, h), RIGHT_BUTTON,
                     RIGHT_BUTTON_HIGHLIGHTED, mouseX, mouseY,
                     (lastMouseInput.getAction() == 1 && lastMouseInput.getInput() == 0))) {
                 currentPage++;
@@ -222,20 +223,20 @@ public class InformationBookletScreen extends GenericScreen {
                 new ComplexPage(BASIC_LEFT_PAGE, new VerticalElement(BlitCoordinates.DEFAULT, 2,
                     new HorizontalElement(
                         new TextureElement(instance, 
-                            new Texture(TEXTURE_LOCATION, 438, 253, 65, 23, 512, 512), 
-                            com.lazrproductions.cuffed.utils.ScreenUtils.UI.Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
+                            new ScreenTexture(TEXTURE_LOCATION, 438, 253, 65, 23, 512, 512), 
+                            Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
                     new HorizontalElement(
                         new ScaledTextureElement(instance, 
                             GenericPage.SEPARATOR_TEXTURE, 
                             Mth.floor(contentWidth * (10f / 104f)))),
                     new HorizontalElement(
                         new TextElement(instance, contentWidth, 
-                            Component.translatable("guide.cuffed.title_page.info"), WRITING_COLOR)))),
+                            Component.translatable("guide.cuffed.title_page.info"), WRITING_COLOR, false)))),
                 new ComplexPage(BASIC_RIGHT_PAGE, new VerticalElement(BlitCoordinates.DEFAULT, 2,
                     new HorizontalElement(
                         new TextureElement(instance, 
-                            new Texture(TEXTURE_LOCATION, 438, 230, 65, 23, 512, 512), 
-                            com.lazrproductions.cuffed.utils.ScreenUtils.UI.Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
+                            new ScreenTexture(TEXTURE_LOCATION, 438, 230, 65, 23, 512, 512), 
+                            Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
                     new HorizontalElement(
                         new ScaledTextureElement(instance, 
                             GenericPage.SEPARATOR_TEXTURE, 
@@ -251,7 +252,7 @@ public class InformationBookletScreen extends GenericScreen {
                                 new Pair<Component, OnClickFunction>(Component.translatable("guide.cuffed.locks_page.title"), () -> { setPage(instance, 9); }),
                                 new Pair<Component, OnClickFunction>(Component.translatable("guide.cuffed.keys_page.title"), () -> { setPage(instance, 10); }),
                                 new Pair<Component, OnClickFunction>(Component.translatable("guide.cuffed.lockpicking_page.title"), () -> { setPage(instance, 11); }),
-                                new Pair<Component, OnClickFunction>(Component.translatable("guide.cuffed.pillory_page.title"), () -> { setPage(instance, 12); })), WRITING_COLOR, HIGHLIGHTED_COLOR))))));
+                                new Pair<Component, OnClickFunction>(Component.translatable("guide.cuffed.pillory_page.title"), () -> { setPage(instance, 12); })), WRITING_COLOR, HIGHLIGHTED_COLOR, false))))));
         
         // [2] -> contents p2 / restraints
         pages.add(new DoublePage(
@@ -262,15 +263,15 @@ public class InformationBookletScreen extends GenericScreen {
                         List.of( 
                             new Pair<Component, OnClickFunction>(Component.translatable("guide.cuffed.guillotine_page.title"), () -> { setPage(instance, 13); }),
                             new Pair<Component, OnClickFunction>(Component.translatable("guide.cuffed.prisoner_tag_page.title"), () -> { setPage(instance, 14); }),
-                            new Pair<Component, OnClickFunction>(Component.translatable("guide.cuffed.encyclopedia_page.title"), () -> { setPage(instance, 16); })), WRITING_COLOR, HIGHLIGHTED_COLOR)))),
+                            new Pair<Component, OnClickFunction>(Component.translatable("guide.cuffed.encyclopedia_page.title"), () -> { setPage(instance, 16); })), WRITING_COLOR, HIGHLIGHTED_COLOR, false)))),
             new ComplexPage(BASIC_RIGHT_PAGE, new VerticalElement(BlitCoordinates.DEFAULT, 1,
                 new HorizontalElement(
                     new TextureElement(instance, 
-                        new Texture(TEXTURE_LOCATION, 438, 23, 65, 23, 512, 512), 
-                        com.lazrproductions.cuffed.utils.ScreenUtils.UI.Alignment.CENTER_LEFT, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f)),
+                        new ScreenTexture(TEXTURE_LOCATION, 438, 23, 65, 23, 512, 512), 
+                        Alignment.CENTER_LEFT, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f)),
                     new TextureElement(instance, 
-                        new Texture(TEXTURE_LOCATION, 75, 360, 39, 39, 512, 512), 
-                        com.lazrproductions.cuffed.utils.ScreenUtils.UI.Alignment.CENTER_RIGHT,  GenericPage.HEADER_HEIGHT)),
+                        new ScreenTexture(TEXTURE_LOCATION, 75, 360, 39, 39, 512, 512), 
+                        Alignment.CENTER_RIGHT,  GenericPage.HEADER_HEIGHT)),
                 new HorizontalElement(
                     new ScaledTextureElement(instance, 
                         GenericPage.SEPARATOR_TEXTURE, 
@@ -278,22 +279,22 @@ public class InformationBookletScreen extends GenericScreen {
                 new HorizontalElement(
                     new TextElement(instance, contentWidth, 
                         Component.translatable("guide.cuffed.restraints_page.info"),
-                        WRITING_COLOR)),
+                        WRITING_COLOR, false)),
                 new HorizontalElement(
                     new LinkElement(instance, 
                         Component.translatable("guide.cuffed.restraints_page.arm"),
-                        com.lazrproductions.cuffed.utils.ScreenUtils.UI.Alignment.CENTER, 
+                        Alignment.CENTER, 
                         () -> { setPage(instance, 3); }, 
                         instance.font.lineHeight, WRITING_COLOR, HIGHLIGHTED_COLOR),
                     new LinkElement(instance, 
                         Component.translatable("guide.cuffed.restraints_page.leg"),
-                        com.lazrproductions.cuffed.utils.ScreenUtils.UI.Alignment.CENTER, 
+                        Alignment.CENTER, 
                         () -> { setPage(instance, 4); }, 
                         instance.font.lineHeight, WRITING_COLOR, HIGHLIGHTED_COLOR)),
                 new HorizontalElement(
                     new TextElement(instance, contentWidth, 
                         Component.translatable("guide.cuffed.restraints_page.info2"),
-                        WRITING_COLOR))))));
+                        WRITING_COLOR, false))))));
         
         // [3] -> restraints p2 / arm restints
         pages.add(new DoublePage(
@@ -305,7 +306,7 @@ public class InformationBookletScreen extends GenericScreen {
                 new HorizontalElement(
                     new LinkElement(instance, 
                         Component.translatable("guide.cuffed.restraints_page.restraint_key"),
-                        com.lazrproductions.cuffed.utils.ScreenUtils.UI.Alignment.CENTER, 
+                        Alignment.CENTER, 
                         () -> { setPage(instance, 4); }, 
                         instance.font.lineHeight, WRITING_COLOR, HIGHLIGHTED_COLOR)),
                 new HorizontalElement(
@@ -315,26 +316,26 @@ public class InformationBookletScreen extends GenericScreen {
                 new HorizontalElement(
                     new LinkElement(instance, 
                         Component.translatable("guide.cuffed.restraints_page.enchantments"),
-                        com.lazrproductions.cuffed.utils.ScreenUtils.UI.Alignment.CENTER, 
+                        Alignment.CENTER, 
                         () -> { setPage(instance, 5); }, 
                         instance.font.lineHeight, WRITING_COLOR, HIGHLIGHTED_COLOR)))),
             new ComplexPage(BASIC_RIGHT_PAGE, new VerticalElement(BlitCoordinates.DEFAULT, 1,
                 new HorizontalElement(
                     new TextureElement(instance, 
-                        new Texture(TEXTURE_LOCATION, 373, 0, 65, 23, 512, 512), 
-                        com.lazrproductions.cuffed.utils.ScreenUtils.UI.Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
+                        new ScreenTexture(TEXTURE_LOCATION, 373, 0, 65, 23, 512, 512), 
+                        Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
                 new HorizontalElement(
                     new TextElement(instance, contentWidth, 
                         Component.translatable("guide.cuffed.arm_restraints_page.info"),
-                        WRITING_COLOR))))));
+                        WRITING_COLOR, false))))));
 
         // [4] -> leg restints / restraint keys
         pages.add(new DoublePage(
             new ComplexPage(BASIC_LEFT_PAGE, new VerticalElement(BlitCoordinates.DEFAULT, 1,
                 new HorizontalElement(
                     new TextureElement(instance, 
-                        new Texture(TEXTURE_LOCATION, 373, 23, 65, 23, 512, 512), 
-                        com.lazrproductions.cuffed.utils.ScreenUtils.UI.Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
+                        new ScreenTexture(TEXTURE_LOCATION, 373, 23, 65, 23, 512, 512), 
+                        Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
                 new HorizontalElement(
                     new TextElement(instance, contentWidth, 
                         Component.translatable("guide.cuffed.leg_restraints_page.info"),
@@ -342,30 +343,31 @@ public class InformationBookletScreen extends GenericScreen {
             new ComplexPage(BASIC_RIGHT_PAGE, new VerticalElement(BlitCoordinates.DEFAULT, 1,
                 new HorizontalElement(
                     new TextElement(instance, contentWidth, 
-                        Component.translatable("guide.cuffed.restraints_page.restraint_key").withStyle(ChatFormatting.BOLD), WRITING_COLOR)),
+                        Component.translatable("guide.cuffed.restraints_page.restraint_key").withStyle(ChatFormatting.BOLD), WRITING_COLOR, false)),
                 new HorizontalElement(
                     new TextElement(instance, contentWidth, 
                         Component.translatable("guide.cuffed.restraints_page.restraint_key.info"),
-                        WRITING_COLOR)),
+                        WRITING_COLOR, false)),
                 new HorizontalElement(new BlankElement(instance, 3)),
                 new HorizontalElement(
                     new BulletLinkListElement(instance, contentWidth,
                         BULLET_LIST_ITEM_ICON,
                         List.of(
                             new Pair<Component, OnClickFunction>(Component.translatable("item.cuffed.handcuffs_key"), () -> { setPage(instance, getItemEncyclopediaPage(ModItems.HANDCUFFS_KEY.get())); }),
-    new Pair<Component, OnClickFunction>(Component.translatable("item.cuffed.shackles_key"), () -> { setPage(instance, getItemEncyclopediaPage(ModItems.SHACKLES_KEY.get()));})), WRITING_COLOR, HIGHLIGHTED_COLOR))))));
+                            new Pair<Component, OnClickFunction>(Component.translatable("item.cuffed.shackles_key"), () -> { setPage(instance, getItemEncyclopediaPage(ModItems.SHACKLES_KEY.get()));})), 
+                        WRITING_COLOR, HIGHLIGHTED_COLOR, false))))));
 
         // [5] -> restraint enchantments / blank page
         pages.add(new DoublePage(
             new ComplexPage(BASIC_LEFT_PAGE, new VerticalElement(BlitCoordinates.DEFAULT, 1,
                 new HorizontalElement(
                     new TextureElement(instance, 
-                        new Texture(TEXTURE_LOCATION, 361, 46, 77, 23, 512, 512), 
-                        com.lazrproductions.cuffed.utils.ScreenUtils.UI.Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
+                        new ScreenTexture(TEXTURE_LOCATION, 361, 46, 77, 23, 512, 512), 
+                        Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
                 new HorizontalElement(
                     new TextElement(instance, contentWidth, 
                         Component.translatable("guide.cuffed.restraint_enchantments.info"),
-                        WRITING_COLOR)),
+                        WRITING_COLOR, false)),
                 new HorizontalElement(
                     new BulletLinkListElement(instance, contentWidth,
                         BULLET_LIST_ITEM_ICON,
@@ -376,7 +378,7 @@ public class InformationBookletScreen extends GenericScreen {
                             new Pair<Component, OnClickFunction>(Component.translatable("enchantment.cuffed.famine"), () -> { setPage(instance, getItemEncyclopediaPage("enchantment.cuffed.famine")); }),
                             new Pair<Component, OnClickFunction>(Component.translatable("enchantment.cuffed.imbue"), () -> { setPage(instance, getItemEncyclopediaPage("enchantment.cuffed.imbue")); }),
                             new Pair<Component, OnClickFunction>(Component.translatable("enchantment.cuffed.shroud"), () -> { setPage(instance, getItemEncyclopediaPage("enchantment.cuffed.shroud")); }),
-                            new Pair<Component, OnClickFunction>(Component.translatable("enchantment.cuffed.drain"), () -> { setPage(instance, getItemEncyclopediaPage("enchantment.cuffed.drain")); })), WRITING_COLOR, HIGHLIGHTED_COLOR)))),
+                            new Pair<Component, OnClickFunction>(Component.translatable("enchantment.cuffed.drain"), () -> { setPage(instance, getItemEncyclopediaPage("enchantment.cuffed.drain")); })), WRITING_COLOR, HIGHLIGHTED_COLOR, false)))),
             new BlankPage(BASIC_RIGHT_PAGE)));
 
         // [6] -> escorting / blank page
@@ -384,12 +386,12 @@ public class InformationBookletScreen extends GenericScreen {
             new ComplexPage(BASIC_LEFT_PAGE, new VerticalElement(BlitCoordinates.DEFAULT, 1,
                 new HorizontalElement(
                     new TextureElement(instance, 
-                        new Texture(TEXTURE_LOCATION, 438, 46, 65, 23, 512, 512), 
-                        com.lazrproductions.cuffed.utils.ScreenUtils.UI.Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
+                        new ScreenTexture(TEXTURE_LOCATION, 438, 46, 65, 23, 512, 512), 
+                        Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
                 new HorizontalElement(
                     new TextElement(instance, contentWidth, 
                         Component.translatable("guide.cuffed.escorting_page.info"),
-                        WRITING_COLOR)))),
+                        WRITING_COLOR, false)))),
             new BlankPage(BASIC_RIGHT_PAGE)));
 
         // [7] -> anchoring / blank page
@@ -397,8 +399,8 @@ public class InformationBookletScreen extends GenericScreen {
             new ComplexPage(BASIC_LEFT_PAGE, new VerticalElement(BlitCoordinates.DEFAULT, 1,
                 new HorizontalElement(
                     new TextureElement(instance, 
-                        new Texture(TEXTURE_LOCATION, 438, 69, 65, 23, 512, 512), 
-                        com.lazrproductions.cuffed.utils.ScreenUtils.UI.Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
+                        new ScreenTexture(TEXTURE_LOCATION, 438, 69, 65, 23, 512, 512), 
+                        Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
                 new HorizontalElement(
                     new TextElement(instance, contentWidth, 
                         Component.translatable("guide.cuffed.anchoring_page.info"),
@@ -408,33 +410,33 @@ public class InformationBookletScreen extends GenericScreen {
                         BULLET_LIST_ITEM_ICON,
                         List.of(
                             Component.translatable("guide.cuffed.anchoring_page.fence"),
-                            Component.translatable("block.minecraft.tripwire_hook")), WRITING_COLOR)),
+                            Component.translatable("block.minecraft.tripwire_hook")), WRITING_COLOR, false)),
                 new HorizontalElement(
                     new BulletLinkListElement(instance, contentWidth,
                         BULLET_LIST_ITEM_ICON,
                         List.of(
-                            Pair.of(Component.translatable("entity.cuffed.weighted_anchor"), () -> { setPage(instance, getItemEncyclopediaPage(ModItems.WEIGHTED_ANCHOR_ITEM.get())); })), WRITING_COLOR, HIGHLIGHTED_COLOR)),
+                            Pair.of(Component.translatable("entity.cuffed.weighted_anchor"), () -> { setPage(instance, getItemEncyclopediaPage(ModItems.WEIGHTED_ANCHOR_ITEM.get())); })), WRITING_COLOR, HIGHLIGHTED_COLOR, false)),
                 new HorizontalElement(
                     new TextElement(instance, contentWidth, 
                         Component.translatable("guide.cuffed.anchoring_page.info2"),
-                        WRITING_COLOR)))),
+                        WRITING_COLOR, false)))),
             new ComplexPage(BASIC_RIGHT_PAGE, new VerticalElement(BlitCoordinates.DEFAULT, 1, 
                 new HorizontalElement(
                     new TextElement(instance, contentWidth, 
                         Component.translatable("guide.cuffed.anchoring_page.info3"),
-                        WRITING_COLOR))))));
+                        WRITING_COLOR, false))))));
 
         // [8] -> reinforced blocks / list of reinforced blocks
         pages.add(new DoublePage(
             new ComplexPage(BASIC_LEFT_PAGE, new VerticalElement(BlitCoordinates.DEFAULT, 1,
                 new HorizontalElement(
                     new TextureElement(instance, 
-                        new Texture(TEXTURE_LOCATION, 438, 0, 65, 23, 512, 512), 
-                        com.lazrproductions.cuffed.utils.ScreenUtils.UI.Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
+                        new ScreenTexture(TEXTURE_LOCATION, 438, 0, 65, 23, 512, 512), 
+                        Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
                 new HorizontalElement(
                     new TextElement(instance, contentWidth, 
                         Component.translatable("guide.cuffed.reinforced_page.info"),
-                        WRITING_COLOR)))),
+                        WRITING_COLOR, false)))),
             new ComplexPage(BASIC_RIGHT_PAGE, new VerticalElement(BlitCoordinates.DEFAULT, 1,
                 new HorizontalElement(
                     new BulletLinkListElement(instance, contentWidth,
@@ -447,33 +449,33 @@ public class InformationBookletScreen extends GenericScreen {
                             Pair.of(Component.translatable("block.cuffed.reinforced_stone_slab"), () -> {setPage(instance, getItemEncyclopediaPage(ModItems.REINFORCED_STONE_SLAB_ITEM.get())); }), 
                             Pair.of(Component.translatable("block.cuffed.reinforced_stone_stairs"), () -> { setPage(instance, getItemEncyclopediaPage(ModItems.REINFORCED_STONE_STAIRS_ITEM.get())); }), 
                             Pair.of(Component.translatable("block.cuffed.chiseled_reinforced_stone"), () -> { setPage(instance, getItemEncyclopediaPage(ModItems.REINFORCED_STONE_CHISELED_ITEM.get())); }), 
-                            Pair.of(Component.translatable("block.cuffed.reinforced_lamp"), () -> { setPage(instance, getItemEncyclopediaPage(ModItems.REINFORCED_LAMP_ITEM.get())); })), WRITING_COLOR, HIGHLIGHTED_COLOR))))));
+                            Pair.of(Component.translatable("block.cuffed.reinforced_lamp"), () -> { setPage(instance, getItemEncyclopediaPage(ModItems.REINFORCED_LAMP_ITEM.get())); })), WRITING_COLOR, HIGHLIGHTED_COLOR, false))))));
 
         // [9] -> locks / blank page
         pages.add(new DoublePage(
             new ComplexPage(BASIC_LEFT_PAGE, new VerticalElement(BlitCoordinates.DEFAULT, 1,
                 new HorizontalElement(
                     new TextureElement(instance, 
-                        new Texture(TEXTURE_LOCATION, 438, 92, 65, 23, 512, 512), 
-                        com.lazrproductions.cuffed.utils.ScreenUtils.UI.Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
+                        new ScreenTexture(TEXTURE_LOCATION, 438, 92, 65, 23, 512, 512), 
+                        Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
                 new HorizontalElement(
                     new TextElement(instance, contentWidth, 
                         Component.translatable("guide.cuffed.locks_page.info"),
-                        WRITING_COLOR)),
+                        WRITING_COLOR, false)),
                 new HorizontalElement(
                     new LinkElement(instance, contentWidth,
                         Component.translatable("item.cuffed.key"),
-                        com.lazrproductions.cuffed.utils.ScreenUtils.UI.Alignment.CENTER,
+                        Alignment.CENTER,
                         ()->{ setPage(instance, 10); },
                         WRITING_COLOR, HIGHLIGHTED_COLOR)),
                 new HorizontalElement(
                     new TextElement(instance, contentWidth, 
                         Component.translatable("guide.cuffed.locks_page.info2"),
-                        WRITING_COLOR)),
+                        WRITING_COLOR, false)),
                 new HorizontalElement(
                     new TextElement(instance, contentWidth, 
                         Component.translatable("guide.cuffed.locks_page.info5"),
-                        WRITING_COLOR)))),
+                        WRITING_COLOR, false)))),
             new ComplexPage(BASIC_RIGHT_PAGE, new VerticalElement(BlitCoordinates.DEFAULT, 
                 new HorizontalElement(
                     new TextElement(instance, contentWidth, 
@@ -482,52 +484,52 @@ public class InformationBookletScreen extends GenericScreen {
                 new HorizontalElement(
                     new LinkElement(instance, contentWidth,
                         Component.translatable("item.cuffed.lockpick"),
-                        com.lazrproductions.cuffed.utils.ScreenUtils.UI.Alignment.CENTER,
+                        Alignment.CENTER,
                         ()->{ setPage(instance, 11); },
                         WRITING_COLOR, HIGHLIGHTED_COLOR)),
                 new HorizontalElement(
                     new TextElement(instance, contentWidth, 
                         Component.translatable("guide.cuffed.locks_page.info4"),
-                        WRITING_COLOR))))));
+                        WRITING_COLOR, false))))));
 
         // [10] -> keys / blank page
         pages.add(new DoublePage(
             new ComplexPage(BASIC_LEFT_PAGE, new VerticalElement(BlitCoordinates.DEFAULT, 1,
                 new HorizontalElement(
                     new TextureElement(instance, 
-                        new Texture(TEXTURE_LOCATION, 438, 207, 65, 23, 512, 512), 
-                        com.lazrproductions.cuffed.utils.ScreenUtils.UI.Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
+                        new ScreenTexture(TEXTURE_LOCATION, 438, 207, 65, 23, 512, 512), 
+                        Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
                 new HorizontalElement(
                     new TextElement(instance, contentWidth, 
                         Component.translatable("guide.cuffed.keys_page.info"),
-                        WRITING_COLOR)),
+                        WRITING_COLOR, false)),
                 new HorizontalElement(
                     new LinkElement(instance, contentWidth,
                         Component.translatable("item.cuffed.key_mold"),
-                        com.lazrproductions.cuffed.utils.ScreenUtils.UI.Alignment.CENTER,
+                        Alignment.CENTER,
                         ()->{ setPage(instance, 10); },
                         WRITING_COLOR, HIGHLIGHTED_COLOR)))),
             new ComplexPage(BASIC_RIGHT_PAGE, new VerticalElement(BlitCoordinates.DEFAULT, 1,
                 new HorizontalElement(
                     new TextElement(instance, contentWidth, 
                         Component.translatable("guide.cuffed.copying_keys_page.title").withStyle(ChatFormatting.BOLD),
-                        WRITING_COLOR)),
+                        WRITING_COLOR, false)),
                 new HorizontalElement(
                     new TextElement(instance, contentWidth, 
                         Component.translatable("guide.cuffed.copying_keys_page.info"),
-                        WRITING_COLOR))))));
+                        WRITING_COLOR, false))))));
 
         // [11] -> lockpicking / blank page
         pages.add(new DoublePage(
             new ComplexPage(BASIC_LEFT_PAGE, new VerticalElement(BlitCoordinates.DEFAULT, 1,
                 new HorizontalElement(
                     new TextureElement(instance, 
-                        new Texture(TEXTURE_LOCATION, 438, 138, 65, 23, 512, 512), 
-                        com.lazrproductions.cuffed.utils.ScreenUtils.UI.Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
+                        new ScreenTexture(TEXTURE_LOCATION, 438, 138, 65, 23, 512, 512), 
+                        Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
                 new HorizontalElement(
                     new TextElement(instance, contentWidth, 
                         Component.translatable("guide.cuffed.lockpicking_page.info"),
-                        WRITING_COLOR)))),
+                        WRITING_COLOR, false)))),
             new BlankPage(BASIC_RIGHT_PAGE)));
 
         // [12] -> pillory / blank page
@@ -535,12 +537,12 @@ public class InformationBookletScreen extends GenericScreen {
             new ComplexPage(BASIC_LEFT_PAGE, new VerticalElement(BlitCoordinates.DEFAULT, 1,
                 new HorizontalElement(
                     new TextureElement(instance, 
-                        new Texture(TEXTURE_LOCATION, 438, 115, 65, 23, 512, 512), 
-                        com.lazrproductions.cuffed.utils.ScreenUtils.UI.Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
+                        new ScreenTexture(TEXTURE_LOCATION, 438, 115, 65, 23, 512, 512), 
+                        Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
                 new HorizontalElement(
                     new TextElement(instance, contentWidth, 
                         Component.translatable("guide.cuffed.pillory_page.info"),
-                        WRITING_COLOR)))),
+                        WRITING_COLOR, false)))),
             new BlankPage(BASIC_RIGHT_PAGE)));
         
         // [13] -> guillotine / blank page
@@ -548,12 +550,12 @@ public class InformationBookletScreen extends GenericScreen {
             new ComplexPage(BASIC_LEFT_PAGE, new VerticalElement(BlitCoordinates.DEFAULT, 1,
                 new HorizontalElement(
                     new TextureElement(instance, 
-                        new Texture(TEXTURE_LOCATION, 438, 161, 65, 23, 512, 512), 
-                        com.lazrproductions.cuffed.utils.ScreenUtils.UI.Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
+                        new ScreenTexture(TEXTURE_LOCATION, 438, 161, 65, 23, 512, 512), 
+                        Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
                 new HorizontalElement(
                     new TextElement(instance, contentWidth, 
                         Component.translatable("guide.cuffed.guillotine_page.info"),
-                        WRITING_COLOR)))),
+                        WRITING_COLOR, false)))),
             new BlankPage(BASIC_RIGHT_PAGE)));
                 
         // [14] -> prisoner tag / blank page
@@ -561,12 +563,12 @@ public class InformationBookletScreen extends GenericScreen {
             new ComplexPage(BASIC_LEFT_PAGE, new VerticalElement(BlitCoordinates.DEFAULT, 1,
                 new HorizontalElement(
                     new TextureElement(instance, 
-                        new Texture(TEXTURE_LOCATION, 438, 184, 65, 23, 512, 512), 
-                        com.lazrproductions.cuffed.utils.ScreenUtils.UI.Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
+                        new ScreenTexture(TEXTURE_LOCATION, 438, 184, 65, 23, 512, 512), 
+                        Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
                 new HorizontalElement(
                     new TextElement(instance, contentWidth, 
                         Component.translatable("guide.cuffed.prisoner_tag_page.info"),
-                        WRITING_COLOR)))),
+                        WRITING_COLOR, false)))),
             new BlankPage(BASIC_RIGHT_PAGE)));
 
         // [15] -> blank page / blank page
@@ -579,8 +581,8 @@ public class InformationBookletScreen extends GenericScreen {
             new ComplexPage(BASIC_LEFT_PAGE, new VerticalElement(BlitCoordinates.DEFAULT, 
                 new HorizontalElement(
                     new TextureElement(instance, 
-                        new Texture(TEXTURE_LOCATION, 361, 69, 77, 23, 512, 512), 
-                        com.lazrproductions.cuffed.utils.ScreenUtils.UI.Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
+                        new ScreenTexture(TEXTURE_LOCATION, 361, 69, 77, 23, 512, 512), 
+                        Alignment.CENTER, Mth.floor(GenericPage.HEADER_HEIGHT * 0.771f))),
                 new HorizontalElement(
                     new BulletLinkListElement(instance, contentWidth, BULLET_LIST_ITEM_ICON, 
                         List.of(
@@ -592,7 +594,7 @@ public class InformationBookletScreen extends GenericScreen {
                             Pair.of(Component.translatable("item.cuffed.handcuffs_key"), () -> { setPage(instance, getItemEncyclopediaPage(ModItems.HANDCUFFS_KEY.get())); }),
                             Pair.of(Component.translatable("item.cuffed.shackles_key"), () -> { setPage(instance, getItemEncyclopediaPage(ModItems.SHACKLES_KEY.get())); }),
                             Pair.of(Component.translatable("item.cuffed.weighted_anchor"), () -> { setPage(instance, getItemEncyclopediaPage(ModItems.WEIGHTED_ANCHOR_ITEM.get())); })
-                            ), WRITING_COLOR, HIGHLIGHTED_COLOR)))),
+                            ), WRITING_COLOR, HIGHLIGHTED_COLOR, false)))),
             new ComplexPage(BASIC_RIGHT_PAGE, new VerticalElement(BlitCoordinates.DEFAULT,
                 new HorizontalElement(
                     new BulletLinkListElement(instance, contentWidth, BULLET_LIST_ITEM_ICON, 
@@ -603,10 +605,10 @@ public class InformationBookletScreen extends GenericScreen {
                             Pair.of(Component.translatable("enchantment.cuffed.famine"), () -> { setPage(instance, getItemEncyclopediaPage("enchantment.cuffed.famine")); }),
                             Pair.of(Component.translatable("enchantment.cuffed.shroud"), () -> { setPage(instance, getItemEncyclopediaPage("enchantment.cuffed.shroud")); }),
                             Pair.of(Component.translatable("enchantment.cuffed.exhaust"), () -> { setPage(instance, getItemEncyclopediaPage("enchantment.cuffed.exhaust")); }),
-                            Pair.of(Component.translatable("enchantment.cuffed.drain"), () -> { setPage(instance, getItemEncyclopediaPage("enchantment.cuffed.drain")); }),
+                            Pair.of(Component.translatable("enchantment.cuffed.silence"), () -> { setPage(instance, getItemEncyclopediaPage("enchantment.cuffed.silence")); }),
                             Pair.of(Component.translatable("enchantment.cuffed.buoyant"), () -> { setPage(instance, getItemEncyclopediaPage("enchantment.cuffed.buoyant")); }),
                             Pair.of(Component.translatable("item.cuffed.prisoner_tag"), () -> { setPage(instance, getItemEncyclopediaPage(ModItems.PRISONER_TAG.get())); }),
-                            Pair.of(Component.translatable("item.cuffed.possessions_box.full"), () -> { setPage(instance, getItemEncyclopediaPage(ModItems.POSSESSIONSBOX.get())); })), WRITING_COLOR, HIGHLIGHTED_COLOR))))));
+                            Pair.of(Component.translatable("item.cuffed.possessions_box.full"), () -> { setPage(instance, getItemEncyclopediaPage(ModItems.POSSESSIONSBOX.get())); })), WRITING_COLOR, HIGHLIGHTED_COLOR, false))))));
 
         // [17] -> encyclopedia p3 / blank page
         pages.add(new DoublePage(
@@ -624,7 +626,7 @@ public class InformationBookletScreen extends GenericScreen {
                             Pair.of(Component.translatable("block.cuffed.reinforced_bars"), () -> { setPage(instance, getItemEncyclopediaPage(ModItems.REINFORCED_BARS_ITEM.get())); }),
                             Pair.of(Component.translatable("block.cuffed.reinforced_smooth_stone"), () -> { setPage(instance, getItemEncyclopediaPage(ModItems.REINFORCED_SMOOTH_STONE_ITEM.get())); }),
                             Pair.of(Component.translatable("block.cuffed.reinforced_stone"), () -> { setPage(instance, getItemEncyclopediaPage(ModItems.REINFORCED_STONE_ITEM.get())); })), 
-                        WRITING_COLOR, HIGHLIGHTED_COLOR)))),
+                        WRITING_COLOR, HIGHLIGHTED_COLOR, false)))),
             new ComplexPage(BASIC_RIGHT_PAGE, new VerticalElement(BlitCoordinates.DEFAULT, 
                 new HorizontalElement(
                     new BulletLinkListElement(instance, contentWidth, BULLET_LIST_ITEM_ICON, 
@@ -636,7 +638,7 @@ public class InformationBookletScreen extends GenericScreen {
                             Pair.of(Component.translatable("block.cuffed.pillory"), () -> { setPage(instance, getItemEncyclopediaPage(ModItems.PILLORY_ITEM.get())); }),
                             Pair.of(Component.translatable("block.cuffed.guillotine"), () -> { setPage(instance, getItemEncyclopediaPage(ModItems.GUILLOTINE_ITEM.get())); }),
                             Pair.of(Component.translatable("block.cuffed.safe"), () -> { setPage(instance, getItemEncyclopediaPage(ModItems.SAFE_ITEM.get())); }),
-                            Pair.of(Component.translatable("item.cuffed.information_booklet"), () -> { setPage(instance, getItemEncyclopediaPage(ModItems.INFORMATION_BOOKLET.get())); })), WRITING_COLOR, HIGHLIGHTED_COLOR))))));
+                            Pair.of(Component.translatable("item.cuffed.information_booklet"), () -> { setPage(instance, getItemEncyclopediaPage(ModItems.INFORMATION_BOOKLET.get())); })), WRITING_COLOR, HIGHLIGHTED_COLOR, false))))));
 
 
 
@@ -668,7 +670,7 @@ public class InformationBookletScreen extends GenericScreen {
         pages.add(createItemEncyclopediaPage(pages.size(), instance, "enchantment.cuffed.exhaust", enchantedBookStack, contentWidth));
         enchantedBookStack = new ItemStack(Items.ENCHANTED_BOOK);
         enchantedBookStack.enchant(ModEnchantments.SILENCE.get(), 1);
-        pages.add(createItemEncyclopediaPage(pages.size(), instance, "enchantment.cuffed.drain", enchantedBookStack, contentWidth));
+        pages.add(createItemEncyclopediaPage(pages.size(), instance, "enchantment.cuffed.silence", enchantedBookStack, contentWidth));
         enchantedBookStack = new ItemStack(Items.ENCHANTED_BOOK);
         enchantedBookStack.enchant(ModEnchantments.BUOYANT.get(), 1);
         pages.add(createItemEncyclopediaPage(pages.size(), instance, "enchantment.cuffed.buoyant", enchantedBookStack, contentWidth));
@@ -722,13 +724,26 @@ public class InformationBookletScreen extends GenericScreen {
             new ComplexPage(BASIC_LEFT_PAGE, new VerticalElement(BlitCoordinates.DEFAULT,
                 new HorizontalElement(
                     new TextElement(instance, contentWidth - GenericPage.HEADER_HEIGHT,
-                        Component.translatable(path).withStyle(ChatFormatting.BOLD), WRITING_COLOR),
-                    new ItemStackElement(instance, stack, 
-                        com.lazrproductions.cuffed.utils.ScreenUtils.UI.Alignment.CENTER_RIGHT, GenericPage.HEADER_HEIGHT)),
+                        Component.translatable(path).withStyle(ChatFormatting.BOLD), WRITING_COLOR, false),
+                    new ItemIconElement(instance, stack, 
+                        Alignment.CENTER_RIGHT, GenericPage.HEADER_HEIGHT)),
                 new HorizontalElement(
                     new TextElement(instance, contentWidth,
-                        Component.translatable(path+".desc"), WRITING_COLOR)))),
+                        Component.translatable(path+".desc"), WRITING_COLOR, false)))),
             new BlankPage(BASIC_RIGHT_PAGE));
+    
+    }
+
+    public static boolean drawButton(GuiGraphics graphics, BlitCoordinates pos, ScreenTexture texture, ScreenTexture highlightedTexture, double mouseX, double mouseY, boolean mouseDown) {
+        ScreenRect area = pos.toRect();
+        if(area.positionEnvlopes(mouseX, mouseY)) {
+            ScreenUtilities.drawTexture(graphics, pos, highlightedTexture);
+            if(mouseDown)
+                return true;
+        } else
+            ScreenUtilities.drawTexture(graphics, pos, texture);
+
+        return false;
     }
 
 
@@ -745,18 +760,18 @@ public class InformationBookletScreen extends GenericScreen {
         static final int ICON_WIDTH = 36;
 
         static int SEPARATOR_HEIGHT = 0;
-        static final Texture SEPARATOR_TEXTURE = new Texture(TEXTURE_LOCATION, 0, 411, 104, 9, 512, 512);
+        static final ScreenTexture SEPARATOR_TEXTURE = new ScreenTexture(TEXTURE_LOCATION, 0, 411, 104, 9, 512, 512);
 
 
         ResourceLocation PAGE_LOCATION;
 
         private int screenWidth, screenHeight;
-        private Rect pageRect;
-        private Rect contentRect;
-        private Texture backgroundtexture;
+        private ScreenRect pageRect;
+        private ScreenRect contentRect;
+        private ScreenTexture backgroundtexture;
         public int pageHorizontalOffset;
 
-        public GenericPage(Texture background) {
+        public GenericPage(ScreenTexture background) {
             this.backgroundtexture = background;
 
             calibratePage(Minecraft.getInstance());
@@ -771,7 +786,7 @@ public class InformationBookletScreen extends GenericScreen {
 
         protected void renderBackground(@Nonnull Minecraft instance, @Nonnull GuiGraphics graphics, float partialTick,
                 int mouseX, int mouseY, boolean mouseDown) {
-            ScreenUtils.drawTexture(graphics, getPageBlitCoords(), backgroundtexture);
+            ScreenUtilities.drawTexture(graphics, getPageBlitCoords(), backgroundtexture);
 
         }
 
@@ -791,7 +806,7 @@ public class InformationBookletScreen extends GenericScreen {
             int x = Mth.floor(centerScreenX - (w / 2)) + pageHorizontalOffset, y = Mth.floor(centerScreenY - (h / 2));
 
             pageRect = new BlitCoordinates(x, y, w, h).toRect();
-            contentRect = new Rect(pageRect.getFromX() + CONTENT_PADDING_LEFT,
+            contentRect = new ScreenRect(pageRect.getFromX() + CONTENT_PADDING_LEFT,
                     pageRect.getFromY() + CONTENT_PADDING_TOP,
                     pageRect.getToX() - CONTENT_PADDING_RIGHT, pageRect.getToY() - CONTENT_PADDING_BOTTOM);
             SEPARATOR_HEIGHT = Mth.floor(contentRect.getWidth() / (104f/ 9f));
@@ -818,14 +833,14 @@ public class InformationBookletScreen extends GenericScreen {
             return pageRect.getCenter();
         }
 
-        public Rect getContentRect() {
+        public ScreenRect getContentRect() {
             return contentRect;
         }
         public BlitCoordinates getContentBlitCoords() {
             return getContentRect().toBlitCoordinates();
         }
 
-        public Rect getPageRect() {
+        public ScreenRect getPageRect() {
             return pageRect;
         }
         public BlitCoordinates getPageBlitCoords() {
@@ -834,7 +849,7 @@ public class InformationBookletScreen extends GenericScreen {
     }
 
     static class BlankPage extends GenericPage {
-        public BlankPage(Texture background) {
+        public BlankPage(ScreenTexture background) {
             super(background);
         }
 
@@ -845,14 +860,14 @@ public class InformationBookletScreen extends GenericScreen {
                 getContentBlitCoords().toRect().getCenter().x() - (ICON_WIDTH/2), 
                 getContentBlitCoords().toRect().getCenter().y() - (ICON_HEIGHT/2), 
                 ICON_WIDTH, ICON_HEIGHT);
-            ScreenUtils.drawTexture(graphics, pos, new Texture(TEXTURE_LOCATION, 292, 0, 35, 35, 512, 512));
+            ScreenUtilities.drawTexture(graphics, pos, new ScreenTexture(TEXTURE_LOCATION, 292, 0, 35, 35, 512, 512));
         }
 
     }
 
     static class CoverPage extends GenericPage {
 
-        public CoverPage(Texture background) {
+        public CoverPage(ScreenTexture background) {
             super(background);
         }
 
@@ -863,7 +878,7 @@ public class InformationBookletScreen extends GenericScreen {
     static class ComplexPage extends GenericPage {
         final VerticalElement element;
 
-        public ComplexPage(Texture background, VerticalElement element) {
+        public ComplexPage(ScreenTexture background, VerticalElement element) {
             super(background);
             this.element = element;
         }
@@ -872,7 +887,7 @@ public class InformationBookletScreen extends GenericScreen {
         protected void renderContent(@Nonnull Minecraft instance, @Nonnull GuiGraphics graphics, float partialTick,
                 int mouseX, int mouseY, boolean mouseDown) {
             element.setAvailableArea(getContentBlitCoords());
-            ScreenUtils.UI.drawPage(instance, graphics, mouseX, mouseY, mouseDown, element);
+            UIUtilities.drawPage(instance, graphics, mouseX, mouseY, mouseDown, element);
         }
     }
 
@@ -901,8 +916,8 @@ public class InformationBookletScreen extends GenericScreen {
         protected void renderContent(@Nonnull Minecraft instance, @Nonnull GuiGraphics graphics, float partialTick, int mouseX, int mouseY, boolean mouseDown) { }
 
         @Override
-        public Rect getPageRect() {
-            return new Rect(leftPage.getPageRect().getFromX(), leftPage.getPageRect().getFromY(), rightPage.getPageRect().getToX(), rightPage.getPageRect().getToY());
+        public ScreenRect getPageRect() {
+            return new ScreenRect(leftPage.getPageRect().getFromX(), leftPage.getPageRect().getFromY(), rightPage.getPageRect().getToX(), rightPage.getPageRect().getToY());
         }
     }
 }

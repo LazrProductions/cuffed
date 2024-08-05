@@ -1,9 +1,9 @@
 {
     "type": "minecraft:crafting_shaped",
     "pattern": [
-      "  N",
-      " IN",
-      "I  "
+      " N ",
+      "III",
+      "III"
     ],
     "key": {
       "I": {
@@ -14,7 +14,7 @@
       }
     },
     "result": {
-      "item": "cuffed:key",
+      "item": "cuffed:weighted_anchor",
       "count": 1
     }
   }

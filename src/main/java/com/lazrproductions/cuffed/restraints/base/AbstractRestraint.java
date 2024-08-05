@@ -69,6 +69,8 @@ public abstract class AbstractRestraint {
     /** Get the sound played when this restraint is unequipped */
     public abstract SoundEvent getUnequipSound();
 
+    /** Whether or not this restraint can be broken out of. */
+    public abstract boolean getCanBeBrokenOutOf();
     /** Whether or not this restraint can be lockpicked. */
     public abstract boolean getLockpickable();
     /** Get the lockpick speed increase per pick for this restraint. */

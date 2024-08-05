@@ -1,0 +1,6 @@
+{
+    "texture_size": [32, 32],
+	"textures": {
+		"particle": "cuffed:block/poster/poster_none"
+	}
+}

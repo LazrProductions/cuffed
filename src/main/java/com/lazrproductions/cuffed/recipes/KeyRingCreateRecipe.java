@@ -8,7 +8,7 @@ import com.lazrproductions.cuffed.init.ModItems;
 import com.lazrproductions.cuffed.init.ModRecipes;
 import com.lazrproductions.cuffed.items.KeyItem;
 import com.lazrproductions.cuffed.items.KeyRingItem;
-import com.lazrproductions.cuffed.utils.TagUtils;
+import com.lazrproductions.lazrslib.common.tag.TagUtilities;
 
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
@@ -69,7 +69,7 @@ public class KeyRingCreateRecipe extends CustomRecipe {
                 
             for (ItemStack stack : keyStacks) {
                 if(stack.getOrCreateTag().contains(KeyItem.TAG_BOUND_BLOCK)) {
-                    KeyRingItem.addBoundBlock(newStack, TagUtils.getBlockPos(stack.getOrCreateTag().getCompound(KeyItem.TAG_BOUND_BLOCK)));
+                    KeyRingItem.addBoundBlock(newStack, TagUtilities.fromTag(stack.getOrCreateTag().getCompound(KeyItem.TAG_BOUND_BLOCK)));
                 }
             }
             

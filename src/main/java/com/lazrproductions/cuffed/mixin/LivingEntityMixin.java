@@ -113,8 +113,8 @@ public abstract class LivingEntityMixin extends Entity implements IAnchorableEnt
                 wasAnchored = true;
                 entityData.set(DATA_ANCHOR_ID, anchor.getId());
             
-                double minDist = CuffedMod.CONFIG.anchoringSettings.maxChainLength;;
-                double maxDist = fallDistance > 0.2f ? CuffedMod.CONFIG.anchoringSettings.maxChainLength : CuffedMod.CONFIG.anchoringSettings.chainSuffocateLength;
+                double minDist = CuffedMod.SERVER_CONFIG.ANCHORING_MAX_CHAIN_LENGTH.get();
+                double maxDist = fallDistance > 0.2f ? CuffedMod.SERVER_CONFIG.ANCHORING_MAX_CHAIN_LENGTH.get(): CuffedMod.SERVER_CONFIG.ANCHORING_SUFFOCATION_LENGTH.get();
 
 
                 if (this.distanceTo(getAnchor()) > minDist) {
@@ -136,7 +136,7 @@ public abstract class LivingEntityMixin extends Entity implements IAnchorableEnt
             } else
                 entityData.set(DATA_ANCHOR_ID, -1);
         } else if(thisEntity instanceof Player player && getAnchorClientSide() != null) {
-            double minDist = CuffedMod.CONFIG.anchoringSettings.maxChainLength;
+            double minDist = CuffedMod.SERVER_CONFIG.ANCHORING_MAX_CHAIN_LENGTH.get();
 
             if (this.distanceTo(getAnchorClientSide()) > minDist) {
                 float distance = distanceTo(getAnchorClientSide());
@@ -163,7 +163,6 @@ public abstract class LivingEntityMixin extends Entity implements IAnchorableEnt
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
     private void onReadAdditionalSaveData(CompoundTag tag, CallbackInfo info) {
-        
         if (!level().isClientSide()) {
             if(tag.contains(ANCHOR_TAG)) {      
                 uuidToBeLoaded = tag.getUUID(ANCHOR_TAG);

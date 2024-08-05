@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.api.CuffedAPI;
 import com.lazrproductions.cuffed.entity.animation.LegRestraintAnimationFlags;
-import com.lazrproductions.cuffed.utils.ScreenUtils;
-import com.lazrproductions.cuffed.utils.ScreenUtils.BlitCoordinates;
-import com.lazrproductions.cuffed.utils.ScreenUtils.Texture;
+import com.lazrproductions.lazrslib.client.screen.ScreenUtilities;
+import com.lazrproductions.lazrslib.client.screen.base.BlitCoordinates;
+import com.lazrproductions.lazrslib.client.screen.base.ScreenTexture;
 import com.mojang.blaze3d.platform.Window;
 
 import net.minecraft.client.Minecraft;
@@ -22,7 +22,7 @@ public abstract class AbstractLegRestraint extends AbstractRestraint {
 
     static final ResourceLocation WIDGETS = new ResourceLocation(CuffedMod.MODID, "textures/gui/widgets.png");
 
-    static final Texture ARMS_ICON = new Texture(WIDGETS, 60, 24, 16, 16, 192, 192);
+    static final ScreenTexture ARMS_ICON = new ScreenTexture(WIDGETS, 60, 24, 16, 16, 192, 192);
 
     public AbstractLegRestraint(){}
     public AbstractLegRestraint(ItemStack stack, ServerPlayer player, ServerPlayer captor) {
@@ -45,11 +45,11 @@ public abstract class AbstractLegRestraint extends AbstractRestraint {
             x -= 16;
             labelOffset += 11;    
         }
-        ScreenUtils.drawTexture(graphics, new BlitCoordinates(x, y, screenWidth, screenHeight), ARMS_ICON);
+        ScreenUtilities.drawTexture(graphics, new BlitCoordinates(x, y, screenWidth, screenHeight), ARMS_ICON);
 
         ArrayList<Component> c = new ArrayList<>();
         c.add(Component.translatable(getActionBarLabel()));
-        ScreenUtils.renderLabel(Minecraft.getInstance(), graphics, window.getGuiScaledWidth() / 2, y + screenHeight + 8 + labelOffset, c, 16579836);
+        ScreenUtilities.renderLabel(Minecraft.getInstance(), graphics, window.getGuiScaledWidth() / 2, y + screenHeight + 8 + labelOffset, c, 16579836);
 
     }
 

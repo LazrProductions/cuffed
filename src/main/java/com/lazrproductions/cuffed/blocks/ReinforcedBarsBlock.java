@@ -39,9 +39,11 @@ public class ReinforcedBarsBlock extends IronBarsBlock {
         BlockPos pos = ctx.getClickedPos();
 
         boolean up = level.getBlockState(pos.above()).is(ModBlocks.REINFORCED_BARS.get())
-                || level.getBlockState(pos.above()).is(ModBlocks.CELL_DOOR.get());
+                || level.getBlockState(pos.above()).is(ModBlocks.CELL_DOOR.get())
+                || level.getBlockState(pos.below()).is(ModBlocks.REINFORCED_BARS_GAPPED.get());
         boolean down = level.getBlockState(pos.below()).is(ModBlocks.REINFORCED_BARS.get())
-                || level.getBlockState(pos.below()).is(ModBlocks.CELL_DOOR.get());
+                || level.getBlockState(pos.below()).is(ModBlocks.CELL_DOOR.get())
+                || level.getBlockState(pos.below()).is(ModBlocks.REINFORCED_BARS_GAPPED.get());
         int column = 0;
         if (up && down)
             column = 1;
@@ -59,9 +61,11 @@ public class ReinforcedBarsBlock extends IronBarsBlock {
 
         if (updateDirection == Direction.DOWN || updateDirection == Direction.UP) {
             boolean up = level.getBlockState(pos.above()).is(ModBlocks.REINFORCED_BARS.get())
-                    || level.getBlockState(pos.above()).is(ModBlocks.CELL_DOOR.get());
+                    || level.getBlockState(pos.above()).is(ModBlocks.CELL_DOOR.get())
+                    || level.getBlockState(pos.below()).is(ModBlocks.REINFORCED_BARS_GAPPED.get());
             boolean down = level.getBlockState(pos.below()).is(ModBlocks.REINFORCED_BARS.get())
-                    || level.getBlockState(pos.below()).is(ModBlocks.CELL_DOOR.get());
+                    || level.getBlockState(pos.below()).is(ModBlocks.CELL_DOOR.get())
+                    || level.getBlockState(pos.below()).is(ModBlocks.REINFORCED_BARS_GAPPED.get());
             int column = 0;
             if (up && down)
                 column = 1;

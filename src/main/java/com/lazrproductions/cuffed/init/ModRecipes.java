@@ -7,6 +7,7 @@ import com.lazrproductions.cuffed.recipes.KeyMoldCopyRecipe;
 import com.lazrproductions.cuffed.recipes.KeyRingAddRecipe;
 import com.lazrproductions.cuffed.recipes.KeyRingCreateRecipe;
 import com.lazrproductions.cuffed.recipes.KeyRingDisassembleRecipe;
+import com.lazrproductions.cuffed.recipes.PosterChangeRecipe;
 import com.lazrproductions.cuffed.recipes.serializer.KeyMoldBakeRecipeSerializer;
 
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -35,6 +36,9 @@ public class ModRecipes {
 
         public static final RegistryObject<RecipeSerializer<BakedKeyMoldCopyRecipe>> BAKED_KEY_MOLD_COPY = RECIPE_SERIALIZERS
                         .register("baked_key_mold_copy", () -> new SimpleCraftingRecipeSerializer<>(BakedKeyMoldCopyRecipe::new));
+                        
+        public static final RegistryObject<RecipeSerializer<PosterChangeRecipe>> POSTER_CHANGE = RECIPE_SERIALIZERS
+                        .register("poster_change", () -> new SimpleCraftingRecipeSerializer<>(PosterChangeRecipe::new));
 
         public static void register(IEventBus bus) {
                 RECIPE_SERIALIZERS.register(bus);

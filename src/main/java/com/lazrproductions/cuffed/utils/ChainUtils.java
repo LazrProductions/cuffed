@@ -5,7 +5,6 @@ import java.util.Random;
 import org.joml.Math;
 import org.joml.Matrix4f;
 
-import com.lazrproductions.cuffed.CuffedMod;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.LightTexture;
@@ -17,12 +16,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.Vec3;
 
-public class RenderUtils {
+public class ChainUtils {
 	public static void renderChainTo(Entity entity, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, Entity entityFrom) {
 		if(entityFrom == null)
 			return;
 
-		float maxLength = CuffedMod.CONFIG.anchoringSettings.chainSuffocateLength;
+		float maxLength = 12;
 
 		float distance = entity.distanceTo(entityFrom) / maxLength;
 		if(distance>maxLength)
@@ -35,7 +34,7 @@ public class RenderUtils {
 	public static void renderChainFrom(Entity entity, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, Entity entityTo) {
 		if(entityTo == null)
 			return;
-		float maxLength = CuffedMod.CONFIG.anchoringSettings.chainSuffocateLength;
+		float maxLength = 12;
 		float distance = entity.distanceTo(entityTo) / maxLength;
 			if(distance>maxLength)
 				distance = maxLength;

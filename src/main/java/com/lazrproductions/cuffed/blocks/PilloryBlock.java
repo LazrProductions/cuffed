@@ -175,19 +175,25 @@ public class PilloryBlock extends DetentionBlock {
         builder.add(FACING, HALF, CLOSED);
     }
 
-
     @SuppressWarnings("deprecation")
     @Override
     public InteractionResult use(@Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos,
             @Nonnull Player player,
             @Nonnull InteractionHand hand, @Nonnull BlockHitResult hit) {
-        if (!player.isCrouching() && state.getValue(HALF) == DoubleBlockHalf.LOWER)
+
+        IDetainableEntity en = (IDetainableEntity) player;
+        
+        if (en.getDetained() > -1)
+            return InteractionResult.FAIL;
+
+        if (!player.isCrouching() && state.getValue(HALF) == DoubleBlockHalf.LOWER) {
             if (!level.isClientSide) {
                 BlockState state1 = level.getBlockState(pos.above());
                 state.getBlock().use(state1, level, pos.above(), player, hand, hit);
                 return InteractionResult.SUCCESS;
             } else
                 return InteractionResult.SUCCESS;
+        }
 
         if (!player.isCrouching() && !level.isClientSide) {
             Random r = new Random();
@@ -206,7 +212,6 @@ public class PilloryBlock extends DetentionBlock {
         else
             return InteractionResult.PASS;
     }
-
 
     public void setClosed(Level level, BlockPos pos, BlockState state, boolean v) {
         level.setBlock(pos, state.setValue(CLOSED, v), UPDATE_NEIGHBORS);
@@ -244,32 +249,35 @@ public class PilloryBlock extends DetentionBlock {
         return pos.getCenter().add(new Vec3(xOffset, -1.5F, zOffset));
     }
 
-
     /**
-     * Attempt to toggle this block as opened or closed, returning whether or not it should be OPEN
+     * Attempt to toggle this block as opened or closed, returning whether or not it
+     * should be OPEN
      */
     public boolean attemptToToggleDetained(@Nonnull Level level, boolean wasOpen, BlockState state, BlockPos pos) {
         if (state.getValue(HALF) == DoubleBlockHalf.UPPER) {
             Vec3 behind = getPositionBehind(state, pos);
             Player p = level.getNearestPlayer(TargetingConditions.forNonCombat(), behind.x, behind.y, behind.z);
             if (p != null) {
-                double dist = Math.sqrt(Math.pow(behind.z - p.position().z, 2) + Math.pow(behind.x - p.position().x, 2));
+                double dist = Math
+                        .sqrt(Math.pow(behind.z - p.position().z, 2) + Math.pow(behind.x - p.position().x, 2));
 
                 if (dist < 0.3f) {
-                    IDetainableEntity detainableEntity = (IDetainableEntity)p;
-                    if(!wasOpen) {
+                    IDetainableEntity detainableEntity = (IDetainableEntity) p;
+                    if (!wasOpen) {
                         if (detainableEntity.getDetained() == 0) {
                             detainableEntity.undetain();
                             return true; // should become openned
                         }
                     } else {
                         if (detainableEntity.getDetained() == -1) {
-                            detainableEntity.detainToBlock(level, new Vector3f((float)behind.x(), (float)behind.y(), (float)behind.z()), pos, 0, getFacingRotation(state, pos));
+                            detainableEntity.detainToBlock(level,
+                                    new Vector3f((float) behind.x(), (float) behind.y(), (float) behind.z()), pos, 0,
+                                    getFacingRotation(state, pos));
                             return false; // should become closed
                         }
                     }
                 }
-            } else 
+            } else
                 return !wasOpen; // if no player is in the pillory, just toggle the state.
         }
         return true;
@@ -279,24 +287,24 @@ public class PilloryBlock extends DetentionBlock {
         Vec3 behind = getPositionBehind(state, pos);
         Player p = level.getNearestPlayer(TargetingConditions.forNonCombat(), behind.x, behind.y, behind.z);
         if (p != null) {
-            IDetainableEntity detain = (IDetainableEntity)p;
-            if(detain.getDetained() > -1) {
-                double dist = Math.sqrt(Math.pow(behind.z - p.position().z, 2) + Math.pow(behind.x - p.position().x, 2));
+            IDetainableEntity detain = (IDetainableEntity) p;
+            if (detain.getDetained() > -1) {
+                double dist = Math
+                        .sqrt(Math.pow(behind.z - p.position().z, 2) + Math.pow(behind.x - p.position().x, 2));
 
                 if (dist < 0.3f) {
-                        return p;
+                    return p;
                 }
             }
         }
-        
+
         return null;
     }
-
 
     public boolean canDetainPlayer(@Nonnull Level level, @Nonnull BlockState state, @Nonnull BlockPos pos,
             @Nonnull Player player) {
         IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(player);
-        if(cap.armsRestrained())
+        if (cap.armsRestrained())
             return false;
         return getClosed(state);
     }

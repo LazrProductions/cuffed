@@ -168,13 +168,13 @@ public class RestrainableCapability implements IRestrainableCapability {
         } else if (stack.is(ModItems.LOCKPICK.get())) {
             int lockpickType = -1;
             if(interactionHeight > 0.5 && armsRestrained())
-                lockpickType = RestraintType.toInteger(RestraintType.Arm);
+                lockpickType = RestraintType.Arm.toInteger();
             if(interactionHeight <= 0.5 && legsRestrained())
-                lockpickType = RestraintType.toInteger(RestraintType.Leg);
+                lockpickType = RestraintType.Leg.toInteger();
             if(lockpickType > -1) {
                 CuffedAPI.Networking.sendLockpickBeginPickingRestraintPacketToClient((ServerPlayer)other, player.getUUID().toString(), lockpickType,
-                    lockpickType == RestraintType.toInteger(RestraintType.Leg) ? getLegRestraint().getLockpickingSpeedIncreasePerPick() : getArmRestraint().getLockpickingSpeedIncreasePerPick(), 
-                    lockpickType == RestraintType.toInteger(RestraintType.Leg) ? getLegRestraint().getLockpickingProgressPerPick() : getArmRestraint().getLockpickingProgressPerPick());
+                    lockpickType == RestraintType.Leg.toInteger() ? getLegRestraint().getLockpickingSpeedIncreasePerPick() : getArmRestraint().getLockpickingSpeedIncreasePerPick(), 
+                    lockpickType == RestraintType.Leg.toInteger() ? getLegRestraint().getLockpickingProgressPerPick() : getArmRestraint().getLockpickingProgressPerPick());
             }
         } else if (stack.isEmpty() && other.isCrouching() && armsOrLegsRestrained())
             CuffedAPI.Capabilities.getRestrainableCapability(other).startEscortingPlayer(other, player);
