@@ -1,0 +1,32 @@
+{
+    "parent": "minecraft:item/generated",
+    "textures": {
+      "layer0": "cuffed:item/poster"
+    },
+    "overrides": [
+      {
+        "predicate": {
+          "cuffed:poster": 1
+        },
+        "model": "cuffed:item/poster_serenity"
+      },
+      {
+        "predicate": {
+          "cuffed:poster": 2
+        },
+        "model": "cuffed:item/poster_skeleton"
+      },
+      {
+        "predicate": {
+          "cuffed:poster": 3
+        },
+        "model": "cuffed:item/poster_impunity"
+      },
+      {
+        "predicate": {
+          "cuffed:poster": 4
+        },
+        "model": "cuffed:item/poster_zooom"
+      }
+    ]
+}

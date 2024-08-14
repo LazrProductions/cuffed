@@ -5,11 +5,11 @@
     "N N"
   ],
   "key": {
-    "I": {
-      "item": "minecraft:chain"
-    },
     "N": {
       "item": "minecraft:iron_ingot"
+    },
+    "I": {
+      "item": "minecraft:iron_nugget"
     }
   },
   "result": {

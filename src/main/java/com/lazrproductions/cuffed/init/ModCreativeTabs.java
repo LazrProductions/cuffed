@@ -1,68 +1,64 @@
 package com.lazrproductions.cuffed.init;
 
+import javax.annotation.Nonnull;
+
 import com.lazrproductions.cuffed.CuffedMod;
 
-import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
+import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import net.minecraft.world.item.ItemStack;
 
 public class ModCreativeTabs {
-    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister
-            .create(Registries.CREATIVE_MODE_TAB, CuffedMod.MODID);
+    public static final CreativeModeTab CUFFED_TAB = new CreativeModeTab(CuffedMod.MODID) {
+        @Override
+       public ItemStack makeIcon() {
+            return ModItems.HANDCUFFS.get().getDefaultInstance();
+       }
 
-    public static final RegistryObject<CreativeModeTab> CUFFED_TAB = CREATIVE_MODE_TABS.register("cuffed_tab",
-            () -> CreativeModeTab.builder()
-                    .title(Component.translatable("itemGroup.cuffed"))
-                    .icon(() -> ModItems.HANDCUFFS.get().getDefaultInstance())
-                    .displayItems((parameters, output) -> {
-                        output.accept(ModItems.HANDCUFFS.get());
-                        output.accept(ModItems.SHACKLES.get());
-                        output.accept(ModItems.FUZZY_HANDCUFFS.get());
+       @Override
+       public void fillItemList(@Nonnull NonNullList<ItemStack> output) {
+                        output.add(ModItems.HANDCUFFS.get().getDefaultInstance());
+                        output.add(ModItems.SHACKLES.get().getDefaultInstance());
+                        output.add(ModItems.FUZZY_HANDCUFFS.get().getDefaultInstance());
 
-                        output.accept(ModItems.LEGCUFFS.get());
-                        output.accept(ModItems.LEG_SHACKLES.get());
+                        output.add(ModItems.LEGCUFFS.get().getDefaultInstance());
+                        output.add(ModItems.LEG_SHACKLES.get().getDefaultInstance());
 
-                        output.accept(ModItems.HANDCUFFS_KEY.get());
-                        output.accept(ModItems.SHACKLES_KEY.get());
+                        output.add(ModItems.HANDCUFFS_KEY.get().getDefaultInstance());
+                        output.add(ModItems.SHACKLES_KEY.get().getDefaultInstance());
 
-                        output.accept(ModItems.POSSESSIONSBOX.get());
-                        output.accept(ModItems.PRISONER_TAG.get());
+                        output.add(ModItems.POSSESSIONSBOX.get().getDefaultInstance());
+                        output.add(ModItems.PRISONER_TAG.get().getDefaultInstance());
 
-                        output.accept(ModItems.PADLOCK.get());
-                        output.accept(ModItems.KEY.get());
-                        output.accept(ModItems.KEY_RING.get());
-                        output.accept(ModItems.KEY_MOLD.get());
-                        output.accept(ModItems.BAKED_KEY_MOLD.get());
-                        output.accept(ModItems.LOCKPICK.get());
+                        output.add(ModItems.PADLOCK.get().getDefaultInstance());
+                        output.add(ModItems.KEY.get().getDefaultInstance());
+                        output.add(ModItems.KEY_RING.get().getDefaultInstance());
+                        output.add(ModItems.KEY_MOLD.get().getDefaultInstance());
+                        output.add(ModItems.BAKED_KEY_MOLD.get().getDefaultInstance());
+                        output.add(ModItems.LOCKPICK.get().getDefaultInstance());
 
                         
-                        output.accept(ModItems.WEIGHTED_ANCHOR_ITEM.get());
+                        output.add(ModItems.WEIGHTED_ANCHOR_ITEM.get().getDefaultInstance());
 
 
-                        output.accept(ModItems.CELL_DOOR_ITEM.get());
-                        output.accept(ModItems.REINFORCED_BARS_ITEM.get());
-                        output.accept(ModItems.REINFORCED_SMOOTH_STONE_ITEM.get());
-                        output.accept(ModItems.REINFORCED_STONE_ITEM.get());
-                        output.accept(ModItems.REINFORCED_STONE_SLAB_ITEM.get());
-                        output.accept(ModItems.REINFORCED_STONE_STAIRS_ITEM.get());
-                        output.accept(ModItems.REINFORCED_STONE_CHISELED_ITEM.get());
-                        output.accept(ModItems.REINFORCED_LAMP_ITEM.get());
+                        output.add(ModItems.CELL_DOOR_ITEM.get().getDefaultInstance());
+                        output.add(ModItems.REINFORCED_BARS_ITEM.get().getDefaultInstance());
+                        output.add(ModItems.REINFORCED_SMOOTH_STONE_ITEM.get().getDefaultInstance());
+                        output.add(ModItems.REINFORCED_STONE_ITEM.get().getDefaultInstance());
+                        output.add(ModItems.REINFORCED_STONE_SLAB_ITEM.get().getDefaultInstance());
+                        output.add(ModItems.REINFORCED_STONE_STAIRS_ITEM.get().getDefaultInstance());
+                        output.add(ModItems.REINFORCED_STONE_CHISELED_ITEM.get().getDefaultInstance());
+                        output.add(ModItems.REINFORCED_LAMP_ITEM.get().getDefaultInstance());
 
 
-                        output.accept(ModItems.PILLORY_ITEM.get());
-                        output.accept(ModItems.GUILLOTINE_ITEM.get());
+                        output.add(ModItems.PILLORY_ITEM.get().getDefaultInstance());
+                        output.add(ModItems.GUILLOTINE_ITEM.get().getDefaultInstance());
 
 
-                        output.accept(ModItems.SAFE_ITEM.get());
+                        output.add(ModItems.SAFE_ITEM.get().getDefaultInstance());
                         
                         
-                        output.accept(ModItems.INFORMATION_BOOKLET.get());
-                    }).build());
-
-    public static void register(IEventBus bus) {
-        CREATIVE_MODE_TABS.register(bus);
-    }
+                        output.add(ModItems.INFORMATION_BOOKLET.get().getDefaultInstance());
+                }
+            };
 }

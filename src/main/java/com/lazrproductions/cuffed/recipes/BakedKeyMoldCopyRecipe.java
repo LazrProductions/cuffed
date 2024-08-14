@@ -10,20 +10,18 @@ import com.lazrproductions.cuffed.items.BakedKeyMoldItem;
 import com.lazrproductions.cuffed.items.KeyMoldItem;
 
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 
 public class BakedKeyMoldCopyRecipe extends CustomRecipe {
-    public BakedKeyMoldCopyRecipe(ResourceLocation idIn, CraftingBookCategory category) {
-        super(idIn, category);
+    public BakedKeyMoldCopyRecipe(ResourceLocation idIn) {
+        super(idIn);
     }
 
     @Override
@@ -33,7 +31,7 @@ public class BakedKeyMoldCopyRecipe extends CustomRecipe {
 
     @SuppressWarnings("null")
     @Override
-    public ItemStack assemble(@Nonnull CraftingContainer inv, @Nonnull RegistryAccess access) {
+    public ItemStack assemble(@Nonnull CraftingContainer inv) {
 
         if (matches(inv, null)) {
             ItemStack moldStack = getMoldFromGrid(inv);

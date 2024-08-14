@@ -4,8 +4,8 @@ public enum RestraintType {
     Arm,
     Leg;
 
-    public static int toInteger(RestraintType value) {
-        switch (value) {
+    public int toInteger() {
+        switch (this) {
             case Arm:
                 return 0;         
             default:

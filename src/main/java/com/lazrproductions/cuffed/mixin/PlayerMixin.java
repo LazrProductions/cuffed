@@ -6,7 +6,6 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,6 +24,7 @@ import com.lazrproductions.cuffed.entity.base.IPrivacyOperand;
 import com.lazrproductions.cuffed.entity.base.IRestrainableEntity;
 import com.lazrproductions.cuffed.init.ModEffects;
 import com.lazrproductions.cuffed.restraints.base.IEnchantableRestraint;
+import com.mojang.math.Vector3f;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -64,7 +64,9 @@ public class PlayerMixin extends LivingEntity implements IRestrainableEntity, ID
     private static final EntityDataAccessor<Integer> DATA_DETAINED = SynchedEntityData.defineId(Player.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<BlockPos> DATA_DETAINED_TO_BLOCK = SynchedEntityData.defineId(Player.class, EntityDataSerializers.BLOCK_POS);
     private static final EntityDataAccessor<Float> DATA_DETAINED_ROTATION = SynchedEntityData.defineId(Player.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Vector3f> DATA_DETAINED_POSITION = SynchedEntityData.defineId(Player.class, EntityDataSerializers.VECTOR3);
+    private static final EntityDataAccessor<Float> DATA_DETAINED_POSITION_X = SynchedEntityData.defineId(Player.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> DATA_DETAINED_POSITION_Y = SynchedEntityData.defineId(Player.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> DATA_DETAINED_POSITION_Z = SynchedEntityData.defineId(Player.class, EntityDataSerializers.FLOAT);
     private static final String DETAINED_TAG = "Detained";
     private static final String DETAINED_ID_TAG = "Id";
     private static final String DETAINED_ROTATION_TAG = "Rotation";
@@ -88,7 +90,9 @@ public class PlayerMixin extends LivingEntity implements IRestrainableEntity, ID
         entityData.define(DATA_DETAINED, -1);
         entityData.define(DATA_DETAINED_ROTATION, 0f);
         entityData.define(DATA_DETAINED_TO_BLOCK, BlockPos.ZERO);
-        entityData.define(DATA_DETAINED_POSITION, new Vector3f());
+        entityData.define(DATA_DETAINED_POSITION_X, 0f);
+        entityData.define(DATA_DETAINED_POSITION_Y, 0f);
+        entityData.define(DATA_DETAINED_POSITION_Z, 0f);
     }
 
     @Inject(at = @At("HEAD"), method = "getName", cancellable = true)
@@ -110,7 +114,7 @@ public class PlayerMixin extends LivingEntity implements IRestrainableEntity, ID
     
     @Inject(at = @At("TAIL"), method = "tick")
     public void tick(CallbackInfo callback) {
-        if (!this.level().isClientSide()) {
+        if (!this.getLevel().isClientSide()) {
             IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability((Player)(Object)this);
             
             if(cap!=null) {
@@ -131,16 +135,23 @@ public class PlayerMixin extends LivingEntity implements IRestrainableEntity, ID
                 this.setYRot(getDetainedRotation());
                 this.teleportTo(getDetainedPosition().x(), getDetainedPosition().y(), getDetainedPosition().z());
 
-                BlockState state = getBlockDetainedTo(level()); 
+                BlockState state = getBlockDetainedTo(getLevel()); 
                 boolean flag = state.getBlock() instanceof DetentionBlock;
                 boolean flag1 = false;
                 if(state.getBlock() instanceof DetentionBlock detentionBlock)
-                    flag1 = detentionBlock.canDetainPlayer(level(), state, entityData.get(DATA_DETAINED_TO_BLOCK), (Player)(Object)this);
+                    flag1 = detentionBlock.canDetainPlayer(getLevel(), state, entityData.get(DATA_DETAINED_TO_BLOCK), (Player)(Object)this);
 
                 if(!flag || !flag1)
                     undetain();
             }    
         }
+    }
+
+    @Inject(at = @At("HEAD"), method = "wantsToStopRiding", cancellable = true)
+    protected void wantsToStopRiding(CallbackInfoReturnable<Boolean> callback) {
+        IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability((Player)(Object)this);
+        if(cap.restraintsDisabledMovement())
+            callback.setReturnValue(false);
     }
 
     @Inject(method = "addAdditionalSaveData", at = @At("HEAD"))
@@ -150,14 +161,14 @@ public class PlayerMixin extends LivingEntity implements IRestrainableEntity, ID
         detainedTag.putFloat(DETAINED_ROTATION_TAG, getDetainedRotation());
         BlockPos blockPos = entityData.get(DATA_DETAINED_TO_BLOCK);
         detainedTag.putIntArray(DETAINED_TO_BLOCK_TAG, new int[] { blockPos.getX(), blockPos.getY(), blockPos.getZ() });
-        Vector3f pos = entityData.get(DATA_DETAINED_POSITION);
+        Vector3f pos = getDetainedPosition();
         detainedTag.putFloat(DETAINED_POSITION_X_TAG, pos.x());
         detainedTag.putFloat(DETAINED_POSITION_Y_TAG, pos.y());
         detainedTag.putFloat(DETAINED_POSITION_Z_TAG, pos.z());
         
         tag.put(DETAINED_TAG, detainedTag);
 
-        if(CuffedMod.CONFIG.nicknameSettings.nicknamePersistsOnLogout && getNickname() != null)
+        if(CuffedMod.SERVER_CONFIG.NICKNAME_PERSISTS_ON_LOGOUT.get() && getNickname() != null)
             tag.putString(NICKNAME_TAG, serializeNickname());
         
         tag.put(TAG_RESTRICTIONS, serializeRestrictions());
@@ -173,7 +184,7 @@ public class PlayerMixin extends LivingEntity implements IRestrainableEntity, ID
             setDetainedPosition(new Vector3f(t.getFloat(DETAINED_POSITION_X_TAG), t.getFloat(DETAINED_POSITION_Y_TAG), t.getFloat(DETAINED_POSITION_Z_TAG)));
         }
 
-        if(CuffedMod.CONFIG.nicknameSettings.nicknamePersistsOnLogout && tag.contains(NICKNAME_TAG))
+        if(CuffedMod.SERVER_CONFIG.NICKNAME_PERSISTS_ON_LOGOUT.get() && tag.contains(NICKNAME_TAG))
             setNickname(Component.Serializer.fromJson(tag.getString(NICKNAME_TAG)));
         else
             setNickname(null);
@@ -302,10 +313,13 @@ public class PlayerMixin extends LivingEntity implements IRestrainableEntity, ID
     }
 
     public Vector3f getDetainedPosition() {
-        return entityData.get(DATA_DETAINED_POSITION);
+        Vector3f p = new Vector3f(entityData.get(DATA_DETAINED_POSITION_X), entityData.get(DATA_DETAINED_POSITION_Y), entityData.get(DATA_DETAINED_POSITION_Z));
+        return p;
     }
     public void setDetainedPosition(Vector3f value) {
-        entityData.set(DATA_DETAINED_POSITION, value);
+        entityData.set(DATA_DETAINED_POSITION_X, value.x());
+        entityData.set(DATA_DETAINED_POSITION_Y, value.y());
+        entityData.set(DATA_DETAINED_POSITION_Z, value.z());
     }
 
     //#endregion

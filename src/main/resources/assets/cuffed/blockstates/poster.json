@@ -1,0 +1,128 @@
+{
+    "variants": {
+        "poster=none,half=upper,facing=north": {
+            "model": "cuffed:block/blank"
+        },
+        "poster=none,half=upper,facing=east": {
+            "model": "cuffed:block/blank", "y": 90
+        },
+        "poster=none,half=upper,facing=south": {
+            "model": "cuffed:block/blank", "y": 180
+        },
+        "poster=none,half=upper,facing=west": {
+            "model": "cuffed:block/blank", "y": 270
+        },
+        "poster=none,half=lower,facing=north": {
+            "model": "cuffed:block/poster_none"
+        },
+        "poster=none,half=lower,facing=east": {
+            "model": "cuffed:block/poster_none", "y": 90
+        },
+        "poster=none,half=lower,facing=south": {
+            "model": "cuffed:block/poster_none", "y": 180
+        },
+        "poster=none,half=lower,facing=west": {
+            "model": "cuffed:block/poster_none", "y": 270
+        },
+        
+        "poster=serenity,half=upper,facing=north": {
+            "model": "cuffed:block/blank"
+        },
+        "poster=serenity,half=upper,facing=east": {
+            "model": "cuffed:block/blank", "y": 90
+        },
+        "poster=serenity,half=upper,facing=south": {
+            "model": "cuffed:block/blank", "y": 180
+        },
+        "poster=serenity,half=upper,facing=west": {
+            "model": "cuffed:block/blank", "y": 270
+        },
+        "poster=serenity,half=lower,facing=north": {
+            "model": "cuffed:block/poster_serenity"
+        },
+        "poster=serenity,half=lower,facing=east": {
+            "model": "cuffed:block/poster_serenity", "y": 90
+        },
+        "poster=serenity,half=lower,facing=south": {
+            "model": "cuffed:block/poster_serenity", "y": 180
+        },
+        "poster=serenity,half=lower,facing=west": {
+            "model": "cuffed:block/poster_serenity", "y": 270
+        },
+        
+        "poster=skeleton,half=upper,facing=north": {
+            "model": "cuffed:block/blank"
+        },
+        "poster=skeleton,half=upper,facing=east": {
+            "model": "cuffed:block/blank", "y": 90
+        },
+        "poster=skeleton,half=upper,facing=south": {
+            "model": "cuffed:block/blank", "y": 180
+        },
+        "poster=skeleton,half=upper,facing=west": {
+            "model": "cuffed:block/blank", "y": 270
+        },
+        "poster=skeleton,half=lower,facing=north": {
+            "model": "cuffed:block/poster_skeleton"
+        },
+        "poster=skeleton,half=lower,facing=east": {
+            "model": "cuffed:block/poster_skeleton", "y": 90
+        },
+        "poster=skeleton,half=lower,facing=south": {
+            "model": "cuffed:block/poster_skeleton", "y": 180
+        },
+        "poster=skeleton,half=lower,facing=west": {
+            "model": "cuffed:block/poster_skeleton", "y": 270
+        },
+        
+        "poster=impunity,half=upper,facing=north": {
+            "model": "cuffed:block/blank"
+        },
+        "poster=impunity,half=upper,facing=east": {
+            "model": "cuffed:block/blank", "y": 90
+        },
+        "poster=impunity,half=upper,facing=south": {
+            "model": "cuffed:block/blank", "y": 180
+        },
+        "poster=impunity,half=upper,facing=west": {
+            "model": "cuffed:block/blank", "y": 270
+        },
+        "poster=impunity,half=lower,facing=north": {
+            "model": "cuffed:block/poster_impunity"
+        },
+        "poster=impunity,half=lower,facing=east": {
+            "model": "cuffed:block/poster_impunity", "y": 90
+        },
+        "poster=impunity,half=lower,facing=south": {
+            "model": "cuffed:block/poster_impunity", "y": 180
+        },
+        "poster=impunity,half=lower,facing=west": {
+            "model": "cuffed:block/poster_impunity", "y": 270
+        },
+        
+        "poster=zooom,half=upper,facing=north": {
+            "model": "cuffed:block/blank"
+        },
+        "poster=zooom,half=upper,facing=east": {
+            "model": "cuffed:block/blank", "y": 90
+        },
+        "poster=zooom,half=upper,facing=south": {
+            "model": "cuffed:block/blank", "y": 180
+        },
+        "poster=zooom,half=upper,facing=west": {
+            "model": "cuffed:block/blank", "y": 270
+        },
+        "poster=zooom,half=lower,facing=north": {
+            "model": "cuffed:block/poster_zooom"
+        },
+        "poster=zooom,half=lower,facing=east": {
+            "model": "cuffed:block/poster_zooom", "y": 90
+        },
+        "poster=zooom,half=lower,facing=south": {
+            "model": "cuffed:block/poster_zooom", "y": 180
+        },
+        "poster=zooom,half=lower,facing=west": {
+            "model": "cuffed:block/poster_zooom", "y": 270
+        }
+    }
+}

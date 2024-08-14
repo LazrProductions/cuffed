@@ -1,21 +1,22 @@
 package com.lazrproductions.cuffed.client.gui.screen;
 
-import javax.annotation.Nonnull;
+import java.util.Random;
 
-import org.joml.Random;
+import javax.annotation.Nonnull;
 
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.api.CuffedAPI;
-import com.lazrproductions.cuffed.utils.MathUtils;
-import com.lazrproductions.cuffed.utils.ScreenUtils;
-import com.lazrproductions.cuffed.utils.ScreenUtils.BlitCoordinates;
-import com.lazrproductions.cuffed.utils.ScreenUtils.Texture;
+import com.lazrproductions.lazrslib.client.screen.ScreenUtilities;
+import com.lazrproductions.lazrslib.client.screen.base.BlitCoordinates;
+import com.lazrproductions.lazrslib.client.screen.base.GenericScreen;
+import com.lazrproductions.lazrslib.client.screen.base.ScreenTexture;
+import com.lazrproductions.lazrslib.common.math.MathUtilities;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -24,7 +25,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class LockpickingScreen extends GenericScreen{
+public class LockpickingScreen extends GenericScreen {
 
     static final float TARGET_BUFFER = 5;
 
@@ -55,11 +56,11 @@ public class LockpickingScreen extends GenericScreen{
     }
 
     @Override
-    public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void render(@Nonnull PoseStack stack, int mouseX, int mouseY, float partialTick) {
         if(minecraft!=null)
-            renderContent(minecraft, graphics, mouseX, mouseY, partialTick);
+            renderContent(minecraft, stack, mouseX, mouseY, partialTick);
 
-        super.render(graphics, mouseX, mouseY, partialTick);
+        super.render(stack, mouseX, mouseY, partialTick);
     }
 
     float animationTick;
@@ -67,7 +68,7 @@ public class LockpickingScreen extends GenericScreen{
 
     float lerpedGhostAngle = 0;
 
-    public void renderContent(@Nonnull Minecraft instance, @Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void renderContent(@Nonnull Minecraft instance, @Nonnull PoseStack stack, int mouseX, int mouseY, float partialTick) {
 
         if(!isAnimating) {
             if(ticksLeftToPick > 0) {
@@ -107,12 +108,12 @@ public class LockpickingScreen extends GenericScreen{
         int scale = 3;
         int originalSize = 32;
         int finalSize = originalSize * scale;
-        ScreenUtils.drawTexture(graphics, new BlitCoordinates(centerScreenX - (finalSize/2) + shakeOffset, centerScreenY - (16 * scale), finalSize, finalSize), 
-            new Texture(new ResourceLocation(CuffedMod.MODID, "textures/item/padlock.png"), 0, 0, 16, 16, 16, 16));
+        ScreenUtilities.drawTexture(graphics, new BlitCoordinates(centerScreenX - (finalSize/2) + shakeOffset, centerScreenY - (16 * scale), finalSize, finalSize), 
+            new ScreenTexture(new ResourceLocation(CuffedMod.MODID, "textures/item/padlock.png"), 0, 0, 16, 16, 16, 16));
 
         
         // draw time left bar
-        ScreenUtils.drawGenericProgressBarUpright(graphics, 
+        ScreenUtilities.drawGenericProgressBarUpright(graphics, 
             new BlitCoordinates(centerScreenX - finalSize, Mth.floor(centerScreenY - (finalSize / 2f)), 
             4, finalSize), (ticksLeftToPick / 40f), partialTick);
 
@@ -135,16 +136,16 @@ public class LockpickingScreen extends GenericScreen{
             // Render ghost lockpick
             RenderSystem.setShaderColor(1f, 1f, 1f, 0.5f);
             RenderSystem.enableBlend();
-            ScreenUtils.drawTexture(graphics, new BlitCoordinates(pickPosX, pickPosY, finalSize, finalSize), 
+            ScreenUtilities.drawTexture(graphics, new BlitCoordinates(pickPosX, pickPosY, finalSize, finalSize), 
                 lerpedGhostAngle, 26 * scale, 8 * scale,
-                new Texture(new ResourceLocation(CuffedMod.MODID, "textures/item/lockpick.png"), 0, 0, 16, 16, 16, 16));
+                new ScreenTexture(new ResourceLocation(CuffedMod.MODID, "textures/item/lockpick.png"), 0, 0, 16, 16, 16, 16));
        
             
             // render lockpick
-            RenderSystem.setShaderColor(1f, 1f, 1f, (float)MathUtils.invert01(animationTick / 5d));
-            ScreenUtils.drawTexture(graphics, new BlitCoordinates(pickPosX, pickPosY, finalSize, finalSize), 
+            RenderSystem.setShaderColor(1f, 1f, 1f, (float)MathUtilities.invert01(animationTick / 5d));
+            ScreenUtilities.drawTexture(graphics, new BlitCoordinates(pickPosX, pickPosY, finalSize, finalSize), 
                 angleToMouse, 26 * scale, 8 * scale,
-                new Texture(new ResourceLocation(CuffedMod.MODID, "textures/item/lockpick.png"), 0, 0, 16, 16, 16, 16));
+                new ScreenTexture(new ResourceLocation(CuffedMod.MODID, "textures/item/lockpick.png"), 0, 0, 16, 16, 16, 16));
         }
 
 

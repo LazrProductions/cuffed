@@ -8,7 +8,9 @@
     "cuffed:reinforced_stone_slab",
     "cuffed:chiseled_reinforced_stone",
     "cuffed:reinforced_bars",
+    "cuffed:reinforced_bars_gap",
     "cuffed:reinforced_lamp",
-    "cuffed:safe"
+    "cuffed:safe",
+    "cuffed:bunk"
   ]
 }

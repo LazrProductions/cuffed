@@ -64,10 +64,10 @@ public class KeyItem extends Item {
     public static boolean tryToSetBoundBlock(Player player, ItemStack stack, BlockPos pos) {
         if (stack.getTagElement(TAG_BOUND_BLOCK) == null) {
             setBoundBlock(stack, pos);
-            if (!player.level().getGameRules().getBoolean(GameRules.RULE_REDUCEDDEBUGINFO))
+            if (!player.getLevel().getGameRules().getBoolean(GameRules.RULE_REDUCEDDEBUGINFO))
                 player.displayClientMessage(Component.literal("Bound key to " + pos.getX() + " " + pos.getY() + " " + pos.getZ()), false);
             else
-                player.displayClientMessage(Component.literal("Bound key to ").append(player.level().getBlockState(pos).getBlock().getName()), false);
+                player.displayClientMessage(Component.literal("Bound key to ").append(player.getLevel().getBlockState(pos).getBlock().getName()), false);
             player.playSound(SoundEvents.CHAIN_FALL, 1.0F, 1.0F);
             return true;
         }

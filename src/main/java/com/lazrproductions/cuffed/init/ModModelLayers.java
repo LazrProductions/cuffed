@@ -3,6 +3,7 @@ package com.lazrproductions.cuffed.init;
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.blocks.entity.model.GuillotineBlockEntityModel;
 import com.lazrproductions.cuffed.entity.model.ChainKnotEntityModel;
+import com.lazrproductions.cuffed.entity.model.CrumblingBlockModel;
 import com.lazrproductions.cuffed.entity.model.PadlockEntityModel;
 import com.lazrproductions.cuffed.entity.model.WeightedAnchorModel;
 import com.lazrproductions.cuffed.restraints.model.FuzzyHandcuffsModel;
@@ -30,6 +31,7 @@ public class ModModelLayers {
 	public static final ModelLayerLocation CHAIN_KNOT_LAYER = new ModelLayerLocation(new ResourceLocation(CuffedMod.MODID, "chain_knot"), "main");
     public static final ModelLayerLocation PADLOCK_LAYER = new ModelLayerLocation(new ResourceLocation(CuffedMod.MODID, "padlock"), "main");
     public static final ModelLayerLocation WEIGHTED_ANCHOR_LAYER = new ModelLayerLocation(new ResourceLocation(CuffedMod.MODID, "weighted_anchor"), "main");
+    public static final ModelLayerLocation CRUMBLING_BLOCK_LAYER = new ModelLayerLocation(new ResourceLocation(CuffedMod.MODID, "crumbling_block"), "main");
 
 	public static final ModelLayerLocation GUILLOTINE_LAYER = new ModelLayerLocation(new ResourceLocation(CuffedMod.MODID, "guillotine_block_entity"), "main");
 
@@ -38,6 +40,7 @@ public class ModModelLayers {
         event.registerLayerDefinition(CHAIN_KNOT_LAYER, ChainKnotEntityModel::getModelData);
         event.registerLayerDefinition(PADLOCK_LAYER, PadlockEntityModel::getModelData);
         event.registerLayerDefinition(WEIGHTED_ANCHOR_LAYER, WeightedAnchorModel::getModelData);
+        event.registerLayerDefinition(CRUMBLING_BLOCK_LAYER, CrumblingBlockModel::getModelData);
 
         event.registerLayerDefinition(HANDCUFFS_LAYER, HandcuffsModel::createArmorLayer);
         event.registerLayerDefinition(SHACKLES_LAYER, ShacklesModel::createArmorLayer);

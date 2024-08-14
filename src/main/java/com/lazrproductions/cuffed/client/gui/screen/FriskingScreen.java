@@ -3,21 +3,22 @@ package com.lazrproductions.cuffed.client.gui.screen;
 import java.util.List;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
 
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.inventory.FriskingMenu;
+import com.lazrproductions.lazrslib.client.gui.GuiGraphics;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -37,15 +38,19 @@ public class FriskingScreen extends AbstractContainerScreen<FriskingMenu> {
       // int j = 114;
       this.imageHeight = 256;
       this.inventoryLabelY = this.imageHeight - 94;
+
+      graphics = GuiGraphics.from(Minecraft.getInstance());
    }
 
-   public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-      this.renderBackground(graphics);
-      super.render(graphics, mouseX, mouseY, partialTick);
-      this.renderTooltip(graphics, mouseX, mouseY);
+   final GuiGraphics graphics; 
+
+   public void render(@Nonnull PoseStack stack, int mouseX, int mouseY, float partialTick) {
+      this.renderBackground(stack);
+      super.render(stack, mouseX, mouseY, partialTick);
+      this.renderTooltip(stack, mouseX, mouseY);
    }
 
-   protected void renderBg(@Nonnull GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+   protected void renderBg(@Nonnull PoseStack stack, float partialTick, int mouseX, int mouseY) {
       imageWidth = 176;
       imageHeight = 256;
       int i = (this.width - this.imageWidth) / 2;
@@ -64,72 +69,66 @@ public class FriskingScreen extends AbstractContainerScreen<FriskingMenu> {
                      entity = p;
                }
                if(entity instanceof LivingEntity actualEntity) {
-                  renderEntityInInventoryFollowsMouse(graphics, i + 51, j + 71, 30, (float) (i + 51) - mouseX,
-                        (float) (j + 75 - 50) - mouseY, actualEntity);
+                  renderEntityInInventory(i + 51, j + 75, 30, (float)(i + 51) - mouseX, (float)(j + 75 - 50) - mouseY, actualEntity);
                }
             }
          }
       }
    }
 
-   public static void renderEntityInInventoryFollowsMouse(GuiGraphics graphics, int x, int y, int z, float mouseX,
-         float mouseY, LivingEntity entity) {
-      float f = (float) Math.atan((double) (mouseX / 40.0F));
-      float f1 = (float) Math.atan((double) (mouseY / 40.0F));
-      // Forge: Allow passing in direct angle components instead of mouse position
-      renderEntityInInventoryFollowsAngle(graphics, x, y, z, f, f1, entity);
+   public static void renderEntityInInventory(int p_98851_, int p_98852_, int p_98853_, float p_98854_, float p_98855_, LivingEntity p_98856_) {
+      float f = (float)Math.atan((double)(p_98854_ / 40.0F));
+      float f1 = (float)Math.atan((double)(p_98855_ / 40.0F));
+      renderEntityInInventoryRaw(p_98851_, p_98852_, p_98853_, f, f1, p_98856_);
    }
-   public static void renderEntityInInventoryFollowsAngle(GuiGraphics graphics, int x, int y,
-         int z, float angleXComponent, float angleYComponent, LivingEntity entity) {
+   public static void renderEntityInInventoryRaw(int p_98851_, int p_98852_, int p_98853_, float angleXComponent, float angleYComponent, LivingEntity p_98856_) {
       float f = angleXComponent;
       float f1 = angleYComponent;
-      Quaternionf quaternionf = (new Quaternionf()).rotateZ((float) Math.PI);
-      Quaternionf quaternionf1 = (new Quaternionf()).rotateX(f1 * 20.0F * ((float) Math.PI / 180F));
-      quaternionf.mul(quaternionf1);
-      float f2 = entity.yBodyRot;
-      float f3 = entity.getYRot();
-      float f4 = entity.getXRot();
-      float f5 = entity.yHeadRotO;
-      float f6 = entity.yHeadRot;
-      entity.yBodyRot = 180.0F + f * 20.0F;
-      entity.setYRot(180.0F + f * 40.0F);
-      entity.setXRot(-f1 * 20.0F);
-      entity.yHeadRot = entity.getYRot();
-      entity.yHeadRotO = entity.getYRot();
-      renderEntityInInventory(graphics, x, y, z, quaternionf, quaternionf1, entity);
-      entity.yBodyRot = f2;
-      entity.setYRot(f3);
-      entity.setXRot(f4);
-      entity.yHeadRotO = f5;
-      entity.yHeadRot = f6;
-   }
-   public static void renderEntityInInventory(GuiGraphics graphics, int x, int y, int z,
-         Quaternionf rotationA, @Nullable Quaternionf rotationB, LivingEntity entity) {
-      graphics.pose().pushPose();
-      graphics.pose().translate((double) x, (double) y, 50.0D);
-      graphics.pose()
-            .mulPoseMatrix((new Matrix4f()).scaling((float) z, (float) z, (float) (-z)));
-      graphics.pose().mulPose(rotationA);
+      PoseStack posestack = RenderSystem.getModelViewStack();
+      posestack.pushPose();
+      posestack.translate((double)p_98851_, (double)p_98852_, 1050.0D);
+      posestack.scale(1.0F, 1.0F, -1.0F);
+      RenderSystem.applyModelViewMatrix();
+      PoseStack posestack1 = new PoseStack();
+      posestack1.translate(0.0D, 0.0D, 1000.0D);
+      posestack1.scale((float)p_98853_, (float)p_98853_, (float)p_98853_);
+      Quaternion quaternion = Vector3f.ZP.rotationDegrees(180.0F);
+      Quaternion quaternion1 = Vector3f.XP.rotationDegrees(f1 * 20.0F);
+      quaternion.mul(quaternion1);
+      posestack1.mulPose(quaternion);
+      float f2 = p_98856_.yBodyRot;
+      float f3 = p_98856_.getYRot();
+      float f4 = p_98856_.getXRot();
+      float f5 = p_98856_.yHeadRotO;
+      float f6 = p_98856_.yHeadRot;
+      p_98856_.yBodyRot = 180.0F + f * 20.0F;
+      p_98856_.setYRot(180.0F + f * 40.0F);
+      p_98856_.setXRot(-f1 * 20.0F);
+      p_98856_.yHeadRot = p_98856_.getYRot();
+      p_98856_.yHeadRotO = p_98856_.getYRot();
       Lighting.setupForEntityInInventory();
       EntityRenderDispatcher entityrenderdispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
-      if (rotationB != null) {
-         rotationB.conjugate();
-         entityrenderdispatcher.overrideCameraOrientation(rotationB);
-      }
-
+      quaternion1.conj();
+      entityrenderdispatcher.overrideCameraOrientation(quaternion1);
       entityrenderdispatcher.setRenderShadow(false);
+      MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers().bufferSource();
       RenderSystem.runAsFancy(() -> {
-         entityrenderdispatcher.render(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, graphics.pose(),
-               graphics.bufferSource(), 15728880);
+         entityrenderdispatcher.render(p_98856_, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, posestack1, multibuffersource$buffersource, 15728880);
       });
-      graphics.flush();
+      multibuffersource$buffersource.endBatch();
       entityrenderdispatcher.setRenderShadow(true);
-      graphics.pose().popPose();
+      p_98856_.yBodyRot = f2;
+      p_98856_.setYRot(f3);
+      p_98856_.setXRot(f4);
+      p_98856_.yHeadRotO = f5;
+      p_98856_.yHeadRot = f6;
+      posestack.popPose();
+      RenderSystem.applyModelViewMatrix();
       Lighting.setupFor3DItems();
    }
 
    @Override
-   protected void renderLabels(@Nonnull GuiGraphics graphics, int mouseX, int mouseY) {
+   protected void renderLabels(@Nonnull PoseStack stack, int mouseX, int mouseY) {
       graphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 4210752,
             false);
          graphics.drawString(this.font, this.title, this.titleLabelX + 110 - (this.font.width(this.title) / 2), this.titleLabelY + 20, 4210752,

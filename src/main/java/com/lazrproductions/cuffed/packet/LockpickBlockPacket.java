@@ -2,27 +2,31 @@ package com.lazrproductions.cuffed.packet;
 
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
+
 import com.lazrproductions.cuffed.api.CuffedAPI;
+import com.lazrproductions.lazrslib.common.network.packet.ParameterizedLazrPacket;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import team.creative.creativecore.common.network.CreativePacket;
 
-public class LockpickBlockPacket extends CreativePacket{
+public class LockpickBlockPacket extends ParameterizedLazrPacket {
     
-    public int speedIncreasePerPick;
-    public int progressPerPick;
+    int speedIncreasePerPick;
+    int progressPerPick;
 
-    public int stopCode;
-    public int x;
-    public int y;
-    public int z;
+    int stopCode;
+    int x;
+    int y;
+    int z;
     
-    public String lockpickerUUID = "";
+    String lockpickerUUID;
 
     public LockpickBlockPacket(BlockPos pos, int speedIncreasePerTick, int progressPerPick, String lockpickerUUID) {
+        super(speedIncreasePerTick, progressPerPick, -1, pos.getX(), pos.getY(), pos.getZ(), lockpickerUUID);
         this.stopCode = -1;
         this.x = pos.getX();
         this.y = pos.getY();
@@ -31,16 +35,31 @@ public class LockpickBlockPacket extends CreativePacket{
         this.progressPerPick = progressPerPick;
     }
     public LockpickBlockPacket(boolean wasFailed, BlockPos pos, String lockpickerUUID) {
+        super(0, 0, wasFailed ? 0 : 2, pos.getX(), pos.getY(), pos.getZ(), lockpickerUUID);
         this.stopCode = wasFailed ? 0 : 2;
         this.x = pos.getX();
         this.y = pos.getY();
         this.z = pos.getZ();
         this.lockpickerUUID = lockpickerUUID;
     }
-    public LockpickBlockPacket() {}
+    public LockpickBlockPacket(FriendlyByteBuf buf) {
+        super(buf);
+    }
 
     @Override
-    public void executeClient(Player arg0) {
+    public void loadValues(Object[] arg0) {
+        //super(speedIncreasePerTick, progressPerPick, -1, pos.getX(), pos.getY(), pos.getZ(), lockpickerUUID);
+        speedIncreasePerPick = (int)arg0[0];
+        progressPerPick = (int)arg0[1];
+        stopCode = (int)arg0[2];
+        x = (int)arg0[3];
+        y = (int)arg0[4];
+        z = (int)arg0[5];
+        lockpickerUUID = (String)arg0[6];
+    }
+
+    @Override
+    public void handleClientside(@Nonnull Player arg0) {
         if(stopCode<=-1) {
             Minecraft instance = Minecraft.getInstance();
             CuffedAPI.Lockpicking.beginLockpickingCellDoor(instance, new BlockPos(x,y,z), speedIncreasePerPick, progressPerPick);
@@ -48,7 +67,7 @@ public class LockpickBlockPacket extends CreativePacket{
     }
 
     @Override
-    public void executeServer(ServerPlayer arg0) {
+    public void handleServerside(@Nonnull ServerPlayer arg0) {
         if(stopCode>-1)
             CuffedAPI.Lockpicking.finishLockpickingCellDoor(stopCode == 0, new BlockPos(x,y,z), UUID.fromString(lockpickerUUID));
     }

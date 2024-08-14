@@ -3,7 +3,7 @@ package com.lazrproductions.cuffed.event;
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.api.CuffedAPI;
 import com.lazrproductions.cuffed.api.IRestrainableCapability;
-import com.lazrproductions.cuffed.client.gui.screen.GenericScreen;
+import com.lazrproductions.lazrslib.client.screen.base.GenericScreen;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;

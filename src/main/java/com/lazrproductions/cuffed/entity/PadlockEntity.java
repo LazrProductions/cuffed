@@ -60,7 +60,7 @@ public class PadlockEntity extends HangingEntity {
     }
 
     public boolean isOnSuitableBlock() {
-        return this.level().getBlockState(pos).is(ModTags.Blocks.LOCKABLE_BLOCKS);
+        return this.getLevel().getBlockState(pos).is(ModTags.Blocks.LOCKABLE_BLOCKS);
     }
 
     @Override
@@ -68,15 +68,15 @@ public class PadlockEntity extends HangingEntity {
         this.playSound(SoundEvents.CHAIN_BREAK, 1.0F, 1.0F);
         float xO = this.getYRot() == 90.0f ? -1 : this.getYRot() == 270.0f || this.getYRot() == -90.0f ? 1 : 0;
         float zO = this.getYRot() == 0.0f ? 1 : this.getYRot() == 180.0f || this.getYRot() == -180.0f ? -1 : 0;
-        ItemEntity itementity = new ItemEntity(this.level(), this.pos.getX() + 0.5f + xO, this.pos.getY() + 0.5f,
+        ItemEntity itementity = new ItemEntity(this.getLevel(), this.pos.getX() + 0.5f + xO, this.pos.getY() + 0.5f,
                 this.pos.getZ() + 0.5f + zO, new ItemStack(ModItems.PADLOCK.get()));
         itementity.setDefaultPickUpDelay();
-        this.level().addFreshEntity(itementity);
+        this.getLevel().addFreshEntity(itementity);
     }
 
     @Override
     public InteractionResult interact(@Nonnull Player interactor, @Nonnull InteractionHand hand) {
-        if (this.level().isClientSide()) {
+        if (this.getLevel().isClientSide()) {
             return InteractionResult.SUCCESS;
         } else {
             ItemStack stack = interactor.getItemInHand(hand);
@@ -144,11 +144,11 @@ public class PadlockEntity extends HangingEntity {
             if (stack.is(ModItems.LOCKPICK.get())) {
                 CuffedAPI.Networking.sendLockpickBeginPickingLockPacketToClient((ServerPlayer) interactor, this.getId(),
                         isReinforced()
-                                ? CuffedMod.CONFIG.lockpickingSettings.speedIncreasePerPickForBreakingReinforcedPadlocks
-                                : CuffedMod.CONFIG.lockpickingSettings.speedIncreasePerPickForBreakingPadlocks,
+                                ? CuffedMod.SERVER_CONFIG.LOCKPICKING_SPEED_INCREASE_PER_PICK_FOR_BREAKING_REINFORCED_PADLOCKS.get()
+                                : CuffedMod.SERVER_CONFIG.LOCKPICKING_SPEED_INCREASE_PER_PICK_FOR_BREAKING_PADLOCKS.get(),
                         isReinforced()
-                                ? CuffedMod.CONFIG.lockpickingSettings.progressPerPickForBreakingReinforcedPadlocks
-                                : CuffedMod.CONFIG.lockpickingSettings.progressPerPickForBreakingPadlocks);
+                                ? CuffedMod.SERVER_CONFIG.LOCKPICKING_PROGRESS_PER_PICK_FOR_BREAKING_REINFORCED_PADLOCKS.get()
+                                : CuffedMod.SERVER_CONFIG.LOCKPICKING_PROGRESS_PER_PICK_FOR_BREAKING_PADLOCKS.get());
 
                 return InteractionResult.SUCCESS;
             }
@@ -198,16 +198,16 @@ public class PadlockEntity extends HangingEntity {
     public void RemoveLock() {
         float xO = this.getYRot() == 90.0f ? -1 : this.getYRot() == 270.0f || this.getYRot() == -90.0f ? 1 : 0;
         float zO = this.getYRot() == 0.0f ? 1 : this.getYRot() == 180.0f || this.getYRot() == -180.0f ? -1 : 0;
-        ItemEntity itementity = new ItemEntity(this.level(), this.pos.getX() + 0.5f + xO, this.pos.getY() + 0.5f,
+        ItemEntity itementity = new ItemEntity(this.getLevel(), this.pos.getX() + 0.5f + xO, this.pos.getY() + 0.5f,
                 this.pos.getZ() + 0.5f + zO, new ItemStack(ModItems.PADLOCK.get()));
         itementity.setDefaultPickUpDelay();
-        this.level().addFreshEntity(itementity);
+        this.getLevel().addFreshEntity(itementity);
 
         if (isReinforced()) {
-            ItemEntity diamondEntity = new ItemEntity(this.level(), this.pos.getX() + 0.5f + xO, this.pos.getY() + 0.5f,
+            ItemEntity diamondEntity = new ItemEntity(this.getLevel(), this.pos.getX() + 0.5f + xO, this.pos.getY() + 0.5f,
                     this.pos.getZ() + 0.5f + zO, new ItemStack(Items.DIAMOND));
             diamondEntity.setDefaultPickUpDelay();
-            this.level().addFreshEntity(diamondEntity);
+            this.getLevel().addFreshEntity(diamondEntity);
         }
 
         this.playSound(SoundEvents.CHAIN_BREAK, 1.0F, 1.0F);
@@ -263,19 +263,20 @@ public class PadlockEntity extends HangingEntity {
     @Override
     public void readAdditionalSaveData(@Nonnull CompoundTag tag) {
         super.readAdditionalSaveData(tag);
+
         this.entityData.set(DATA_LOCKED, tag.getBoolean("Locked"));
         this.setLocked(tag.getBoolean("Locked"));
 
         this.entityData.set(DATA_HAS_KEY, tag.getBoolean("HasKey"));
-        this.setLocked(tag.getBoolean("HasKey"));
+        this.setHasKey(tag.getBoolean("HasKey"));
 
         this.entityData.set(DATA_REINFORCED, tag.getBoolean("Reinforced"));
-        this.setLocked(tag.getBoolean("Reinforced"));
+        this.setReinforced(tag.getBoolean("Reinforced"));
     }
 
     @Override
     public boolean survives() {
-        return !this.level().getBlockState(this.pos).isAir();
+        return !this.getLevel().getBlockState(this.pos).isAir();
     }
 
     @Override

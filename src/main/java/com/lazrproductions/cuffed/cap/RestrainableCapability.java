@@ -22,9 +22,9 @@ import com.lazrproductions.cuffed.restraints.base.AbstractLegRestraint;
 import com.lazrproductions.cuffed.restraints.base.AbstractRestraint;
 import com.lazrproductions.cuffed.restraints.base.IEnchantableRestraint;
 import com.lazrproductions.cuffed.restraints.base.RestraintType;
+import com.lazrproductions.lazrslib.client.gui.GuiGraphics;
 import com.mojang.blaze3d.platform.Window;
 
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -63,14 +63,14 @@ public class RestrainableCapability implements IRestrainableCapability {
         if (legRestraint != null || armRestraint != null) {
             if (!player.hasEffect(ModEffects.RESTRAINED_EFFECT.get())) {
                 // Add new effect
-                RestrainedEffectInstance inst = new RestrainedEffectInstance(-1, encoded);
+                RestrainedEffectInstance inst = new RestrainedEffectInstance(0, encoded);
                 player.addEffect(inst);
             } else {
                 // Remove and replace existing effect
                 if (player.getEffect(ModEffects.RESTRAINED_EFFECT.get()) instanceof RestrainedEffectInstance e
                         && e.getAmplifier() != encoded) {
                     player.removeEffect(ModEffects.RESTRAINED_EFFECT.get());
-                    RestrainedEffectInstance inst = new RestrainedEffectInstance(-1, encoded);
+                    RestrainedEffectInstance inst = new RestrainedEffectInstance(0, encoded);
                     player.addEffect(inst);
                 }
             }
@@ -82,18 +82,22 @@ public class RestrainableCapability implements IRestrainableCapability {
         // --- HANDLE ESCORTING
 
         if (playerEscortingMe != null) {
-            playerEscortingMe.sendSystemMessage(
-                    Component.translatable("info.cuffed.escorting").append(playerEscortingMe.getDisplayName()), true);
+            playerEscortingMe.sendSystemMessage(Component.translatable("info.cuffed.escorting").append(player.getDisplayName()), true);
 
             if (!armsOrLegsRestrained()) {
                 CuffedAPI.Capabilities.getRestrainableCapability(playerEscortingMe).stopEscortingPlayer();
+            } else if (playerEscortingMe == null || playerEscortingMe.isRemoved()) {
+                playerEscortingMe = null;
             } else if (playerEscortingMe.distanceTo(player) > 3.5f) {
                 playerEscortingMe.sendSystemMessage(Component.translatable("info.cuffed.cancel_escorting")
-                        .append(playerEscortingMe.getDisplayName()), true);
+                        .append(player.getDisplayName()), true);
                 CuffedAPI.Capabilities.getRestrainableCapability(playerEscortingMe).stopEscortingPlayer();
             } else if (playerEscortingMe != null && playerEscortingMe.isRemoved() || player.isRemoved())
                 CuffedAPI.Capabilities.getRestrainableCapability(playerEscortingMe).stopEscortingPlayer();
         }
+
+        if(whoImEscorting == null || whoImEscorting.isRemoved())
+            whoImEscorting = null;
 
         // ---
 
@@ -164,13 +168,13 @@ public class RestrainableCapability implements IRestrainableCapability {
         } else if (stack.is(ModItems.LOCKPICK.get())) {
             int lockpickType = -1;
             if(interactionHeight > 0.5 && armsRestrained())
-                lockpickType = RestraintType.toInteger(RestraintType.Arm);
+                lockpickType = RestraintType.Arm.toInteger();
             if(interactionHeight <= 0.5 && legsRestrained())
-                lockpickType = RestraintType.toInteger(RestraintType.Leg);
+                lockpickType = RestraintType.Leg.toInteger();
             if(lockpickType > -1) {
                 CuffedAPI.Networking.sendLockpickBeginPickingRestraintPacketToClient((ServerPlayer)other, player.getUUID().toString(), lockpickType,
-                    lockpickType == RestraintType.toInteger(RestraintType.Leg) ? getLegRestraint().getLockpickingSpeedIncreasePerPick() : getArmRestraint().getLockpickingSpeedIncreasePerPick(), 
-                    lockpickType == RestraintType.toInteger(RestraintType.Leg) ? getLegRestraint().getLockpickingProgressPerPick() : getArmRestraint().getLockpickingProgressPerPick());
+                    lockpickType == RestraintType.Leg.toInteger() ? getLegRestraint().getLockpickingSpeedIncreasePerPick() : getArmRestraint().getLockpickingSpeedIncreasePerPick(), 
+                    lockpickType == RestraintType.Leg.toInteger() ? getLegRestraint().getLockpickingProgressPerPick() : getArmRestraint().getLockpickingProgressPerPick());
             }
         } else if (stack.isEmpty() && other.isCrouching() && armsOrLegsRestrained())
             CuffedAPI.Capabilities.getRestrainableCapability(other).startEscortingPlayer(other, player);
@@ -376,9 +380,9 @@ public class RestrainableCapability implements IRestrainableCapability {
 
         ItemStack stack = oldRestraint.saveToItemStack();
         if (releaser == null || !releaser.addItem(stack)) {
-            ItemEntity e = new ItemEntity(player.level(), player.getX(), player.getY() + 0.6D, player.getZ(), stack);
+            ItemEntity e = new ItemEntity(player.getLevel(), player.getX(), player.getY() + 0.6D, player.getZ(), stack);
             e.setDefaultPickUpDelay();
-            player.level().addFreshEntity(e);
+            player.getLevel().addFreshEntity(e);
         }
 
         oldRestraint.onUnequippedServer(player);
@@ -396,12 +400,12 @@ public class RestrainableCapability implements IRestrainableCapability {
 
     // #region Escort Management
 
-    public void startEscortingPlayer(ServerPlayer self, ServerPlayer other) {
-        CuffedAPI.Capabilities.getRestrainableCapability(other).startGettingEscortedByPlayer(self);
-        whoImEscorting = other;
+    public void startEscortingPlayer(@Nonnull ServerPlayer self, @Nonnull ServerPlayer playerToEscort) {
+        CuffedAPI.Capabilities.getRestrainableCapability(playerToEscort).startGettingEscortedByPlayer(self);
+        whoImEscorting = playerToEscort;
     }
 
-    public void startGettingEscortedByPlayer(ServerPlayer other) {
+    public void startGettingEscortedByPlayer(@Nonnull ServerPlayer other) {
         playerEscortingMe = other;
     }
 

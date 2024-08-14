@@ -1,6 +1,7 @@
 {
     "replace": false,
     "values": [
-        "cuffed:cell_door"
+        "cuffed:cell_door",
+        "cuffed:reinforced_bars_gap"
     ]
 }

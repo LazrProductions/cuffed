@@ -11,10 +11,10 @@ import com.lazrproductions.cuffed.compat.ArsNouveauCompat;
 import com.lazrproductions.cuffed.compat.IronsSpellsnSpellbooksCompat;
 import com.lazrproductions.cuffed.init.ModEnchantments;
 import com.lazrproductions.cuffed.init.ModStatistics;
+import com.lazrproductions.lazrslib.client.gui.GuiGraphics;
 import com.mojang.blaze3d.platform.Window;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerLevel;
@@ -69,6 +69,8 @@ public abstract class AbstractRestraint {
     /** Get the sound played when this restraint is unequipped */
     public abstract SoundEvent getUnequipSound();
 
+    /** Whether or not this restraint can be broken out of. */
+    public abstract boolean getCanBeBrokenOutOf();
     /** Whether or not this restraint can be lockpicked. */
     public abstract boolean getLockpickable();
     /** Get the lockpick speed increase per pick for this restraint. */
@@ -139,7 +141,7 @@ public abstract class AbstractRestraint {
         ModStatistics.awardRestrained(player, this);
 
         Random random = new Random();
-        player.level().playSound(null, player.blockPosition(), getEquipSound(), SoundSource.PLAYERS, 0.8f, (random.nextFloat() * 0.2f) + 0.9f);
+        player.getLevel().playSound(null, player.blockPosition(), getEquipSound(), SoundSource.PLAYERS, 0.8f, (random.nextFloat() * 0.2f) + 0.9f);
     }
     /** Called on the client when this restraint is equipped. */
     public void onEquippedClient(Player player, Player captor) {
@@ -149,7 +151,7 @@ public abstract class AbstractRestraint {
     /** Called on the server when this restraint is equipped. */
     public void onUnequippedServer(ServerPlayer player) {
         Random random = new Random();
-        player.level().playSound(null, player.blockPosition(), getUnequipSound(), SoundSource.PLAYERS, 0.8f, (random.nextFloat() * 0.2f) + 0.9f);
+        player.getLevel().playSound(null, player.blockPosition(), getUnequipSound(), SoundSource.PLAYERS, 0.8f, (random.nextFloat() * 0.2f) + 0.9f);
     }
     /** Called on the client when this restraint is equipped. */
     public void onUnequippedClient(Player player) {

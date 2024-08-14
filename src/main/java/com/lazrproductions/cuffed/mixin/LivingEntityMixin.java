@@ -57,22 +57,22 @@ public abstract class LivingEntityMixin extends Entity implements IAnchorableEnt
 
     @Override
     public Entity getAnchorClientSide() {
-        return level().getEntity(entityData.get(DATA_ANCHOR_ID));
+        return getLevel().getEntity(entityData.get(DATA_ANCHOR_ID));
     }
 
     @Override
     public void setAnchoredTo(@Nullable Entity e) {
-        if (!level().isClientSide()) {
+        if (!getLevel().isClientSide()) {
             if (e == null) {
                 setAnchor(null);
 
                 wasAnchored = false;
 
                 ItemStack stack = new ItemStack(Items.CHAIN, 1);
-                ItemEntity en = new ItemEntity(level(), this.position().x(), this.position().y(), this.position().z(),
+                ItemEntity en = new ItemEntity(getLevel(), this.position().x(), this.position().y(), this.position().z(),
                         stack);
                 en.setDefaultPickUpDelay();
-                level().addFreshEntity(en);
+                getLevel().addFreshEntity(en);
             } else 
                 setAnchor(e);
         }
@@ -92,9 +92,9 @@ public abstract class LivingEntityMixin extends Entity implements IAnchorableEnt
     @Inject(method = "tick", at = @At("TAIL"))
     private void onTick(CallbackInfo callback) {
         LivingEntity thisEntity = (LivingEntity)(Object)this;
-        if(!level().isClientSide()) {
+        if(!getLevel().isClientSide()) {
             if(shouldBeLoaded) {
-                if(level() instanceof ServerLevel l) {
+                if(getLevel() instanceof ServerLevel l) {
                     Entity a = l.getEntity(uuidToBeLoaded);
                     
                     setAnchor(a);
@@ -113,13 +113,13 @@ public abstract class LivingEntityMixin extends Entity implements IAnchorableEnt
                 wasAnchored = true;
                 entityData.set(DATA_ANCHOR_ID, anchor.getId());
             
-                double minDist = CuffedMod.CONFIG.anchoringSettings.maxChainLength;;
-                double maxDist = fallDistance > 0.2f ? CuffedMod.CONFIG.anchoringSettings.maxChainLength : CuffedMod.CONFIG.anchoringSettings.chainSuffocateLength;
+                double minDist = CuffedMod.SERVER_CONFIG.ANCHORING_MAX_CHAIN_LENGTH.get();
+                double maxDist = fallDistance > 0.2f ? CuffedMod.SERVER_CONFIG.ANCHORING_MAX_CHAIN_LENGTH.get(): CuffedMod.SERVER_CONFIG.ANCHORING_SUFFOCATION_LENGTH.get();
 
 
                 if (this.distanceTo(getAnchor()) > minDist) {
                     if(distanceTo(getAnchor()) > maxDist) {
-                        hurt(ModDamageTypes.GetModSource(this, ModDamageTypes.HANG, anchor), 2);
+                        hurt(ModDamageTypes.HANG, 2);
                     }
 
                     float distance = distanceTo(getAnchor());
@@ -136,7 +136,7 @@ public abstract class LivingEntityMixin extends Entity implements IAnchorableEnt
             } else
                 entityData.set(DATA_ANCHOR_ID, -1);
         } else if(thisEntity instanceof Player player && getAnchorClientSide() != null) {
-            double minDist = CuffedMod.CONFIG.anchoringSettings.maxChainLength;
+            double minDist = CuffedMod.SERVER_CONFIG.ANCHORING_MAX_CHAIN_LENGTH.get();
 
             if (this.distanceTo(getAnchorClientSide()) > minDist) {
                 float distance = distanceTo(getAnchorClientSide());
@@ -155,7 +155,7 @@ public abstract class LivingEntityMixin extends Entity implements IAnchorableEnt
 
     @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
     private void onAddAdditionalSaveData(CompoundTag tag, CallbackInfo info) {
-        if (!level().isClientSide()) {
+        if (!getLevel().isClientSide()) {
             if (isAnchored()) 
                 tag.putUUID(ANCHOR_TAG, getAnchor().getUUID());
         }
@@ -163,8 +163,7 @@ public abstract class LivingEntityMixin extends Entity implements IAnchorableEnt
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
     private void onReadAdditionalSaveData(CompoundTag tag, CallbackInfo info) {
-        
-        if (!level().isClientSide()) {
+        if (!getLevel().isClientSide()) {
             if(tag.contains(ANCHOR_TAG)) {      
                 uuidToBeLoaded = tag.getUUID(ANCHOR_TAG);
                 shouldBeLoaded = true;          

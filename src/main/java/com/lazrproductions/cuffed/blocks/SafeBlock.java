@@ -99,8 +99,8 @@ public class SafeBlock extends BaseEntityBlock implements SimpleWaterloggedBlock
                 }
             } else if (ILockableBlock.isLocked(state)) {
                 CuffedAPI.Networking.sendLockpickBeginPickingCellDoorPacketToClient((ServerPlayer) player, pos,
-                        CuffedMod.CONFIG.lockpickingSettings.speedIncreasePerPickForBreakingSafes,
-                        CuffedMod.CONFIG.lockpickingSettings.progressPerPickForBreakingSafes);
+                        CuffedMod.SERVER_CONFIG.LOCKPICKING_SPEED_INCREASE_PER_PICK_FOR_BREAKING_SAFES.get(),
+                        CuffedMod.SERVER_CONFIG.LOCKPICKING_PROGRESS_PER_PICK_FOR_BREAKING_SAFES.get());
                 return InteractionResult.sidedSuccess(level.isClientSide());
             }
 

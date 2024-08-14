@@ -30,7 +30,6 @@ import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.IronBarsBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
-import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DoorHingeSide;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
@@ -43,12 +42,10 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 public class CellDoor extends DoorBlock implements ILockableBlock{
 
     public static final BooleanProperty IN_BARS = BooleanProperty.create("in_bars");
+   
 
-    private final BlockSetType type;
-
-    public CellDoor(Properties p, BlockSetType setType) {
-        super(p, setType);
-        this.type = setType;
+    public CellDoor(Properties p) {
+        super(p);
         this.registerDefaultState(
                 this.stateDefinition.any()
                         .setValue(FACING, Direction.NORTH)
@@ -115,11 +112,6 @@ public class CellDoor extends DoorBlock implements ILockableBlock{
     }
 
     @Override
-    public BlockSetType type() {
-        return this.type;
-    }
-
-    @Override
     @Nullable
     public BlockState getStateForPlacement(@Nonnull BlockPlaceContext ctx) {
         BlockPos blockpos = ctx.getClickedPos();
@@ -171,8 +163,8 @@ public class CellDoor extends DoorBlock implements ILockableBlock{
                 }
             } else {
                 CuffedAPI.Networking.sendLockpickBeginPickingCellDoorPacketToClient((ServerPlayer)player, pos,
-                        CuffedMod.CONFIG.lockpickingSettings.speedIncreasePerPickForBreakingCellDoors, 
-                        CuffedMod.CONFIG.lockpickingSettings.progressPerPickForBreakingCellDoors);
+                        CuffedMod.SERVER_CONFIG.LOCKPICKING_SPEED_INCREASE_PER_PICK_FOR_BREAKING_CELL_DOORS.get(), 
+                        CuffedMod.SERVER_CONFIG.LOCKPICKING_PROGRESS_PER_PICK_FOR_BREAKING_CELL_DOORS.get());
                 return InteractionResult.sidedSuccess(level.isClientSide);
             }
         }

@@ -7,9 +7,9 @@ import com.lazrproductions.cuffed.restraints.base.AbstractArmRestraint;
 import com.lazrproductions.cuffed.restraints.base.AbstractLegRestraint;
 import com.lazrproductions.cuffed.restraints.base.AbstractRestraint;
 import com.lazrproductions.cuffed.restraints.base.RestraintType;
+import com.lazrproductions.lazrslib.client.gui.GuiGraphics;
 import com.mojang.blaze3d.platform.Window;
 
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -112,11 +112,11 @@ public interface IRestrainableCapability {
     /**
      * Start escorting another player, and notify them that they are being escorted.
      */
-    public void startEscortingPlayer(ServerPlayer self, ServerPlayer other);
+    public void startEscortingPlayer(@Nonnull ServerPlayer self, @Nonnull ServerPlayer other);
     /**
      * Notify this player that they have started to be escorted..
      */
-    public void startGettingEscortedByPlayer(ServerPlayer other);
+    public void startGettingEscortedByPlayer(@Nonnull ServerPlayer other);
 
     /**
      * Stop escorting who you were, and notify them that they are no longer being escorted.

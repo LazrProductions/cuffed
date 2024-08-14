@@ -13,7 +13,7 @@ import com.lazrproductions.cuffed.restraints.LegcuffsRestraint;
 import com.lazrproductions.cuffed.restraints.ShacklesRestraint;
 import com.lazrproductions.cuffed.restraints.base.AbstractRestraint;
 
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.StatFormatter;
@@ -25,7 +25,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class ModStatistics {
     private static final DeferredRegister<ResourceLocation> REGISTER = DeferredRegister.create(
-			Registries.CUSTOM_STAT, CuffedMod.MODID
+			Registry.CUSTOM_STAT_REGISTRY, CuffedMod.MODID
 	);
 	private static final List<Runnable> RUN_IN_SETUP = new ArrayList<>();
 
@@ -60,6 +60,8 @@ public class ModStatistics {
 
 	
 	public static final RegistryObject<ResourceLocation> OPEN_SAFE = registerCustomStat("open_safe", StatFormatter.DEFAULT);
+
+	
 
 
 	public static void register(IEventBus bus)

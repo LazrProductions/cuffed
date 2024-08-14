@@ -23,7 +23,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
@@ -76,10 +75,10 @@ public class WeightedAnchorEntity extends LivingEntity {
     }
     @Override
     public void tick() {
-        if(!level().isClientSide()) {
+        if(!getLevel().isClientSide()) {
             entityData.set(DATA_ENCHANTED, getEnchantments().size() > 0);
             if(this.isInWaterOrBubble() && getEnchantmentLevel(ModEnchantments.BUOYANT.get()) >= 1)
-                this.addDeltaMovement(new Vec3(0f, 0.023f, 0f));
+                this.setDeltaMovement(this.getDeltaMovement().add(new Vec3(0f, 0.023f, 0f)));
          }
   
         super.tick();
@@ -93,7 +92,7 @@ public class WeightedAnchorEntity extends LivingEntity {
     @Override
     public boolean isInvulnerableTo(@Nonnull DamageSource source) {
 
-        if(source.is(DamageTypes.GENERIC_KILL))
+        if(source.equals(DamageSource.GENERIC))
             return false;
         return true;
     }
@@ -114,7 +113,7 @@ public class WeightedAnchorEntity extends LivingEntity {
     }
 
     @Override
-    protected Vec3 getLeashOffset() {
+    public Vec3 getLeashOffset() {
         return new Vec3(0.0D, 8D / 16D, 0);
     }
     @Override
@@ -130,13 +129,13 @@ public class WeightedAnchorEntity extends LivingEntity {
     @Override
     public InteractionResult interact(@Nonnull Player interactor, @Nonnull InteractionHand hand) {
 
-        if (this.level().isClientSide()) {
+        if (this.getLevel().isClientSide()) {
             return InteractionResult.SUCCESS;
         } else if(hand == InteractionHand.MAIN_HAND) {
-            if(!interactor.isCrouching() && CuffedMod.CONFIG.anchoringSettings.allowAnchoringToWeightedAnchors) {
+            if(!interactor.isCrouching() && CuffedMod.SERVER_CONFIG.ANCHORING_ALLOW_ANCHORING_TO_WEIGHTED_ANCHORS.get()) {
                 boolean flag = false;
-                double maxDist = CuffedMod.CONFIG.anchoringSettings.chainSuffocateLength + 5;
-                List<LivingEntity> list = this.level().getEntitiesOfClass(LivingEntity.class,
+                double maxDist = CuffedMod.SERVER_CONFIG.ANCHORING_SUFFOCATION_LENGTH.get() + 5;
+                List<LivingEntity> list = this.getLevel().getEntitiesOfClass(LivingEntity.class,
                         new AABB(this.getX() - maxDist - 2.0D, this.getY() - maxDist - 2.0D, this.getZ() - maxDist - 2.0D,
                                 this.getX() + maxDist + 2.0D, this.getY() + maxDist + 2.0D, this.getZ() + maxDist + 2.0D));
 
@@ -158,13 +157,13 @@ public class WeightedAnchorEntity extends LivingEntity {
                         }
                     }
                     if(flag1)
-                        level().playSound(null, blockPosition(), SoundEvents.CHAIN_BREAK, SoundSource.PLAYERS, 0.7f, 1);
+                        getLevel().playSound(null, blockPosition(), SoundEvents.CHAIN_BREAK, SoundSource.PLAYERS, 0.7f, 1);
                 }
 
                 if(flag)
-                    level().playSound(null, blockPosition(), SoundEvents.CHAIN_PLACE, SoundSource.PLAYERS, 0.7f, 1);
+                    getLevel().playSound(null, blockPosition(), SoundEvents.CHAIN_PLACE, SoundSource.PLAYERS, 0.7f, 1);
                 if(flag1)
-                    level().playSound(null, blockPosition(), SoundEvents.CHAIN_BREAK, SoundSource.PLAYERS, 0.7f, 1);
+                    getLevel().playSound(null, blockPosition(), SoundEvents.CHAIN_BREAK, SoundSource.PLAYERS, 0.7f, 1);
 
                 if (flag || flag1) {
                     this.gameEvent(GameEvent.BLOCK_ATTACH, interactor);
@@ -173,10 +172,10 @@ public class WeightedAnchorEntity extends LivingEntity {
                 return InteractionResult.CONSUME;
             } else {
                 ItemStack stack = getDroppedItem();
-                ItemEntity entity = new ItemEntity(level(), position().x(), position().y(), position().z(), stack); 
-                level().addFreshEntity(entity);
+                ItemEntity entity = new ItemEntity(getLevel(), position().x(), position().y(), position().z(), stack); 
+                getLevel().addFreshEntity(entity);
                 
-                level().playSound(null, blockPosition(), SoundEvents.ANVIL_BREAK, SoundSource.PLAYERS, 0.7f, 1);
+                getLevel().playSound(null, blockPosition(), SoundEvents.ANVIL_BREAK, SoundSource.PLAYERS, 0.7f, 1);
                 this.discard();
             }
         }

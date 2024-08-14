@@ -15,11 +15,6 @@ public class RestrainedEffect extends MobEffect {
     public RestrainedEffect(MobEffectCategory category, int color) {
         super(category, color);
     }
-    
-    @Override
-    public void applyEffectTick(@Nonnull LivingEntity entity, int amplifier) {
-
-    }
 
     @Override
     public void removeAttributeModifiers(@Nonnull LivingEntity entity, @Nonnull AttributeMap attributes, int amplifier) {

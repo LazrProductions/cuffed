@@ -2,6 +2,7 @@ package com.lazrproductions.cuffed.command;
 
 import com.lazrproductions.cuffed.api.CuffedAPI;
 import com.lazrproductions.cuffed.cap.RestrainableCapability;
+import com.lazrproductions.cuffed.entity.base.IAnchorableEntity;
 import com.lazrproductions.cuffed.entity.base.INicknamable;
 import com.lazrproductions.cuffed.restraints.Restraints;
 import com.lazrproductions.cuffed.restraints.base.AbstractArmRestraint;
@@ -19,6 +20,7 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.server.command.EnumArgument;
 
@@ -34,11 +36,18 @@ public class HandcuffCommand {
                         .then(Commands.literal("remove")
                             .then(Commands.argument("type", EnumArgument.enumArgument(RestraintType.class))
                                 .executes(this::executeRemove)))
+                        .then(Commands.literal("anchor")
+                                .then(Commands.literal("set")
+                                    .then(Commands.argument("entity", EntityArgument.entity())
+                                        .executes(this::executeSetAnchor)))
+                                .then(Commands.literal("remove")
+                                    .executes(this::executeRemoveAnchor)))
                         .then(Commands.literal("nickname")
                                 .then(Commands.literal("set")
                                         .then(Commands.argument("new nickname", ComponentArgument.textComponent())
                                             .executes(this::executeSetNickname)))
-                                .then(Commands.literal("reset").executes(this::executeResetNickname)))
+                                .then(Commands.literal("reset")
+                                    .executes(this::executeResetNickname)))
                     ));
 }
 
@@ -125,6 +134,39 @@ public class HandcuffCommand {
                 INicknamable nicknamable = (INicknamable) player;
                 nicknamable.setNickname(null);
                 sender.sendSystemMessage(Component.translatable("command.cuffed.nickname.reset", player.getName()));
+                return 1;
+            }
+            return 0;
+        } catch (CommandSyntaxException e) {
+            return 0;
+        }
+    }
+
+    private int executeSetAnchor(CommandContext<CommandSourceStack> ctx) {
+        try {
+            Entity anchor = EntityArgument.getEntity(ctx, "entity");
+            ServerPlayer player = EntityArgument.getPlayer(ctx, "player");
+            ServerPlayer sender = ctx.getSource().getPlayer();
+            if (anchor != null && player != null && sender != null) {
+                IAnchorableEntity anchorable = (IAnchorableEntity)player;
+                anchorable.setAnchoredTo(anchor);
+                sender.sendSystemMessage(Component.translatable("command.cuffed.anchor.set", player.getDisplayName(), anchor.getDisplayName()));
+                return 1;
+            }
+            return 0;
+        } catch (CommandSyntaxException e) {
+            return 0;
+        }
+    }
+
+    private int executeRemoveAnchor(CommandContext<CommandSourceStack> ctx) {
+        try {
+            ServerPlayer player = EntityArgument.getPlayer(ctx, "player");
+            ServerPlayer sender = ctx.getSource().getPlayer();
+            if (player != null && sender != null) {
+                IAnchorableEntity anchorable = (IAnchorableEntity)player;
+                anchorable.setAnchoredTo(null);
+                sender.sendSystemMessage(Component.translatable("command.cuffed.anchor.remove", player.getDisplayName()));
                 return 1;
             }
             return 0;

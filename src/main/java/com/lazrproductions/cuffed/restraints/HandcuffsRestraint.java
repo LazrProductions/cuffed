@@ -13,14 +13,14 @@ import com.lazrproductions.cuffed.restraints.base.AbstractArmRestraint;
 import com.lazrproductions.cuffed.restraints.base.IBreakableRestraint;
 import com.lazrproductions.cuffed.restraints.base.IEnchantableRestraint;
 import com.lazrproductions.cuffed.restraints.base.RestraintType;
-import com.lazrproductions.cuffed.utils.MathUtils;
-import com.lazrproductions.cuffed.utils.ScreenUtils;
-import com.lazrproductions.cuffed.utils.ScreenUtils.BlitCoordinates;
-import com.lazrproductions.cuffed.utils.ScreenUtils.Texture;
+import com.lazrproductions.lazrslib.client.gui.GuiGraphics;
+import com.lazrproductions.lazrslib.client.screen.ScreenUtilities;
+import com.lazrproductions.lazrslib.client.screen.base.BlitCoordinates;
+import com.lazrproductions.lazrslib.client.screen.base.ScreenTexture;
+import com.lazrproductions.lazrslib.common.math.MathUtilities;
 import com.mojang.blaze3d.platform.Window;
 
 import net.minecraft.client.Options;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
@@ -40,7 +40,7 @@ import net.minecraft.world.item.enchantment.Enchantments;
 public class HandcuffsRestraint extends AbstractArmRestraint implements IBreakableRestraint, IEnchantableRestraint {
     static final ResourceLocation WIDGETS = new ResourceLocation(CuffedMod.MODID, "textures/gui/widgets.png");
     
-    static final Texture CHAIN_ICON = new Texture(WIDGETS, 44, 24, 16, 16, 192, 192);
+    static final ScreenTexture CHAIN_ICON = new ScreenTexture(WIDGETS, 44, 24, 16, 16, 192, 192);
 
     public HandcuffsRestraint() {
         enchantments = new ListTag();
@@ -99,14 +99,17 @@ public class HandcuffsRestraint extends AbstractArmRestraint implements IBreakab
         return true;
     }
 
+    public boolean getCanBeBrokenOutOf() {
+        return CuffedMod.SERVER_CONFIG.HANDCUFFS_SETTINGS.canBeBrokenOutOf.get();
+    }
     public boolean getLockpickable() {
-        return CuffedMod.CONFIG.handcuffsConfig.lockpickable;
+        return CuffedMod.SERVER_CONFIG.HANDCUFFS_SETTINGS.lockpickable.get();
     }
     public int getLockpickingProgressPerPick() {
-        return CuffedMod.CONFIG.handcuffsConfig.lockpickingProgressPerPick;
+        return CuffedMod.SERVER_CONFIG.HANDCUFFS_SETTINGS.lockpickingProgressPerPick.get();
     }
     public int getLockpickingSpeedIncreasePerPick() {
-        return CuffedMod.CONFIG.handcuffsConfig.lockpickingSpeedIncreasePerPick;
+        return CuffedMod.SERVER_CONFIG.HANDCUFFS_SETTINGS.lockpickingSpeedIncreasePerPick.get();
     }
     // #endregion
 
@@ -177,7 +180,6 @@ public class HandcuffsRestraint extends AbstractArmRestraint implements IBreakab
     int lastBarIndex = 0;
     public void renderOverlay(Player player, GuiGraphics graphics, float partialTick, Window window) {
         super.renderOverlay(player, graphics, partialTick, window);
-
         // Display Icon and chain overlay
         int screenWidth = 183;
         int screenHeight = 24;
@@ -194,12 +196,12 @@ public class HandcuffsRestraint extends AbstractArmRestraint implements IBreakab
         y = (window.getGuiScaledHeight() / 2) - (screenHeight) - 50;
         if(CuffedAPI.Capabilities.getRestrainableCapability(player).legsRestrained())
             x += 16;
-        ScreenUtils.drawTexture(graphics, new BlitCoordinates(x, y, screenWidth, screenHeight), CHAIN_ICON);
+        ScreenUtilities.drawTexture(graphics, new BlitCoordinates(x, y, screenWidth, screenHeight), CHAIN_ICON);
         graphics.setColor(1, 1, 1, 1);
 
         // Display break progress
         float p = Mth.clamp((float)clientSidedDurability / (float)getMaxDurability(), 0, 1);
-        ScreenUtils.drawGenericProgressBar(graphics, new BlitCoordinates(x, y+screenHeight+2, screenWidth, screenHeight), p);
+        ScreenUtilities.drawGenericProgressBar(graphics, new BlitCoordinates(x, y+screenHeight+2, screenWidth, screenHeight), p);
     }
 
     public void onKeyInput(Player player, int keyCode, int action) {
@@ -231,7 +233,7 @@ public class HandcuffsRestraint extends AbstractArmRestraint implements IBreakab
     }
 
     public boolean dropItemOnBroken() {
-        return CuffedMod.CONFIG.handcuffsConfig.dropItemWhenBroken;
+        return CuffedMod.SERVER_CONFIG.HANDCUFFS_SETTINGS.dropItemWhenBroken.get();
     }
 
     /** Changed only server-side. changes are synced to client. */
@@ -253,7 +255,7 @@ public class HandcuffsRestraint extends AbstractArmRestraint implements IBreakab
                     double cooldownMultiplier = 1;
                     if(this instanceof IEnchantableRestraint && hasEnchantment(Enchantments.UNBREAKING)) {
                         double d = getEnchantmentLevel(Enchantments.UNBREAKING) / 3d;
-                        chance = ((MathUtils.invert01(d / 3d) * 0.7d) + 0.3d)  * 0.5f;
+                        chance = ((MathUtilities.invert01(d / 3d) * 0.7d) + 0.3d)  * 0.5f;
                         cooldownMultiplier = 1 + d;
                     }
                     if (r.nextDouble() < chance) {
@@ -293,7 +295,7 @@ public class HandcuffsRestraint extends AbstractArmRestraint implements IBreakab
         CuffedAPI.Networking.sendRestraintUtilityPacketToClient(player, getType(), 103, 0, false, 0, "");
 
         Random random = new Random();
-        player.level().playSound(null, player.blockPosition(), getBreakSound(), SoundSource.PLAYERS, 0.8f,
+        player.getLevel().playSound(null, player.blockPosition(), getBreakSound(), SoundSource.PLAYERS, 0.8f,
                 (random.nextFloat() * 0.2f) + 0.9f);
                 
         ModStatistics.awardRestraintBroken(player, this);
@@ -301,9 +303,9 @@ public class HandcuffsRestraint extends AbstractArmRestraint implements IBreakab
         if (dropItemOnBroken()) {
             ItemStack stack = this.saveToItemStack();
             stack.setDamageValue(stack.getMaxDamage() - 1); // instead of 0 durability
-            ItemEntity e = new ItemEntity(player.level(), player.getX(), player.getY() + 0.6D, player.getZ(), stack);
+            ItemEntity e = new ItemEntity(player.getLevel(), player.getX(), player.getY() + 0.6D, player.getZ(), stack);
             e.setDefaultPickUpDelay();
-            player.level().addFreshEntity(e);
+            player.getLevel().addFreshEntity(e);
         }
 
         IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(player);

@@ -7,11 +7,9 @@ import com.lazrproductions.cuffed.init.ModRecipes;
 import com.lazrproductions.cuffed.items.BakedKeyMoldItem;
 import com.lazrproductions.cuffed.items.KeyMoldItem;
 
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CookingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
@@ -21,7 +19,7 @@ public class KeyMoldBakeRecipe extends SmeltingRecipe {
 
 
     public KeyMoldBakeRecipe(ResourceLocation id, String group, Ingredient ingredient, ItemStack result, float experience, int cookingTime) {
-        super(id, group, CookingBookCategory.MISC, ingredient, result, experience, cookingTime);
+        super(id, group, ingredient, result, experience, cookingTime);
     }
 
     @Override
@@ -30,7 +28,7 @@ public class KeyMoldBakeRecipe extends SmeltingRecipe {
     }
 
     @Override
-    public ItemStack assemble(@Nonnull Container inv, @Nonnull RegistryAccess access) {
+    public ItemStack assemble(@Nonnull Container inv) {
         return BakedKeyMoldItem.createFromRawMold(inv.getItem(0));
     }
 

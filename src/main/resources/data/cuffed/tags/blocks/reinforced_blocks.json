@@ -8,6 +8,8 @@
         "cuffed:reinforced_smooth_stone",
         "cuffed:chiseled_reinforced_stone",
         "cuffed:cell_door",
-        "cuffed:reinforced_bars"
+        "cuffed:reinforced_bars",
+        "cuffed:reinforced_bars_gap",
+        "cuffed:bunk"
     ]
 }

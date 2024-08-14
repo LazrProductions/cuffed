@@ -59,14 +59,14 @@ public class KeyRingItem extends Item {
 
                                 player.awardStat(Stats.ITEM_USED.get(ModItems.KEY_RING.get()), 1);
 
-                                if (player.level().getGameRules().getBoolean(GameRules.RULE_REDUCEDDEBUGINFO))
+                                if (player.getLevel().getGameRules().getBoolean(GameRules.RULE_REDUCEDDEBUGINFO))
                                     player.displayClientMessage(
                                             Component.literal(
                                                     "Bound key to " + p.getX() + " " + p.getY() + " " + p.getZ()),
                                             false);
                                 else
                                     player.displayClientMessage(Component.literal("Bound key to ")
-                                            .append(player.level().getBlockState(p).getBlock().getName()), false);
+                                            .append(player.getLevel().getBlockState(p).getBlock().getName()), false);
                                 player.playSound(SoundEvents.CHAIN_FALL, 1.0F, 1.0F);
                                 return InteractionResult.SUCCESS;
                             }
@@ -83,14 +83,14 @@ public class KeyRingItem extends Item {
 
                                 player.awardStat(Stats.ITEM_USED.get(ModItems.KEY_RING.get()), 1);
 
-                                if (player.level().getGameRules().getBoolean(GameRules.RULE_REDUCEDDEBUGINFO))
+                                if (player.getLevel().getGameRules().getBoolean(GameRules.RULE_REDUCEDDEBUGINFO))
                                     player.displayClientMessage(
                                             Component.literal(
                                                     "Bound key to " + p.getX() + " " + p.getY() + " " + p.getZ()),
                                             false);
                                 else
                                     player.displayClientMessage(Component.literal("Bound key to ")
-                                            .append(player.level().getBlockState(p).getBlock().getName()), false);
+                                            .append(player.getLevel().getBlockState(p).getBlock().getName()), false);
                                 player.playSound(SoundEvents.CHAIN_FALL, 1.0F, 1.0F);
                                 return InteractionResult.SUCCESS;
                             }
@@ -136,13 +136,13 @@ public class KeyRingItem extends Item {
             if (canBindBlock(stack)) {
                 if (!hasBoundBlockAt(stack, pos)) {
                     addBoundBlock(stack, pos);
-                    if (player.level().getGameRules().getBoolean(GameRules.RULE_REDUCEDDEBUGINFO))
+                    if (player.getLevel().getGameRules().getBoolean(GameRules.RULE_REDUCEDDEBUGINFO))
                         player.displayClientMessage(
                                 Component.literal("Bound key to " + pos.getX() + " " + pos.getY() + " " + pos.getZ()),
                                 false);
                     else
                         player.displayClientMessage(Component.literal("Bound key to ")
-                                .append(player.level().getBlockState(pos).getBlock().getName()), false);
+                                .append(player.getLevel().getBlockState(pos).getBlock().getName()), false);
                     player.playSound(SoundEvents.CHAIN_FALL, 1.0F, 1.0F);
                     return true;
                 }

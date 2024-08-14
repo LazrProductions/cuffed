@@ -4,6 +4,7 @@ import javax.annotation.Nonnull;
 
 import com.lazrproductions.cuffed.init.ModMenuTypes;
 
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -16,6 +17,10 @@ import net.minecraft.world.item.ItemStack;
 public class FriskingMenu extends AbstractContainerMenu {
     private final Container container;
     private final int containerRows;
+
+    public FriskingMenu(int containerId, Inventory inv, FriendlyByteBuf extraData) {
+        this(containerId, inv);
+    }
 
     private FriskingMenu(MenuType<?> type, int containerId, Inventory otherPlayerInv, int rows) {
         this(type, containerId, otherPlayerInv, new SimpleContainer(9 * rows), rows);

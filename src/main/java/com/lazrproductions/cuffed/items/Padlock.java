@@ -36,7 +36,7 @@ public class Padlock extends Item {
                 if(PadlockEntity.getLockAt(level, pos) != null)
                     return InteractionResult.FAIL;
                 else{
-                    player.level().playSound(null, pos, SoundEvents.CHAIN_PLACE, SoundSource.BLOCKS);
+                    player.getLevel().playSound(null, pos, SoundEvents.CHAIN_PLACE, SoundSource.BLOCKS, 1, 1);
                     PadlockEntity.getOrCreateLockAt(level, pos, context.getClickedFace());
                     player.awardStat(Stats.ITEM_USED.get(ModItems.PADLOCK.get()));
                     player.getItemInHand(context.getHand()).shrink(1);

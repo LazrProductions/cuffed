@@ -20,6 +20,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
@@ -46,46 +47,45 @@ public class ChainKnotEntity extends HangingEntity {
         this.setPos((double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D);
     }
 
-
     /**
      * Get whether or not this knot is on a fence block.
      * 
      * @return (boolean) True if this knot is on a fence block.
      */
     public boolean isOnFence() {
-        return !this.level().getBlockState(pos).is(BlockTags.FENCES);
+        return !this.getLevel().getBlockState(pos).is(BlockTags.FENCES);
     }
 
     @Override
     public void dropItem(@Nullable Entity p_31837_) {
         this.playSound(SoundEvents.CHAIN_BREAK, 1.0F, 1.0F);
-        //for (int i = 0; i < anchoredEntities.size(); i++) {
-        //    ((IAnchorableEntity)anchoredEntities.get(i)).setAnchoredTo(null);
-        //}
-        
-        // Chains are dropped from the method(s) above, so this isn't needed.
-        // ItemEntity itementity = new ItemEntity(this.level(), this.pos.getX() + 0.5f,
-        // this.pos.getY() + 0.5f,
-        // this.pos.getZ() + 0.5f, new ItemStack(Items.CHAIN));
-        // itementity.setDefaultPickUpDelay();
-        // this.level().addFreshEntity(itementity);
+    }
+
+    public boolean hurt(@Nonnull DamageSource source, float f) {
+        if (source.getEntity() instanceof IAnchorableEntity a)
+            if (a.getAnchor() == this)
+                return false;
+        return super.hurt(source, f);
     }
 
     @Override
     public InteractionResult interact(@Nonnull Player interactor, @Nonnull InteractionHand hand) {
-        if (this.level().isClientSide()) {
+        if (this.getLevel().isClientSide()) {
             return InteractionResult.SUCCESS;
         } else {
+            if (((IAnchorableEntity) interactor).isAnchored())
+                return InteractionResult.PASS;
+
             boolean flag = false;
-            double maxDist = CuffedMod.CONFIG.anchoringSettings.chainSuffocateLength + 5;
-            List<LivingEntity> list = this.level().getEntitiesOfClass(LivingEntity.class,
+            double maxDist = CuffedMod.SERVER_CONFIG.ANCHORING_SUFFOCATION_LENGTH.get() + 5;
+            List<LivingEntity> list = this.getLevel().getEntitiesOfClass(LivingEntity.class,
                     new AABB(this.getX() - maxDist - 2.0D, this.getY() - maxDist - 2.0D, this.getZ() - maxDist - 2.0D,
                             this.getX() + maxDist + 2.0D, this.getY() + maxDist + 2.0D, this.getZ() + maxDist + 2.0D));
 
             for (LivingEntity entity : list) {
                 IAnchorableEntity anchorableEntity = (IAnchorableEntity) entity;
                 if (anchorableEntity.getAnchor() == interactor) {
-                    //anchoredEntities.add(entity);
+                    // anchoredEntities.add(entity);
                     anchorableEntity.setAnchoredTo(this);
                     flag = true;
                 }
@@ -93,11 +93,11 @@ public class ChainKnotEntity extends HangingEntity {
 
             boolean flag1 = false;
             if (!flag) {
-                level().playSound(null, pos, SoundEvents.CHAIN_BREAK, SoundSource.PLAYERS, 0.7f, 1);
+                getLevel().playSound(null, pos, SoundEvents.CHAIN_BREAK, SoundSource.PLAYERS, 0.7f, 1);
                 for (LivingEntity entity : list) {
                     IAnchorableEntity anchorableEntity = (IAnchorableEntity) entity;
                     if (anchorableEntity.isAnchored() && anchorableEntity.getAnchor() == this) {
-                        //anchoredEntities.remove(entity);
+                        // anchoredEntities.remove(entity);
                         anchorableEntity.setAnchoredTo(null);
                         flag1 = true;
                     }
@@ -105,10 +105,10 @@ public class ChainKnotEntity extends HangingEntity {
                 this.discard();
             }
 
-            if(flag)
-                level().playSound(null, pos, SoundEvents.CHAIN_PLACE, SoundSource.PLAYERS, 0.7f, 1);
-            if(flag1)
-                level().playSound(null, pos, SoundEvents.CHAIN_BREAK, SoundSource.PLAYERS, 0.7f, 1);
+            if (flag)
+            getLevel().playSound(null, pos, SoundEvents.CHAIN_PLACE, SoundSource.PLAYERS, 0.7f, 1);
+            if (flag1)
+            getLevel().playSound(null, pos, SoundEvents.CHAIN_BREAK, SoundSource.PLAYERS, 0.7f, 1);
 
             if (flag || flag1) {
                 this.gameEvent(GameEvent.BLOCK_ATTACH, interactor);
@@ -150,16 +150,14 @@ public class ChainKnotEntity extends HangingEntity {
                         (double) k + 1.0D))) {
             if (knot.getPos().equals(pos)) {
                 ((IAnchorableEntity) entity).setAnchor(knot);
-                //knot.addAnchored(entity);
+                // knot.addAnchored(entity);
                 return knot;
             }
         }
 
-
-
         ChainKnotEntity newKnot = new ChainKnotEntity(level, pos);
 
-        //newKnot.addAnchored(entity);
+        // newKnot.addAnchored(entity);
         ((IAnchorableEntity) entity).setAnchor(newKnot);
 
         level.addFreshEntity(newKnot);
@@ -197,8 +195,8 @@ public class ChainKnotEntity extends HangingEntity {
 
     @Override
     public boolean survives() {
-        return this.level().getBlockState(this.pos).is(BlockTags.FENCES)
-                || this.level().getBlockState(this.pos).is(Blocks.TRIPWIRE_HOOK);
+        return this.getLevel().getBlockState(this.pos).is(BlockTags.FENCES)
+                || this.getLevel().getBlockState(this.pos).is(Blocks.TRIPWIRE_HOOK);
     }
 
     @Override
@@ -213,11 +211,11 @@ public class ChainKnotEntity extends HangingEntity {
 
     @Override
     public Vec3 getRopeHoldPosition(float partialTick) {
-        return this.getPosition(partialTick).add(getLeashOffset(partialTick));
+        return this.getPosition(partialTick).add(getLeashOffset());
     }
 
     @Override
-    public Vec3 getLeashOffset(float partialTick) {
+    public Vec3 getLeashOffset() {
         return new Vec3(0.0D, (double) getEyeHeight() + (!isOnFence() ? 0.2D : 0D), 0.0D);
     }
 

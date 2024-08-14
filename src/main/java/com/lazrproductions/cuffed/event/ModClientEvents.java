@@ -3,20 +3,20 @@ package com.lazrproductions.cuffed.event;
 import com.lazrproductions.cuffed.api.CuffedAPI;
 import com.lazrproductions.cuffed.api.IRestrainableCapability;
 import com.lazrproductions.cuffed.blocks.base.ILockableBlock;
-import com.lazrproductions.cuffed.client.gui.screen.GenericScreen;
 import com.lazrproductions.cuffed.effect.RestrainedEffectInstance;
 import com.lazrproductions.cuffed.entity.base.IRestrainableEntity;
-import com.lazrproductions.cuffed.event.base.LivingRideTickEvent;
 import com.lazrproductions.cuffed.init.ModItems;
 import com.lazrproductions.cuffed.init.ModTags;
+import com.lazrproductions.lazrslib.client.gui.GuiGraphics;
+import com.lazrproductions.lazrslib.client.screen.base.GenericScreen;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -28,6 +28,7 @@ import net.minecraftforge.client.event.InputEvent.InteractionKeyMappingTriggered
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.ScreenEvent.Opening;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -107,23 +108,15 @@ public class ModClientEvents {
     }
 
     @SubscribeEvent
-    public void onTickRide(LivingRideTickEvent event) {
-        if (event.getEntity() instanceof Player player) {
-            IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(player);
-            if (cap != null)
-                event.setCanceled(cap.onTickRideClient(player, event.getVehicle()));
-        }
-    }
-
-    @SubscribeEvent
     public void renderGUI(RenderGuiOverlayEvent.Post event) {
         Minecraft inst = Minecraft.getInstance();
         LocalPlayer p = inst.player;
         if (p != null) {
             IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(p);
-            cap.renderOverlay(p, event.getGuiGraphics(), event.getPartialTick(), event.getWindow());
+            cap.renderOverlay(p, GuiGraphics.from(inst), event.getPartialTick(), event.getWindow());
         }
     }
+
 
     ///////// MISC CLIENT EVENTS FOR HANDCUFFED PLAYERS //////////
 
@@ -155,7 +148,7 @@ public class ModClientEvents {
         if (inst != null) {
             Player player = inst.player;
             if (player != null) {
-                Level level = player.level();
+                Level level = player.getLevel();
                 IRestrainableEntity restrainable = (IRestrainableEntity) player;
                 if (restrainable.isRestrained()) {
                     if (!event.isAttack()) {
@@ -164,13 +157,14 @@ public class ModClientEvents {
                     } else if (RestrainedEffectInstance.decodeNoMining(restrainable.getRestraintCode()))
                         event.setCanceled(true);
                 }
-
+                ItemStack handItem  =player.getItemInHand(InteractionHand.MAIN_HAND);
                 if (!player.isCreative()
-                        && !player.getItemInHand(InteractionHand.MAIN_HAND).is(ItemTags.PICKAXES)
+                        && !handItem.is(Tags.Items.TOOLS_PICKAXES)
                         && event.isAttack()) {
                     BlockState pickresult = GetSelectedBlock(player, false);
-                    if (pickresult != null && pickresult.is(ModTags.Blocks.REINFORCED_BLOCKS) && !(inst.hitResult instanceof EntityHitResult))
-                        event.setCanceled(true);
+                    if (pickresult != null && pickresult.is(ModTags.Blocks.REINFORCED_BLOCKS) && !(inst.hitResult instanceof EntityHitResult)) {
+                            event.setCanceled(true);
+                    }
                 } else if (event.isUseItem() && !(inst.hitResult instanceof EntityHitResult) && 
                         !(player.getItemInHand(event.getHand()).is(ModItems.KEY.get()) || player.getItemInHand(event.getHand()).is(ModItems.KEY_RING.get()))) {
                     BlockState pickresult = GetSelectedBlock(player, false);
@@ -244,7 +238,7 @@ public class ModClientEvents {
 
         if (block.getType() == HitResult.Type.BLOCK) {
             BlockPos blockpos = ((BlockHitResult) block).getBlockPos();
-            return player.level().getBlockState(blockpos);
+            return player.getLevel().getBlockState(blockpos);
         }
         return null;
     }

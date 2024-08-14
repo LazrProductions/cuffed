@@ -4,17 +4,20 @@ import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.api.CuffedAPI;
 import com.lazrproductions.cuffed.api.IRestrainableCapability;
+import com.lazrproductions.cuffed.blocks.PilloryBlock;
 import com.lazrproductions.cuffed.cap.provider.RestrainableCapabilityProvider;
 import com.lazrproductions.cuffed.entity.ChainKnotEntity;
+import com.lazrproductions.cuffed.entity.CrumblingBlockEntity;
 import com.lazrproductions.cuffed.entity.base.IAnchorableEntity;
 import com.lazrproductions.cuffed.entity.base.IDetainableEntity;
 import com.lazrproductions.cuffed.entity.base.INicknamable;
-import com.lazrproductions.cuffed.event.base.LivingRideTickEvent;
+import com.lazrproductions.cuffed.init.ModBlocks;
 import com.lazrproductions.cuffed.init.ModEnchantments;
 import com.lazrproductions.cuffed.init.ModItems;
 import com.lazrproductions.cuffed.init.ModTags;
@@ -31,20 +34,23 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.Tags.Blocks;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
@@ -75,7 +81,7 @@ public class ModServerEvents {
             if (deadEntityRestraintData.containsKey(event.getEntity().getUUID())) {
                 event.getEntity().getCapability(CuffedAPI.Capabilities.RESTRAINABLE_CAPABILITY).ifPresent(n -> {
                     n.copyFrom(deadEntityRestraintData.get(event.getEntity().getUUID()),
-                            (ServerLevel) event.getEntity().level());
+                            (ServerLevel) event.getEntity().getLevel());
                     deadEntityRestraintData.remove(event.getEntity().getUUID());
                 });
             }
@@ -109,12 +115,10 @@ public class ModServerEvents {
         BlockState pickresult = event.getState();
         if (pickresult.is(ModTags.Blocks.REINFORCED_BLOCKS))
             if (!event.getPlayer().isCreative()
-                    && !event.getPlayer().getItemInHand(InteractionHand.MAIN_HAND).is(ItemTags.PICKAXES)) {
+                    && !event.getPlayer().getItemInHand(InteractionHand.MAIN_HAND).is(Tags.Items.TOOLS_PICKAXES)) {
                 event.setCanceled(true);
                 return;
             }
-
-        
 
         Level level = (Level) event.getLevel();
         BlockPos pickpos = event.getPos();
@@ -133,12 +137,16 @@ public class ModServerEvents {
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void playerInteractBlock(PlayerInteractEvent.RightClickBlock event) {
         if (event.getHand() == InteractionHand.MAIN_HAND) {
-            Level level = event.getEntity().level();
+            Level level = event.getEntity().getLevel();
             if (!level.isClientSide()) {
 
                 Player interacting = event.getEntity();
+                IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(interacting);
 
                 IDetainableEntity detainableEntity = (IDetainableEntity) interacting;
+
+                BlockPos pos = event.getPos();
+                BlockState state = level.getBlockState(pos);
 
                 if (detainableEntity.getDetained() > -1) {
                     event.setCancellationResult(InteractionResult.FAIL);
@@ -155,16 +163,47 @@ public class ModServerEvents {
                                 entitiesAnchoredToInteractor.add(en);
                     }
 
-                if (((level.getBlockState(event.getPos()).is(Blocks.FENCES)
-                        && CuffedMod.CONFIG.anchoringSettings.allowAnchoringToFences)
-                        || (level.getBlockState(event.getPos()).is(net.minecraft.world.level.block.Blocks.TRIPWIRE_HOOK)
-                                && CuffedMod.CONFIG.anchoringSettings.allowAnchoringToTripwireHook))
+                if (((state.is(Blocks.FENCES)
+                        && CuffedMod.SERVER_CONFIG.ANCHORING_ALLOW_ANCHORING_TO_FENCES.get())
+                        || (state.is(net.minecraft.world.level.block.Blocks.TRIPWIRE_HOOK)
+                                && CuffedMod.SERVER_CONFIG.ANCHORING_ALLOW_ANCHORING_TO_TRIPWIRE_HOOKS.get()))
                         && entitiesAnchoredToInteractor.size() > 0) {
                     for (int i = 0; i < entitiesAnchoredToInteractor.size(); i++)
                         ChainKnotEntity.bindEntityToNewOrExistingKnot(
                                 (LivingEntity) entitiesAnchoredToInteractor.get(i), level, event.getPos());
                     event.setCanceled(true);
                     return;
+                }
+
+                if (state.is(ModBlocks.PILLORY.get())) {
+                    if (level.getBlockState(pos.above()).is(ModBlocks.PILLORY.get()))
+                        state = level.getBlockState(pos.above());
+
+                    if (cap.getWhoImEscorting() != null) {
+                        cap.getWhoImEscorting().moveTo(PilloryBlock.getPositionBehind(state, pos));
+                        cap.stopEscortingPlayer();
+                    }
+                }
+
+                if (state.is(ModTags.Blocks.REINFORCED_BLOCKS) && Block.isShapeFullBlock(state.getShape(level, pos))) {
+                    ItemStack stack = event.getItemStack();
+                    if (stack.is(ModItems.FORK.get()) || stack.is(ModItems.SPOON.get())) {
+                        Random r = new Random();
+                        if (r.nextFloat() < 0.25f)
+                            CrumblingBlockEntity.crumbleBlock(level, pos, state, 1);
+
+                        level.playSound(null, pos, SoundEvents.STONE_HIT, SoundSource.BLOCKS, 1f,
+                                (r.nextFloat() * 0.2f) + 0.9f);
+
+                        level.levelEvent(null, 2001, pos, Block.getId(state));
+
+                        stack.hurtAndBreak(1, interacting, (f) -> {
+                            f.broadcastBreakEvent(event.getHand());
+                        });
+
+                        event.setCancellationResult(InteractionResult.SUCCESS);
+                        event.setCanceled(true);
+                    }
                 }
             }
         }
@@ -173,7 +212,7 @@ public class ModServerEvents {
     @SubscribeEvent
     public void playerInteractEntity(PlayerInteractEvent.EntityInteract event) {
         if (event.getSide() == LogicalSide.CLIENT)
-            event.setCanceled(true);
+            return;
         if (event.getHand() == InteractionHand.MAIN_HAND) {
             if (event.getSide() == LogicalSide.SERVER) {
                 ServerPlayer player = (ServerPlayer) event.getEntity();
@@ -208,11 +247,19 @@ public class ModServerEvents {
                 if (event.getTarget().getType().is(ModTags.Entities.CHAINABLE_ENTITIES)) {
                     IAnchorableEntity anchorableEntity = (IAnchorableEntity) event.getTarget();
 
+                    if(CuffedMod.SERVER_CONFIG.ANCHORING_ANCHOR_ONLY_WHEN_RESTRAINED.get()) {
+                        if(event.getTarget() instanceof Player p) {
+                            IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(p);
+                            if(!cap.armsOrLegsRestrained())
+                                return;
+                        }
+                    }
+
                     if (anchorableEntity.isAnchored()) {
                         if (player.getItemInHand(event.getHand()).is(Items.AIR)) {
                             anchorableEntity.setAnchoredTo(null);
 
-                            player.level().playSound(null, event.getPos(), SoundEvents.CHAIN_BREAK, SoundSource.PLAYERS,
+                            player.getLevel().playSound(null, event.getPos(), SoundEvents.CHAIN_BREAK, SoundSource.PLAYERS,
                                     0.7f, 1);
 
                             event.setCancellationResult(InteractionResult.SUCCESS);
@@ -223,7 +270,7 @@ public class ModServerEvents {
                         anchorableEntity.setAnchoredTo(player);
                         player.getItemInHand(InteractionHand.MAIN_HAND).shrink(1);
 
-                        player.level().playSound(null, event.getPos(), SoundEvents.CHAIN_PLACE, SoundSource.PLAYERS,
+                        player.getLevel().playSound(null, event.getPos(), SoundEvents.CHAIN_PLACE, SoundSource.PLAYERS,
                                 0.7f, 1);
 
                         event.setCancellationResult(InteractionResult.SUCCESS);
@@ -246,6 +293,10 @@ public class ModServerEvents {
                 }
             }
         }
+    }
+
+    public void onPlayerDismount() {
+
     }
 
     @SubscribeEvent
@@ -280,7 +331,7 @@ public class ModServerEvents {
             }
 
             INicknamable nick = (INicknamable) player;
-            if (CuffedMod.CONFIG.nicknameSettings.nicknamePersistsOnDeath)
+            if (CuffedMod.SERVER_CONFIG.NICKNAME_PERSISTS_ON_DEATH.get())
                 deadEntityNicknameData.put(player.getUUID(), nick.serializeNickname());
         }
     }
@@ -305,11 +356,11 @@ public class ModServerEvents {
 
     @SubscribeEvent
     public void onLivingDamaged(LivingDamageEvent event) {
-        if (event.getEntity() instanceof Player captor && !event.getEntity().level().isClientSide()) {
+        if (event.getEntity() instanceof Player captor && !event.getEntity().getLevel().isClientSide()) {
             float originalAmount = event.getAmount();
 
-            ServerLevel level = (ServerLevel) event.getEntity().level();
-            MinecraftServer server = event.getEntity().level().getServer();
+            ServerLevel level = (ServerLevel) event.getEntity().getLevel();
+            MinecraftServer server = event.getEntity().getLevel().getServer();
             if (server != null) {
                 boolean activateImbue = true;
 
@@ -347,7 +398,7 @@ public class ModServerEvents {
 
                         // each restrained player takes a percentage of the total damage negated by
                         // imbue
-                        pl.hurt(captor.damageSources().magic(), amountNegated / (float) playersToTakeDamage.size());
+                        pl.hurt(DamageSource.indirectMagic(pl, captor), amountNegated / (float) playersToTakeDamage.size());
                     }
 
                     // CuffedMod.LOGGER.info("Imbue activated! -> original: " +originalAmount + ",
@@ -357,15 +408,6 @@ public class ModServerEvents {
                     event.setAmount(Mth.clamp(originalAmount - (amountNegated), 0, originalAmount));
                 }
             }
-        }
-    }
-
-    @SubscribeEvent
-    public void onTickRide(LivingRideTickEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
-            IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(player);
-            if (cap != null)
-                event.setCanceled(cap.onTickRideServer(player, event.getVehicle()));
         }
     }
 }

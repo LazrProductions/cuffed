@@ -8,7 +8,7 @@ import com.lazrproductions.cuffed.entity.model.PadlockEntityModel;
 import com.lazrproductions.cuffed.init.ModModelLayers;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
+import com.mojang.math.Vector3f;
 
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -36,7 +36,7 @@ public class PadlockEntityRenderer extends EntityRenderer<PadlockEntity> {
 
 
    protected void setupRotations(PadlockEntity entity, PoseStack stack, float rotX, float rotY, float rotZ) {
-      stack.mulPose(Axis.YP.rotationDegrees(180.0F - rotY));
+      stack.mulPose(Vector3f.YP.rotationDegrees(180.0F - rotY));
    }
 
 

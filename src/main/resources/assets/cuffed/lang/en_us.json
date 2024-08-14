@@ -7,12 +7,12 @@
     "item.cuffed.key.desc": "Keys can be used to lock padlocks and cell doors.",
     "item.cuffed.key.description.bound": "Bound",
     "item.cuffed.key_ring": "Key Ring",
-    "item.cuffed.key_ring.desc": "Add multiple keys to a key ring to unlock mutliple objects with one item.",
+    "item.cuffed.key_ring.desc": "Add multiple keys to a key ring to unlock multiple objects with one item.",
     "item.cuffed.key_ring.description.amount": "%1$s Keys",
     "item.cuffed.key_ring.description.bound": "%1$s Bound Keys",
     "item.cuffed.key_mold": "Raw Key Mold",
     "item.cuffed.key_mold.desc": "Use a bound key and a key mold in a crafting table to copy keys, then bake it in a furnace to lock the mold.",
-    "item.cuffed.key_mold.description.bound": "Continas a copied binding",
+    "item.cuffed.key_mold.description.bound": "Contains a copied binding",
     "item.cuffed.key_mold.description.unbound": "This mold hasn't been set!",
     "item.cuffed.baked_key_mold": "Baked Key Mold",
     "item.cuffed.baked_key_mold.desc": "Use an iron ingot and a baked key mold in a crafting table to create a copy of the molded key.",
@@ -59,11 +59,21 @@
     "item.cuffed.prisoner_tag.desc": "Similar to a Name Tag but can be used on players to change their name.",
 
 
+    "item.cuffed.fork": "Fork",
+    "item.cuffed.fork.desc": "A basic utensil.",
+    "item.cuffed.spoon": "Spoon",
+    "item.cuffed.spoon.desc": "A basic utensil.",
+    "item.cuffed.knife": "Knife",
+    "item.cuffed.knife.desc": "A basic utensil.",
+
+
 
     "block.cuffed.cell_door": "Cell Door",
     "block.cuffed.cell_door.desc": "A lockable door that can only be broken with a pickaxe. Is reinforced.",
     "block.cuffed.reinforced_bars": "Reinforced Bars",
     "block.cuffed.reinforced_bars.desc": "A simple decorational block that can only be broken with a pickaxe. Is reinforced.",
+    "block.cuffed.reinforced_bars_gap": "Reinforced Bars Window",
+    "block.cuffed.reinforced_bars_gap.desc": "A simple decorational block that can only be broken with a pickaxe. Is reinforced.",
     "block.cuffed.reinforced_smooth_stone": "Smooth Reinforced Stone",
     "block.cuffed.reinforced_smooth_stone.desc": "A simple decorational block that can only be broken with a pickaxe. Is reinforced.",
     "block.cuffed.reinforced_stone": "Reinforced Stone",
@@ -82,8 +92,22 @@
     "block.cuffed.guillotine.desc": "Place a guillotine over a pillory. Then, while a player is detained in the pillory, interact with the guillotine to execute the detained player, interact with the guillotine again to reset it.",
     "block.cuffed.safe": "Safe",
     "block.cuffed.safe.desc": "A secure place to store your items, can be locked with a key and lockpicked.",
-
+    "block.cuffed.bunk": "Bunk",
+    "block.cuffed.bunk.desc": "A reinforced bed to set your spawn at. Can only be broken with a pickaxe.",
     
+    "block.cuffed.tray": "Tray",
+    "block.cuffed.tary.desc": "A simple dish that can hold a meal and some utensils.",
+
+    "block.cuffed.poster": "Poster",
+    "block.cuffed.poster.desc": "A simple decorational poster that can be placed on walls.",
+    "block.cuffed.poster.none": "None",
+    "block.cuffed.poster.serenity": "Serenity - by Lazr",
+    "block.cuffed.poster.skeleton": "Skeleton - by Lazr",
+    "block.cuffed.poster.impunity": "Impunity - by Chreal",
+    "block.cuffed.poster.zooom": "Zooom - by Chreal",
+    
+
+
     "entity.cuffed.weighted_anchor": "Weighted Anchor",
     "entity.cuffed.padlock": "Padlock",
     "entity.cuffed.chain_knot": "Chain Knot",
@@ -110,6 +134,7 @@
 
 
     "effect.cuffed.restrained": "Restrained",
+    "effect.cuffed.wounded": "Wounded",
 
 
 
@@ -187,7 +212,8 @@
     "command.cuffed.nickname.set": "Set %1$s's nickname to %2$s.",
     "command.cuffed.nickname.reset": "Reset %1$s's nickname.",
 
-    
+    "command.cuffed.anchor.set": "Anchored %1$s to %2$s.",
+    "command.cuffed.anchor.remove": "Removed %1$s's anchor.",
 
     "guide.cuffed.title_page.info": "A complete encyclopedia of restraints, locks, and everything else.",
     

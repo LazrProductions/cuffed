@@ -1,0 +1,9 @@
+{
+    "parent": "minecraft:item/generated",
+    "textures": {
+      "layer0": "cuffed:item/tray"
+    },
+    "overrides": [
+        { "predicate": { "cuffed:filled": 1 }, "model": "cuffed:item/tray_filled" }
+    ]
+}

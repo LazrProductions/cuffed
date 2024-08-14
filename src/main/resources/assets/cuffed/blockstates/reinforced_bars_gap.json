@@ -1,0 +1,19 @@
+{
+  "variants": {
+      "facing=north": {
+          "model": "cuffed:block/reinforced_bars_gap"
+      },
+      "facing=east": {
+          "model": "cuffed:block/reinforced_bars_gap",
+          "y": 90
+      },
+      "facing=south": {
+          "model": "cuffed:block/reinforced_bars_gap",
+          "y": 180
+      },
+      "facing=west": {
+          "model": "cuffed:block/reinforced_bars_gap",
+          "y": 270
+      }
+  }
+}
