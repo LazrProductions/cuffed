@@ -51,7 +51,7 @@ public class GuillotineBlockEntity extends BlockEntity {
     public void chop(@Nonnull Level l, @Nonnull BlockPos pos, @Nonnull BlockState state) {
         Player player = PilloryBlock.getDetainedEntity(l, state, pos);
         if(player != null) {
-            player.hurt(ModDamageTypes.GetModSource(player, ModDamageTypes.HANG, null), 999);
+            player.hurt(ModDamageTypes.HANG, 999);
 
             ItemStack stack = new ItemStack(Items.PLAYER_HEAD, 1);
             stack.getOrCreateTag().putString("SkullOwner", player.getGameProfile().getName());

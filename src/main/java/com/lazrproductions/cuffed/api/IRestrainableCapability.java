@@ -4,12 +4,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.lazrproductions.cuffed.restraints.base.AbstractArmRestraint;
+import com.lazrproductions.cuffed.restraints.base.AbstractHeadRestraint;
 import com.lazrproductions.cuffed.restraints.base.AbstractLegRestraint;
 import com.lazrproductions.cuffed.restraints.base.AbstractRestraint;
 import com.lazrproductions.cuffed.restraints.base.RestraintType;
+import com.lazrproductions.lazrslib.client.gui.GuiGraphics;
 import com.mojang.blaze3d.platform.Window;
 
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -82,26 +83,34 @@ public interface IRestrainableCapability {
     public boolean armsRestrained();
     /** Get whether or not this player's legs are restrained. */
     public boolean legsRestrained();
-    /** Get whether or not this player's legs OR arms are restrained */
-    public boolean armsOrLegsRestrained();
+    /** Get whether or not this player's head is restrained. */
+    public boolean headRestrained();
+    /** Get whether or not this player is restrained in any way. */
+    public boolean isRestrained();
     /** Get whether or not this player is restrained with the given type. */
     public boolean isRestrained(RestraintType type);
     /** Get the id of this player's arm restraint. */
     public String getArmRestraintId();
     /** Get the id of this player's leg restraint. */
     public String getLegRestraintId();
+    /** Get the id of this player's head restraint. */
+    public String getHeadRestraintId();
     /** Get the id of this player's restraint with the given type. */
     public String getRestraintId(RestraintType type);
     /** Get this player's arm restraint. */
     @Nullable public AbstractArmRestraint getArmRestraint();
     /** Get this player's leg restraint */
     @Nullable public AbstractLegRestraint getLegRestraint();
+    /** Get this player's head restraint */
+    @Nullable public AbstractHeadRestraint getHeadRestraint();
     /** Get this player's restraint with the given type */
     @Nullable public AbstractRestraint getRestraint(RestraintType type);
     /** Set this player's arm restraint without sending any events. */
     public void setArmRestraintWithoutWarning(@Nonnull ServerPlayer player, @Nullable AbstractArmRestraint newValue);
     /** Set this player's leg restraint without sending any events. */
     public void setLegRestraintWithoutWarning(@Nonnull ServerPlayer player, @Nullable AbstractLegRestraint newValue);
+    /** Set this player's leg restraint without sending any events. */
+    public void setHeadRestraintWithoutWarning(@Nonnull ServerPlayer player, @Nullable AbstractHeadRestraint newValue);
     /** Set this player's restraint with the given type without sending any events. */
     public void setRestraintWithoutWarning(@Nonnull ServerPlayer player, @Nonnull AbstractRestraint newValue, RestraintType type);
 
@@ -158,22 +167,22 @@ public interface IRestrainableCapability {
     public abstract void onLogoutClient(Player player);
 
     /**
-     * Called on the server when this hero lands on the ground.
-     * @param player The hero who is landing.
-     * @param damageToTake How much fall damage this hero will take.
+     * Called on the server when this player lands on the ground.
+     * @param player The player who is landing.
+     * @param damageToTake How much fall damage this player will take.
      * @return The modified amount of damage to take, will replace the original value and the player will instead take this amount of damage.
      */
     public abstract float onLandServer(ServerPlayer player, float distance, float damageMultiplier);
     /**
-     * Called on the client when this hero lands on the ground.
-     * @param player The hero who is landing.
-     * @param damageToTake How much fall damage this hero will take.
+     * Called on the client when this player lands on the ground.
+     * @param player The player who is landing.
+     * @param damageToTake How much fall damage this player will take.
      */
     public abstract void onLandClient(Player player, float distance, float damageMultiplier);
 
     /** Called on the server when this player jumps. */
     public abstract void onJumpServer(ServerPlayer player);
-    /** Called on the client when this hero jumps. */
+    /** Called on the client when this player jumps. */
     public abstract void onJumpClient(Player player);
 
     public abstract boolean onTickRideServer(ServerPlayer player, Entity vehicle);

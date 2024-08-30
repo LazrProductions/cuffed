@@ -25,3 +25,11 @@ description='''${mod_description}'''
     versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"
+    
+# Lazr's Lib
+[[dependencies.${mod_id}]]
+    modId="lazrslib"
+    mandatory=true
+    versionRange="${lazrslib_version_range}"
+    ordering="NONE"
+    side="BOTH"

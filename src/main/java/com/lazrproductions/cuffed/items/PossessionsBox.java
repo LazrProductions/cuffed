@@ -88,7 +88,8 @@ public class PossessionsBox extends Item {
          } else {
             ListTag listtag = compoundtag.getList(TAG_ITEMS, 10);
 
-            ItemStack itemstack1 = stackToAdd.copyWithCount(k);
+            ItemStack itemstack1 = stackToAdd.copy();
+            itemstack1.setCount(1);
             CompoundTag compoundtag2 = new CompoundTag();
             itemstack1.save(compoundtag2);
             listtag.add(0, (Tag) compoundtag2);
@@ -181,10 +182,10 @@ public class PossessionsBox extends Item {
          @Nonnull TooltipFlag p_150752_) {
       CompoundTag compoundtag = stack.getOrCreateTag();
       if (!compoundtag.contains(TAG_ITEMS)) {
-         component.add(Component.translatable("Empty").withStyle(ChatFormatting.GRAY));
+         component.add(Component.translatable("item.cuffed.possessions_box.lore.empty").withStyle(ChatFormatting.GRAY));
       } else {
          ListTag listtag = compoundtag.getList(TAG_ITEMS, 10);
-         component.add(Component.translatable("Contains " + listtag.size() + " stacks of items.")
+         component.add(Component.translatable("item.cuffed.possessions_box.lore.full", listtag.size())
                .withStyle(ChatFormatting.GRAY));
       }
 
@@ -196,11 +197,11 @@ public class PossessionsBox extends Item {
    }
 
    private void playRemoveOneSound(Entity entity) {
-      entity.playSound(SoundEvents.BUNDLE_REMOVE_ONE, 0.8F, 0.8F + entity.level().getRandom().nextFloat() * 0.4F);
+      entity.playSound(SoundEvents.BUNDLE_REMOVE_ONE, 0.8F, 0.8F + entity.getLevel().getRandom().nextFloat() * 0.4F);
    }
 
    private void playDropContentsSound(Entity entity) {
-      entity.playSound(SoundEvents.BUNDLE_DROP_CONTENTS, 0.8F, 0.8F + entity.level().getRandom().nextFloat() * 0.4F);
+      entity.playSound(SoundEvents.BUNDLE_DROP_CONTENTS, 0.8F, 0.8F + entity.getLevel().getRandom().nextFloat() * 0.4F);
    }
 
    public static void frisk(@Nonnull ServerPlayer frisker, @Nonnull ServerPlayer player, @Nonnull ItemStack boxStack) {

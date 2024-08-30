@@ -1,5 +1,6 @@
 package com.lazrproductions.cuffed.restraints.base;
 
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.UUID;
 
@@ -8,13 +9,12 @@ import javax.annotation.Nullable;
 
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.compat.ArsNouveauCompat;
-import com.lazrproductions.cuffed.compat.IronsSpellsnSpellbooksCompat;
 import com.lazrproductions.cuffed.init.ModEnchantments;
 import com.lazrproductions.cuffed.init.ModStatistics;
+import com.lazrproductions.lazrslib.client.gui.GuiGraphics;
 import com.mojang.blaze3d.platform.Window;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerLevel;
@@ -32,6 +32,7 @@ public abstract class AbstractRestraint {
 
     private ServerPlayer s_player;
     private Player c_player;
+    private CompoundTag itemData;
     @Nonnull private UUID captor;
 
     public AbstractRestraint(){ captor = UUID.randomUUID(); }
@@ -41,6 +42,9 @@ public abstract class AbstractRestraint {
         if(this instanceof IEnchantableRestraint enchantable)
             enchantable.setEnchantments(stack.getEnchantmentTags());
     
+        itemData = new CompoundTag();
+        stack.save(itemData);
+
         this.captor = captor.getUUID();    
     } 
 
@@ -77,6 +81,8 @@ public abstract class AbstractRestraint {
     public abstract int getLockpickingSpeedIncreasePerPick();
     /** Get the lockpick progress per pick for this restraint. */
     public abstract int getLockpickingProgressPerPick();
+
+    public abstract ArrayList<Integer> getBlockedKeyCodes();
 
     //#endregion
 
@@ -124,7 +130,7 @@ public abstract class AbstractRestraint {
 
             if(e.getEnchantmentLevel(ModEnchantments.SILENCE.get()) >= 1) {
                 if(CuffedMod.ArsNouveauInstalled) ArsNouveauCompat.DrainMana(player, 2);
-                if(CuffedMod.IronsSpellsnSpellbooksInstalled) IronsSpellsnSpellbooksCompat.DrainMana(player, 2);
+                //if(CuffedMod.IronsSpellsnSpellbooksInstalled) IronsSpellsnSpellbooksCompat.DrainMana(player, 2);
             }
         }
     }
@@ -141,7 +147,7 @@ public abstract class AbstractRestraint {
         ModStatistics.awardRestrained(player, this);
 
         Random random = new Random();
-        player.level().playSound(null, player.blockPosition(), getEquipSound(), SoundSource.PLAYERS, 0.8f, (random.nextFloat() * 0.2f) + 0.9f);
+        player.getLevel().playSound(null, player.blockPosition(), getEquipSound(), SoundSource.PLAYERS, 0.8f, (random.nextFloat() * 0.2f) + 0.9f);
     }
     /** Called on the client when this restraint is equipped. */
     public void onEquippedClient(Player player, Player captor) {
@@ -151,7 +157,7 @@ public abstract class AbstractRestraint {
     /** Called on the server when this restraint is equipped. */
     public void onUnequippedServer(ServerPlayer player) {
         Random random = new Random();
-        player.level().playSound(null, player.blockPosition(), getUnequipSound(), SoundSource.PLAYERS, 0.8f, (random.nextFloat() * 0.2f) + 0.9f);
+        player.getLevel().playSound(null, player.blockPosition(), getUnequipSound(), SoundSource.PLAYERS, 0.8f, (random.nextFloat() * 0.2f) + 0.9f);
     }
     /** Called on the client when this restraint is equipped. */
     public void onUnequippedClient(Player player) {
@@ -223,6 +229,7 @@ public abstract class AbstractRestraint {
             tag.put("Enchantments", ench.getEnchantments());
 
         tag.putUUID("Captor", captor);
+        tag.put("ItemData", itemData);
         return tag;
     }
     public void deserializeNBT(CompoundTag nbt) {
@@ -231,11 +238,12 @@ public abstract class AbstractRestraint {
             ench.setEnchantments(t);
         }
         this.captor = nbt.getUUID("Captor");
+        this.itemData = nbt.getCompound("ItemData");
     }
 
     /** Save this restraint to an item stack */
     public ItemStack saveToItemStack() {
-        ItemStack stack = this.getItem().getDefaultInstance();
+        ItemStack stack = ItemStack.of(itemData);
         stack.setCount(1);
         if(this instanceof IBreakableRestraint breakable)
             stack.setDamageValue(breakable.getMaxDurability() - breakable.getDurability());

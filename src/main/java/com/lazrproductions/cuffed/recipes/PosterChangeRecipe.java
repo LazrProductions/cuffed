@@ -8,18 +8,16 @@ import com.lazrproductions.cuffed.init.ModItems;
 import com.lazrproductions.cuffed.init.ModRecipes;
 import com.lazrproductions.cuffed.items.PosterBlockItem;
 
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 
 public class PosterChangeRecipe extends CustomRecipe {
-    public PosterChangeRecipe(ResourceLocation idIn, CraftingBookCategory category) {
-        super(idIn, category);
+    public PosterChangeRecipe(ResourceLocation idIn) {
+        super(idIn);
     }
 
     @Override
@@ -29,7 +27,7 @@ public class PosterChangeRecipe extends CustomRecipe {
 
     @SuppressWarnings("null")
     @Override
-    public ItemStack assemble(@Nonnull CraftingContainer inv, @Nonnull RegistryAccess access) {
+    public ItemStack assemble(@Nonnull CraftingContainer inv) {
 
         if (matches(inv, null)) {
             ItemStack posterStack = getPosterFromGrid(inv);

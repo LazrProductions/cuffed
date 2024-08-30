@@ -53,7 +53,7 @@ public class ChainKnotEntity extends HangingEntity {
      * @return (boolean) True if this knot is on a fence block.
      */
     public boolean isOnFence() {
-        return !this.level().getBlockState(pos).is(BlockTags.FENCES);
+        return !this.getLevel().getBlockState(pos).is(BlockTags.FENCES);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class ChainKnotEntity extends HangingEntity {
 
     @Override
     public InteractionResult interact(@Nonnull Player interactor, @Nonnull InteractionHand hand) {
-        if (this.level().isClientSide()) {
+        if (this.getLevel().isClientSide()) {
             return InteractionResult.SUCCESS;
         } else {
             if (((IAnchorableEntity) interactor).isAnchored())
@@ -78,7 +78,7 @@ public class ChainKnotEntity extends HangingEntity {
 
             boolean flag = false;
             double maxDist = CuffedMod.SERVER_CONFIG.ANCHORING_SUFFOCATION_LENGTH.get() + 5;
-            List<LivingEntity> list = this.level().getEntitiesOfClass(LivingEntity.class,
+            List<LivingEntity> list = this.getLevel().getEntitiesOfClass(LivingEntity.class,
                     new AABB(this.getX() - maxDist - 2.0D, this.getY() - maxDist - 2.0D, this.getZ() - maxDist - 2.0D,
                             this.getX() + maxDist + 2.0D, this.getY() + maxDist + 2.0D, this.getZ() + maxDist + 2.0D));
 
@@ -93,7 +93,7 @@ public class ChainKnotEntity extends HangingEntity {
 
             boolean flag1 = false;
             if (!flag) {
-                level().playSound(null, pos, SoundEvents.CHAIN_BREAK, SoundSource.PLAYERS, 0.7f, 1);
+                getLevel().playSound(null, pos, SoundEvents.CHAIN_BREAK, SoundSource.PLAYERS, 0.7f, 1);
                 for (LivingEntity entity : list) {
                     IAnchorableEntity anchorableEntity = (IAnchorableEntity) entity;
                     if (anchorableEntity.isAnchored() && anchorableEntity.getAnchor() == this) {
@@ -106,9 +106,9 @@ public class ChainKnotEntity extends HangingEntity {
             }
 
             if (flag)
-                level().playSound(null, pos, SoundEvents.CHAIN_PLACE, SoundSource.PLAYERS, 0.7f, 1);
+            getLevel().playSound(null, pos, SoundEvents.CHAIN_PLACE, SoundSource.PLAYERS, 0.7f, 1);
             if (flag1)
-                level().playSound(null, pos, SoundEvents.CHAIN_BREAK, SoundSource.PLAYERS, 0.7f, 1);
+            getLevel().playSound(null, pos, SoundEvents.CHAIN_BREAK, SoundSource.PLAYERS, 0.7f, 1);
 
             if (flag || flag1) {
                 this.gameEvent(GameEvent.BLOCK_ATTACH, interactor);
@@ -195,8 +195,8 @@ public class ChainKnotEntity extends HangingEntity {
 
     @Override
     public boolean survives() {
-        return this.level().getBlockState(this.pos).is(BlockTags.FENCES)
-                || this.level().getBlockState(this.pos).is(Blocks.TRIPWIRE_HOOK);
+        return this.getLevel().getBlockState(this.pos).is(BlockTags.FENCES)
+                || this.getLevel().getBlockState(this.pos).is(Blocks.TRIPWIRE_HOOK);
     }
 
     @Override
@@ -211,11 +211,11 @@ public class ChainKnotEntity extends HangingEntity {
 
     @Override
     public Vec3 getRopeHoldPosition(float partialTick) {
-        return this.getPosition(partialTick).add(getLeashOffset(partialTick));
+        return this.getPosition(partialTick).add(getLeashOffset());
     }
 
     @Override
-    public Vec3 getLeashOffset(float partialTick) {
+    public Vec3 getLeashOffset() {
         return new Vec3(0.0D, (double) getEyeHeight() + (!isOnFence() ? 0.2D : 0D), 0.0D);
     }
 

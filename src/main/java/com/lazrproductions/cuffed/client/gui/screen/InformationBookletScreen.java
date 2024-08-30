@@ -6,14 +6,14 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import org.joml.Vector2i;
-
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.init.ModEnchantments;
 import com.lazrproductions.cuffed.init.ModItems;
 import com.lazrproductions.lazrslib.client.font.FontUtilities;
+import com.lazrproductions.lazrslib.client.gui.GuiGraphics;
 import com.lazrproductions.lazrslib.client.screen.ScreenUtilities;
 import com.lazrproductions.lazrslib.client.screen.base.BlitCoordinates;
+import com.lazrproductions.lazrslib.client.screen.base.GenericScreen;
 import com.lazrproductions.lazrslib.client.screen.base.ScreenRect;
 import com.lazrproductions.lazrslib.client.screen.base.ScreenTexture;
 import com.lazrproductions.lazrslib.client.ui.Alignment;
@@ -29,12 +29,13 @@ import com.lazrproductions.lazrslib.client.ui.element.ScaledTextureElement;
 import com.lazrproductions.lazrslib.client.ui.element.TextElement;
 import com.lazrproductions.lazrslib.client.ui.element.TextureElement;
 import com.lazrproductions.lazrslib.client.ui.element.VerticalElement;
+import com.lazrproductions.lazrslib.common.math.Vector2i;
 import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -92,25 +93,25 @@ public class InformationBookletScreen extends GenericScreen {
     }
 
     @Override
-    public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-
+    public void render(@Nonnull PoseStack stack, int mouseX, int mouseY, float partialTick) {
+        
         pageHeight = FIXED_PAGE_HEIGHT;
         pageWidth = Mth.floor(pageHeight * (146f / 180f));
 
         if (minecraft != null)
-            drawContent(graphics, partialTick);
+            drawContent(stack, graphics, mouseX, mouseY, partialTick);
 
-        super.render(graphics, mouseX, mouseY, partialTick);
+        super.render(stack, mouseX, mouseY, partialTick);
         
     }
 
     @SuppressWarnings("null")
-    public void drawContent(@Nonnull GuiGraphics graphics, float partialTick) {
+    public void drawContent(@Nonnull PoseStack stack, @Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         assemblePages(minecraft);
         
         var page = pages.get(currentPage);
 
-        this.renderBackground(graphics);
+        this.renderBackground(stack);
 
         pages.get(currentPage).renderPage(minecraft, graphics, partialTick, mouseX, mouseY, (lastMouseInput.getAction() == 1 && lastMouseInput.getInput() == 0));
 
@@ -745,7 +746,6 @@ public class InformationBookletScreen extends GenericScreen {
 
         return false;
     }
-
 
     static abstract class GenericPage {
         static final float PAGE_VERTICAL_PERCENTAGE = 0.8f;

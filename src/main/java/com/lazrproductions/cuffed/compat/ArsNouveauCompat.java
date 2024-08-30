@@ -3,7 +3,7 @@ package com.lazrproductions.cuffed.compat;
 import javax.annotation.Nonnull;
 
 import com.hollingsworth.arsnouveau.api.mana.IManaCap;
-import com.hollingsworth.arsnouveau.setup.registry.CapabilityRegistry;
+import com.hollingsworth.arsnouveau.common.capability.CapabilityRegistry;
 
 import net.minecraft.server.level.ServerPlayer;
 

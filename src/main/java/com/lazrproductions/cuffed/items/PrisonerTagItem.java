@@ -22,7 +22,7 @@ public class PrisonerTagItem extends Item {
    public InteractionResult interactLivingEntity(@Nonnull ItemStack stack, @Nonnull Player player,
          @Nonnull LivingEntity entity, @Nonnull InteractionHand hand) {
       if (entity instanceof Player other) {
-         if (hand == InteractionHand.MAIN_HAND && !player.level().isClientSide()) {
+         if (hand == InteractionHand.MAIN_HAND && !player.getLevel().isClientSide()) {
             INicknamable nicknamable = (INicknamable) other;
 
             other.awardStat(ModStatistics.TIMES_NICKNAMED.get(), 1);
@@ -36,7 +36,7 @@ public class PrisonerTagItem extends Item {
             stack.shrink(1);
          }
 
-         return InteractionResult.sidedSuccess(player.level().isClientSide());
+         return InteractionResult.sidedSuccess(player.getLevel().isClientSide());
       } else {
          return InteractionResult.PASS;
       }

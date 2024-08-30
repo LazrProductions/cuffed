@@ -24,7 +24,7 @@ public interface ILockableBlock {
     }
     
     public static void setIsLocked(@Nonnull Player player, @Nonnull BlockState state, @Nonnull BlockPos pos, boolean locked) {
-        Level level = player.level();
+        Level level = player.getLevel();
         if(level != null) {
             state = state.setValue(LOCKED, locked);
             level.setBlock(pos, state, Block.UPDATE_NEIGHBORS);
@@ -43,7 +43,7 @@ public interface ILockableBlock {
         
     public static boolean tryToBindToKey(@Nonnull Player player, @Nonnull BlockState state, @Nonnull BlockPos pos, @Nonnull ItemStack stack) {
         if(!isBound(state)) {
-            Level level = player.level();
+            Level level = player.getLevel();
             if(level != null) {        
                 if(KeyItem.tryToSetBoundBlock(player, stack, pos)) {
                     state = state.setValue(BOUND, true);
@@ -56,7 +56,7 @@ public interface ILockableBlock {
     }
 
     public static void bindToKey(@Nonnull Player player, @Nonnull BlockState state, @Nonnull BlockPos pos, @Nonnull ItemStack stack) {
-        Level level = player.level();
+        Level level = player.getLevel();
         if(level != null) {        
             if(KeyItem.tryToSetBoundBlock(player, stack, pos)) {
                 state = state.setValue(BOUND, true);

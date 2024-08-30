@@ -127,7 +127,7 @@ public class CuffedAPI {
         public static void finishLockpickingLock(boolean wasFailed, int lockId, @Nonnull UUID lockpickerUUID) {
             ServerPlayer player = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(lockpickerUUID);
             if (player != null) {
-                Level level = player.level();
+                Level level = player.getLevel();
                 if (level != null) {
                     if (!level.isClientSide()) {
                         ItemStack itemstack = player.getItemInHand(InteractionHand.MAIN_HAND);
@@ -160,7 +160,7 @@ public class CuffedAPI {
             ServerPlayer lockpicker = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(lockpickerUUID);
             ServerPlayer restrained = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(restrainedPlayerUUID);
             if (lockpicker != null && restrained != null) {
-                Level level = lockpicker.level();
+                Level level = lockpicker.getLevel();
                 if (level != null && !level.isClientSide()) {
                         ItemStack itemstack = lockpicker.getItemInHand(InteractionHand.MAIN_HAND);
                         lockpicker.getCooldowns().addCooldown(ModItems.LOCKPICK.get(), 20);
@@ -191,7 +191,7 @@ public class CuffedAPI {
         public static void finishLockpickingCellDoor(boolean wasFailed, @Nonnull BlockPos pos, UUID lockpickerUUID) {
             ServerPlayer lockpicker = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(lockpickerUUID);
             if (lockpicker != null) {
-                Level level = lockpicker.level();
+                Level level = lockpicker.getLevel();
                 if (level != null) {
                     if (!level.isClientSide()) {
                         ItemStack itemstack = lockpicker.getItemInHand(InteractionHand.MAIN_HAND);

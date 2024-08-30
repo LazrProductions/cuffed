@@ -36,11 +36,6 @@ public class FriskingContainer implements Container {
 		return index >= 4 && index < 8;
 	}
 
-	@Override
-	public boolean canTakeItem(@Nonnull Container p_273520_, int p_272681_, @Nonnull ItemStack p_273702_) {
-		return false;
-	}	
-
 	public int getSlot(int index) {
 		if (index == 8) {
 			return 40;

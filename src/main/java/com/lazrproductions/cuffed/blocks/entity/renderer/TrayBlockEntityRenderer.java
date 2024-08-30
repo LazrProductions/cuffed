@@ -5,18 +5,18 @@ import javax.annotation.Nonnull;
 import com.lazrproductions.cuffed.blocks.TrayBlock;
 import com.lazrproductions.cuffed.blocks.entity.TrayBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
+import com.mojang.math.Vector3f;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
@@ -51,11 +51,11 @@ public class TrayBlockEntityRenderer implements BlockEntityRenderer<TrayBlockEnt
                     break;
             }
             stack.scale(0.35f, 0.35f, 0.35f);
-            stack.mulPose(Axis.YN.rotationDegrees(facing.getOpposite().toYRot()));
-            stack.mulPose(Axis.XP.rotationDegrees(90));
+            stack.mulPose(Vector3f.YN.rotationDegrees(facing.getOpposite().toYRot()));
+            stack.mulPose(Vector3f.XP.rotationDegrees(90));
 
-            itemRenderer.renderStatic(foodStack, ItemDisplayContext.FIXED, getLightLevel(entity.getLevel(),
-                entity.getBlockPos()), OverlayTexture.NO_OVERLAY, stack, buffer, entity.getLevel(), 1);
+            itemRenderer.renderStatic(foodStack, ItemTransforms.TransformType.FIXED, getLightLevel(entity.getLevel(),
+                entity.getBlockPos()), OverlayTexture.NO_OVERLAY, stack, buffer, 1);
             stack.popPose();
         }
     
@@ -79,11 +79,11 @@ public class TrayBlockEntityRenderer implements BlockEntityRenderer<TrayBlockEnt
                     break;
             }
             stack.scale(0.28f, 0.28f, 0.28f);
-            stack.mulPose(Axis.YN.rotationDegrees(facing.getOpposite().toYRot() - 45));
-            stack.mulPose(Axis.XP.rotationDegrees(90));
+            stack.mulPose(Vector3f.YN.rotationDegrees(facing.getOpposite().toYRot() - 45));
+            stack.mulPose(Vector3f.XP.rotationDegrees(90));
 
-            itemRenderer.renderStatic(forkStack, ItemDisplayContext.FIXED, getLightLevel(entity.getLevel(),
-                entity.getBlockPos()), OverlayTexture.NO_OVERLAY, stack, buffer, entity.getLevel(), 1);
+            itemRenderer.renderStatic(forkStack, ItemTransforms.TransformType.FIXED, getLightLevel(entity.getLevel(),
+                entity.getBlockPos()), OverlayTexture.NO_OVERLAY, stack, buffer, 1);
             stack.popPose();
         }
 
@@ -107,11 +107,11 @@ public class TrayBlockEntityRenderer implements BlockEntityRenderer<TrayBlockEnt
                     break;
             }
             stack.scale(0.28f, 0.28f, 0.28f);
-            stack.mulPose(Axis.YN.rotationDegrees(facing.getOpposite().toYRot() - 45));
-            stack.mulPose(Axis.XP.rotationDegrees(90));
+            stack.mulPose(Vector3f.YN.rotationDegrees(facing.getOpposite().toYRot() - 45));
+            stack.mulPose(Vector3f.XP.rotationDegrees(90));
 
-            itemRenderer.renderStatic(spoonStack, ItemDisplayContext.FIXED, getLightLevel(entity.getLevel(),
-                entity.getBlockPos()), OverlayTexture.NO_OVERLAY, stack, buffer, entity.getLevel(), 1);
+            itemRenderer.renderStatic(spoonStack, ItemTransforms.TransformType.FIXED, getLightLevel(entity.getLevel(),
+                entity.getBlockPos()), OverlayTexture.NO_OVERLAY, stack, buffer, 1);
             stack.popPose();
         }
         
@@ -135,11 +135,11 @@ public class TrayBlockEntityRenderer implements BlockEntityRenderer<TrayBlockEnt
                     break;
             }
             stack.scale(0.28f, 0.28f, 0.28f);
-            stack.mulPose(Axis.YN.rotationDegrees(facing.getOpposite().toYRot() - 45));
-            stack.mulPose(Axis.XP.rotationDegrees(90));
+            stack.mulPose(Vector3f.YN.rotationDegrees(facing.getOpposite().toYRot() - 45));
+            stack.mulPose(Vector3f.XP.rotationDegrees(90));
 
-            itemRenderer.renderStatic(knifeStack, ItemDisplayContext.FIXED, getLightLevel(entity.getLevel(),
-                entity.getBlockPos()), OverlayTexture.NO_OVERLAY, stack, buffer, entity.getLevel(), 1);
+            itemRenderer.renderStatic(knifeStack, ItemTransforms.TransformType.FIXED, getLightLevel(entity.getLevel(),
+                entity.getBlockPos()), OverlayTexture.NO_OVERLAY, stack, buffer, 1);
             stack.popPose();
         }
     }

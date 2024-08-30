@@ -3,9 +3,9 @@ package com.lazrproductions.cuffed.inventory.tooltip;
 import javax.annotation.Nonnull;
 
 import com.lazrproductions.cuffed.CuffedMod;
+import com.lazrproductions.lazrslib.client.gui.GuiGraphics;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.core.NonNullList;
@@ -60,9 +60,9 @@ public class PossessionsBoxTooltip implements ClientTooltipComponent, TooltipCom
             ItemStack itemstack = this.items.get(index);
             this.blit(gui, x, y, PossessionsBoxTooltip.Texture.SLOT);
             gui.renderItem(itemstack, x + 1, y + 1, index);
-            gui.renderItemDecorations(p_281863_, itemstack, x + 1, y + 1);
+            //gui.renderItemDecorations(p_281863_, itemstack, x + 1, y + 1);
             if (index == 0) {
-                AbstractContainerScreen.renderSlotHighlight(gui, x + 1, y + 1, 0);
+                AbstractContainerScreen.renderSlotHighlight(gui.pose(), x + 1, y + 1, 0);
             }
         }
     }

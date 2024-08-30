@@ -54,7 +54,8 @@ public class PosterBlockItem extends BlockItem {
     }
 
     public static ItemStack newItemFromType(PosterType type) {
-        ItemStack stack = ModItems.POSTER_ITEM.get().getDefaultInstance().copyWithCount(1);
+        ItemStack stack = ModItems.POSTER_ITEM.get().getDefaultInstance().copy();
+        stack.setCount(1);
         CompoundTag tag = stack.getOrCreateTag();
         tag.putString(POSTER_TYPE_TAG, type.getSerializedName());
         return stack;

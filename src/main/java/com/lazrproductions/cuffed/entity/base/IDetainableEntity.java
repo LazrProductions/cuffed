@@ -2,7 +2,7 @@ package com.lazrproductions.cuffed.entity.base;
 
 import javax.annotation.Nonnull;
 
-import org.joml.Vector3f;
+import com.mojang.math.Vector3f;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;

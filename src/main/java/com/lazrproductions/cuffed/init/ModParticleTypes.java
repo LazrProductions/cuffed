@@ -21,6 +21,6 @@ public class ModParticleTypes {
     }
 
     public static void registerSprites(RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(ModParticleTypes.BLOOD_DRIP_FALL_PARTICLE.get(), BloodDripParticle.Provider::new);
+        event.register(ModParticleTypes.BLOOD_DRIP_FALL_PARTICLE.get(), BloodDripParticle.Provider::new);
     }
 }

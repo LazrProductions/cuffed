@@ -1,21 +1,22 @@
 package com.lazrproductions.cuffed.client.gui.screen;
 
-import javax.annotation.Nonnull;
+import java.util.Random;
 
-import org.joml.Random;
+import javax.annotation.Nonnull;
 
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.api.CuffedAPI;
 import com.lazrproductions.lazrslib.client.screen.ScreenUtilities;
 import com.lazrproductions.lazrslib.client.screen.base.BlitCoordinates;
+import com.lazrproductions.lazrslib.client.screen.base.GenericScreen;
 import com.lazrproductions.lazrslib.client.screen.base.ScreenTexture;
 import com.lazrproductions.lazrslib.common.math.MathUtilities;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -24,7 +25,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class LockpickingScreen extends GenericScreen{
+public class LockpickingScreen extends GenericScreen {
 
     static final float TARGET_BUFFER = 5;
 
@@ -55,11 +56,11 @@ public class LockpickingScreen extends GenericScreen{
     }
 
     @Override
-    public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void render(@Nonnull PoseStack stack, int mouseX, int mouseY, float partialTick) {
         if(minecraft!=null)
-            renderContent(minecraft, graphics, mouseX, mouseY, partialTick);
+            renderContent(minecraft, stack, mouseX, mouseY, partialTick);
 
-        super.render(graphics, mouseX, mouseY, partialTick);
+        super.render(stack, mouseX, mouseY, partialTick);
     }
 
     float animationTick;
@@ -67,7 +68,7 @@ public class LockpickingScreen extends GenericScreen{
 
     float lerpedGhostAngle = 0;
 
-    public void renderContent(@Nonnull Minecraft instance, @Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void renderContent(@Nonnull Minecraft instance, @Nonnull PoseStack stack, int mouseX, int mouseY, float partialTick) {
 
         if(!isAnimating) {
             if(ticksLeftToPick > 0) {

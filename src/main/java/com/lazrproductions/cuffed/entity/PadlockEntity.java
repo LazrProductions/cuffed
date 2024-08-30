@@ -60,7 +60,7 @@ public class PadlockEntity extends HangingEntity {
     }
 
     public boolean isOnSuitableBlock() {
-        return this.level().getBlockState(pos).is(ModTags.Blocks.LOCKABLE_BLOCKS);
+        return this.getLevel().getBlockState(pos).is(ModTags.Blocks.LOCKABLE_BLOCKS);
     }
 
     @Override
@@ -68,15 +68,15 @@ public class PadlockEntity extends HangingEntity {
         this.playSound(SoundEvents.CHAIN_BREAK, 1.0F, 1.0F);
         float xO = this.getYRot() == 90.0f ? -1 : this.getYRot() == 270.0f || this.getYRot() == -90.0f ? 1 : 0;
         float zO = this.getYRot() == 0.0f ? 1 : this.getYRot() == 180.0f || this.getYRot() == -180.0f ? -1 : 0;
-        ItemEntity itementity = new ItemEntity(this.level(), this.pos.getX() + 0.5f + xO, this.pos.getY() + 0.5f,
+        ItemEntity itementity = new ItemEntity(this.getLevel(), this.pos.getX() + 0.5f + xO, this.pos.getY() + 0.5f,
                 this.pos.getZ() + 0.5f + zO, new ItemStack(ModItems.PADLOCK.get()));
         itementity.setDefaultPickUpDelay();
-        this.level().addFreshEntity(itementity);
+        this.getLevel().addFreshEntity(itementity);
     }
 
     @Override
     public InteractionResult interact(@Nonnull Player interactor, @Nonnull InteractionHand hand) {
-        if (this.level().isClientSide()) {
+        if (this.getLevel().isClientSide()) {
             return InteractionResult.SUCCESS;
         } else {
             ItemStack stack = interactor.getItemInHand(hand);
@@ -198,16 +198,16 @@ public class PadlockEntity extends HangingEntity {
     public void RemoveLock() {
         float xO = this.getYRot() == 90.0f ? -1 : this.getYRot() == 270.0f || this.getYRot() == -90.0f ? 1 : 0;
         float zO = this.getYRot() == 0.0f ? 1 : this.getYRot() == 180.0f || this.getYRot() == -180.0f ? -1 : 0;
-        ItemEntity itementity = new ItemEntity(this.level(), this.pos.getX() + 0.5f + xO, this.pos.getY() + 0.5f,
+        ItemEntity itementity = new ItemEntity(this.getLevel(), this.pos.getX() + 0.5f + xO, this.pos.getY() + 0.5f,
                 this.pos.getZ() + 0.5f + zO, new ItemStack(ModItems.PADLOCK.get()));
         itementity.setDefaultPickUpDelay();
-        this.level().addFreshEntity(itementity);
+        this.getLevel().addFreshEntity(itementity);
 
         if (isReinforced()) {
-            ItemEntity diamondEntity = new ItemEntity(this.level(), this.pos.getX() + 0.5f + xO, this.pos.getY() + 0.5f,
+            ItemEntity diamondEntity = new ItemEntity(this.getLevel(), this.pos.getX() + 0.5f + xO, this.pos.getY() + 0.5f,
                     this.pos.getZ() + 0.5f + zO, new ItemStack(Items.DIAMOND));
             diamondEntity.setDefaultPickUpDelay();
-            this.level().addFreshEntity(diamondEntity);
+            this.getLevel().addFreshEntity(diamondEntity);
         }
 
         this.playSound(SoundEvents.CHAIN_BREAK, 1.0F, 1.0F);
@@ -276,7 +276,7 @@ public class PadlockEntity extends HangingEntity {
 
     @Override
     public boolean survives() {
-        return !this.level().getBlockState(this.pos).isAir();
+        return !this.getLevel().getBlockState(this.pos).isAir();
     }
 
     @Override

@@ -5,12 +5,12 @@ import javax.annotation.Nonnull;
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.init.ModItems;
 import com.lazrproductions.cuffed.items.TrayItem;
+import com.lazrproductions.lazrslib.client.gui.GuiGraphics;
 import com.lazrproductions.lazrslib.client.screen.ScreenUtilities;
 import com.lazrproductions.lazrslib.client.screen.base.BlitCoordinates;
 import com.lazrproductions.lazrslib.client.screen.base.ScreenTexture;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
@@ -74,7 +74,7 @@ public class TrayTooltip implements ClientTooltipComponent, TooltipComponent {
     private void renderSlot(int x, int y, int index, GuiGraphics gui, Font p_281863_) {
         ItemStack itemstack = this.items.get(index);
         gui.renderItem(itemstack, x + 1, y + 1, index);
-        gui.renderItemDecorations(p_281863_, itemstack, x + 1, y + 1);
+        //gui.renderItemDecorations(p_281863_, itemstack, x + 1, y + 1);
     }
 
     private int getTrayFoodSlot() {

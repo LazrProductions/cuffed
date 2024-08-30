@@ -119,7 +119,8 @@ public class TrayItem extends BlockItem {
 
             if(slotToAddTo > -1) {
                 if(listtag.getCompound(slotToAddTo).isEmpty()) {
-                    ItemStack itemToAddCopy = stackToAdd.copyWithCount(1);
+                    ItemStack itemToAddCopy = stackToAdd.copy();
+                    itemToAddCopy.setCount(1);
                     CompoundTag itemToAddData = new CompoundTag();
                     itemToAddCopy.save(itemToAddData);
                     listtag.set(slotToAddTo, (Tag) itemToAddData);
@@ -184,14 +185,14 @@ public class TrayItem extends BlockItem {
 
     private void playRemoveOneSound(Entity entity) {
         entity.playSound(SoundEvents.LANTERN_STEP, 0.8F,
-                0.8F + entity.level().getRandom().nextFloat() * 0.4F);
+                0.8F + entity.getLevel().getRandom().nextFloat() * 0.4F);
     }
     private void playInsertSound(Entity entity) {
-        entity.playSound(SoundEvents.LANTERN_HIT, 0.8F, 0.8F + entity.level().getRandom().nextFloat() * 0.4F);
+        entity.playSound(SoundEvents.LANTERN_HIT, 0.8F, 0.8F + entity.getLevel().getRandom().nextFloat() * 0.4F);
     }
     private void playDropContentsSound(Entity entity) {
         entity.playSound(SoundEvents.BUNDLE_DROP_CONTENTS, 0.8F,
-                0.8F + entity.level().getRandom().nextFloat() * 0.4F);
+                0.8F + entity.getLevel().getRandom().nextFloat() * 0.4F);
     }
 
 

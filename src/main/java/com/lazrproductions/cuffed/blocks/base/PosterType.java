@@ -12,7 +12,10 @@ public enum PosterType implements StringRepresentable {
     SERENITY,
     SKELETON,
     IMPUNITY,
-    ZOOOM;
+    ZOOOM,
+    A_SHADOW_LOCKED_AWAY,
+    PRISONER,
+    LANTERN;
 
     public String toString() {
         return this.getSerializedName();
@@ -27,6 +30,12 @@ public enum PosterType implements StringRepresentable {
                 return 3;
             case ZOOOM:
                 return 4;
+            case A_SHADOW_LOCKED_AWAY:
+                return 5;
+            case PRISONER:
+                return 6;
+            case LANTERN:
+                return 7;            
             default:
                 return 0;
         }
@@ -35,7 +44,7 @@ public enum PosterType implements StringRepresentable {
     public PosterType next() {
         int t = this.toInt();
         t++;
-        if(t > 4)
+        if(t > 7)
             t = 0;
         return fromInt(t);
     }
@@ -50,6 +59,12 @@ public enum PosterType implements StringRepresentable {
                 return IMPUNITY;
             case "zooom":
                 return ZOOOM;
+            case "a_shadow_locked_away":
+                return A_SHADOW_LOCKED_AWAY;
+            case "prisoner":
+                return PRISONER;
+            case "lantern":
+                return LANTERN;
             default:
                 return NONE;
         }
@@ -64,6 +79,12 @@ public enum PosterType implements StringRepresentable {
                 return IMPUNITY;
             case 4:
                 return ZOOOM;
+            case 5:
+                return A_SHADOW_LOCKED_AWAY;
+            case 6:
+                return PRISONER;
+            case 7:
+                return LANTERN;
             default:
                 return NONE;
         }
@@ -79,11 +100,17 @@ public enum PosterType implements StringRepresentable {
                 return "impunity";
             case ZOOOM:
                 return "zooom";
+            case A_SHADOW_LOCKED_AWAY:
+                return "a_shadow_locked_away";
+            case PRISONER:
+                return "prisoner";
+            case LANTERN:
+                return "lantern";  
             default:
                 return "none";
         }
     }
-
+    
     public static PosterType getfromItem(@Nonnull ItemStack stack) {
         return PosterBlockItem.getPosterType(stack);
     }

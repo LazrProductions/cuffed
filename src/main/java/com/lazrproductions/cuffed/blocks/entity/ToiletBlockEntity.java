@@ -53,7 +53,9 @@ public class ToiletBlockEntity extends BlockEntity {
                     return InteractionResult.CONSUME;
                 }
             } else {
-                if(addItem(stack.copyWithCount(1))) {
+                ItemStack stackToAdd = stack.copy();
+                stackToAdd.setCount(1);
+                if(addItem(stackToAdd)) {
                     stack.shrink(1);
 
                     level.playSound((Player) null, getBlockPos().getX() + 0.5f, getBlockPos().getY(), getBlockPos().getZ() + 0.5f,

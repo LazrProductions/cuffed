@@ -96,13 +96,17 @@ dependencies {
     implementation fg.deobf("curse.maven:lazrs-lib-${lazrslib_maven}")
 
     // Optional Dependencies
-    compileOnly fg.deobf("curse.maven:better-combat-by-daedelus-639842:5065424") // Better Combat
-    compileOnly fg.deobf("curse.maven:epic-fight-mod-405076:5159623") // Epic Fight
-    compileOnly fg.deobf("curse.maven:parcool-482378:4944983") // Parcool
-    compileOnly fg.deobf("curse.maven:elenai-dodge-2-442962:4814313") // elenai dodge 2
+    compileOnly fg.deobf("curse.maven:better-combat-by-daedelus-639842:4534619") // Better Combat
+    //compileOnly fg.deobf("curse.maven:epic-fight-mod-405076:5593321") // Epic Fight (not available for 1.19)
+    //compileOnly fg.deobf("curse.maven:parcool-482378:5323143") // Parcool (not available for 1.19)
+    //compileOnly fg.deobf("curse.maven:elenai-dodge-2-442962:4127740") // elenai dodge 2 (not available for 1.19)
     
-    compileOnly fg.deobf("curse.maven:irons-spells-n-spellbooks-855414:5377916") // Iron spell n' spellbooks
-    compileOnly fg.deobf("curse.maven:ars-nouveau-401955:5371927") // Ars Nouveau
+    //compileOnly fg.deobf("curse.maven:irons-spells-n-spellbooks-855414:5616391") // Iron spell n' spellbooks (not available for 1.19)
+    compileOnly fg.deobf("curse.maven:ars-nouveau-401955:3896644") // Ars Nouveau
+
+    compileOnly fg.deobf("curse.maven:playerrevive-266890:3900268") // Player Revive
+
+    compileOnly fg.deobf("curse.maven:simple-voice-chat-416089:4540782") // Simple Voice Chat
 
     // Apply Mixin AP
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
@@ -120,7 +124,8 @@ def replaceProperties = [
         forge_version: forge_version, forge_version_range: forge_version_range,
         loader_version_range: loader_version_range,
         mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
-        mod_authors: mod_authors, mod_description: mod_description, lazrslib_maven:lazrslib_maven
+        mod_authors: mod_authors, mod_description: mod_description, lazrslib_maven:lazrslib_maven,
+        lazrslib_version_range: lazrslib_version_range
 ]
 
 processResources {

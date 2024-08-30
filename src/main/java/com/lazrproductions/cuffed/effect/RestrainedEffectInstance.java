@@ -26,7 +26,7 @@ public class RestrainedEffectInstance extends MobEffectInstance {
     public boolean noJumping;
 
     public RestrainedEffectInstance(int duration, int restraintType) {
-        super(ModEffects.RESTRAINED_EFFECT.get(), duration, restraintType);
+        super(ModEffects.RESTRAINED_EFFECT.get(), Integer.MAX_VALUE, restraintType);
         
         boolean[] decodedValues = decodeRestraintProperties(restraintType);
         this.noMining = decodedValues[0];
@@ -36,7 +36,7 @@ public class RestrainedEffectInstance extends MobEffectInstance {
     }
 
     private boolean hasRemainingDuration() {
-        return this.isInfiniteDuration() || this.getDuration() > 0;
+        return false;
     }
 
     @Override
@@ -55,7 +55,7 @@ public class RestrainedEffectInstance extends MobEffectInstance {
                 moveSpeed.addTransientModifier(new AttributeModifier(NEGATIVE_MOVE_SPEED_UUID, "restrainMovementSpeed", -9.0, Operation.MULTIPLY_TOTAL));
                 
             if(noMovement&&!entity.getAttributes().hasModifier(ForgeMod.SWIM_SPEED.get(), NEGATIVE_SWIM_SPEED_UUID) && swimSpeed != null)
-            swimSpeed.addTransientModifier(new AttributeModifier(NEGATIVE_SWIM_SPEED_UUID, "restrainSwimSpeed", -9.0, Operation.MULTIPLY_TOTAL));
+                swimSpeed.addTransientModifier(new AttributeModifier(NEGATIVE_SWIM_SPEED_UUID, "restrainSwimSpeed", -9.0, Operation.MULTIPLY_TOTAL));
         } else {
             AttributeInstance attackSpeed = entity.getAttribute(Attributes.ATTACK_SPEED);
             AttributeInstance moveSpeed = entity.getAttribute(Attributes.MOVEMENT_SPEED);
@@ -64,7 +64,9 @@ public class RestrainedEffectInstance extends MobEffectInstance {
             if(noMining&&!entity.getAttributes().hasModifier(Attributes.ATTACK_SPEED, NEGATIVE_MINE_SPEED_UUID) && attackSpeed != null)
                 attackSpeed.addTransientModifier(new AttributeModifier(NEGATIVE_MINE_SPEED_UUID, "restrainMineSpeed", -9.0, Operation.MULTIPLY_TOTAL));
 
-            if(noMovement&&!entity.getAttributes().hasModifier(Attributes.ATTACK_SPEED, NEGATIVE_MOVE_SPEED_UUID) && moveSpeed != null)
+
+
+            if(noMovement&&!entity.getAttributes().hasModifier(Attributes.MOVEMENT_SPEED, NEGATIVE_MOVE_SPEED_UUID) && moveSpeed != null)
                 moveSpeed.addTransientModifier(new AttributeModifier(NEGATIVE_MOVE_SPEED_UUID, "restrainMovementSpeed", -9.0, Operation.MULTIPLY_TOTAL));
                 
             if(noMovement&&!entity.getAttributes().hasModifier(ForgeMod.SWIM_SPEED.get(), NEGATIVE_SWIM_SPEED_UUID) && swimSpeed != null)

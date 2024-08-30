@@ -8,11 +8,14 @@ import com.lazrproductions.cuffed.init.ModEntityTypes;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -41,9 +44,8 @@ public class CrumblingBlockEntity extends Entity {
         time = CRUMBLE_STAGE_TIME*5;
     }
 
-    @SuppressWarnings("deprecation")
     public static CrumblingBlockEntity crumbleBlock(Level level, BlockPos pos, BlockState state, int crumbleStrength) {
-        if(state.isSolid()) {
+        if(state.isSolidRender((BlockGetter)level, pos)) {
             int x = pos.getX();
             int y = pos.getY();
             int z = pos.getZ();
@@ -94,7 +96,7 @@ public class CrumblingBlockEntity extends Entity {
 
     @Override
     public void tick() {
-        Level l = level();
+        Level l = getLevel();
         if (l.getBlockState(blockPosition()).isAir()) {
             this.discard();
         } else {
@@ -140,5 +142,10 @@ public class CrumblingBlockEntity extends Entity {
     @Override
     public boolean displayFireAnimation() {
         return false;
+    }
+
+    @Override
+    public Packet<?> getAddEntityPacket() {
+      return new ClientboundAddEntityPacket(this);
     }
 }

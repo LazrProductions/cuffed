@@ -15,6 +15,7 @@ public class CuffedServerConfig extends LazrConfig {
 
     public ConfigProperty<Integer> MAX_KEYS_PER_RING;
     public ConfigProperty<Integer> SAFE_SLOTS;
+    public ConfigProperty<Boolean> REQUIRE_LOW_HEALTH_TO_RESTRAIN;
 
     public ConfigCategory ANCHORING_SETTINGS;
     public ConfigProperty<Boolean> ANCHORING_ANCHOR_ONLY_WHEN_RESTRAINED;
@@ -51,6 +52,9 @@ public class CuffedServerConfig extends LazrConfig {
     public void registerProperties() {
         MAX_KEYS_PER_RING = createGenericProperty(new ConfigProperty<Integer>(this, "Maximum Keys Per Ring", "The maximum number of keys that can fit on a single key ring.", 16));
         SAFE_SLOTS = createGenericProperty(new ConfigProperty<Integer>(this, "Safes Slots", "The total number of slots in the safe.", 36));
+
+        REQUIRE_LOW_HEALTH_TO_RESTRAIN = createGenericProperty(new ConfigProperty<Boolean>(this, "Require Low Health To Restrain", "Whether or not to require players to be under 30% health to be restrained. If PlayerRevive is installed, then it requires players to be bleeding out. If a player is already restrained then this setting doesn't take effect.", false));
+
 
         ANCHORING_SETTINGS = createCategory(new ConfigCategory(this, "Anchoring Settings"), (c) -> {
             ANCHORING_ANCHOR_ONLY_WHEN_RESTRAINED = c.putProperty(new ConfigProperty<Boolean>(this, "Only Restrained Players Can Be Restrained", "Whether or not to require players to be restrained to get anchored.", false));

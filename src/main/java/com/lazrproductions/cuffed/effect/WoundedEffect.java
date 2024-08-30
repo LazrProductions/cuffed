@@ -8,9 +8,11 @@ import com.lazrproductions.cuffed.init.ModEffects;
 import com.lazrproductions.cuffed.init.ModParticleTypes;
 
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -34,7 +36,7 @@ public class WoundedEffect extends MobEffect {
             double x = entity.position().x() + (entity.getRandom().nextFloat() * 0.8D) -0.4D;
             double y = entity.position().y() + 1 + (entity.getRandom().nextFloat() * 0.8D) -0.4D;
             double z = entity.position().z() + (entity.getRandom().nextFloat() * 0.8D) -0.4D;
-            entity.level().addParticle(ModParticleTypes.BLOOD_DRIP_FALL_PARTICLE.get(), x, y, z, 0, 0, 0);
+            entity.getLevel().addParticle(ModParticleTypes.BLOOD_DRIP_FALL_PARTICLE.get(), x, y, z, 0, 0, 0);
         }
     }
 
@@ -46,7 +48,7 @@ public class WoundedEffect extends MobEffect {
         AttributeInstance slowness = entity.getAttribute(Attributes.MOVEMENT_SPEED);
         if(health != null) {
             health.removeModifier(ATTRIBUTE_HEALTH_UUID);
-            entity.hurt(entity.damageSources().magic(), 1);
+            entity.hurt(DamageSource.indirectMagic(entity, null), 1);
         }
         
         if(slowness != null) {
@@ -63,7 +65,7 @@ public class WoundedEffect extends MobEffect {
             health.removeModifier(ATTRIBUTE_HEALTH_UUID);
             health.addPermanentModifier(new AttributeModifier(ATTRIBUTE_HEALTH_UUID, "woundedHealthReduction", reductionAmount, Operation.MULTIPLY_BASE));
 
-            entity.hurt(entity.damageSources().magic(), 1);
+            entity.hurt(DamageSource.indirectMagic(entity, null), 1);
         }
 
         AttributeInstance slowness = entity.getAttribute(Attributes.MOVEMENT_SPEED);
@@ -96,5 +98,10 @@ public class WoundedEffect extends MobEffect {
     }
     public static void woundEntity(@Nonnull LivingEntity entity, int percentage) {
         woundEntity(entity, percentage, false);
+    }
+    public static void treatEntity(@Nonnull LivingEntity entity) {
+        if(entity.hasEffect(ModEffects.WOUNDED_EFFECT.get()))
+            entity.removeEffect(ModEffects.WOUNDED_EFFECT.get());
+        entity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 60, 2));
     }
 }

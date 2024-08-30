@@ -2,11 +2,11 @@ package com.lazrproductions.cuffed.utils;
 
 import java.util.Random;
 
-import org.joml.Math;
-import org.joml.Matrix4f;
-
+import com.lazrproductions.lazrslib.common.math.MathUtilities;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix4f;
+
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -71,7 +71,7 @@ public class ChainUtils {
 
 		VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.leash());
 		Matrix4f pose = poseStack.last().pose();
-		float f4 = Mth.invSqrt(f * f + f2 * f2) * 0.025F / 2.0F;
+		float f4 = MathUtilities.invsqrt(f * f + f2 * f2) * 0.025F / 2.0F;
 		float f5 = f2 * f4;
 		float f6 = f * f4;
         Vec3 _mEye = entityFrom.getEyePosition(partialTicks);
@@ -80,8 +80,8 @@ public class ChainUtils {
 		BlockPos holderEyePos = new BlockPos((int)Math.floor(_hEye.x), (int)Math.floor(_hEye.y), (int)Math.floor(_hEye.z));
 		int mobLightLevel = getBlockLightLevel(entityFrom, mobEyePosition);
 		int holderLightLevel = getBlockLightLevel(entityTo, holderEyePos);
-		int mobBrightness = entityFrom.level().getBrightness(LightLayer.SKY, mobEyePosition);
-		int holderBrightness = entityFrom.level().getBrightness(LightLayer.SKY, holderEyePos);
+		int mobBrightness = entityFrom.getLevel().getBrightness(LightLayer.SKY, mobEyePosition);
+		int holderBrightness = entityFrom.getLevel().getBrightness(LightLayer.SKY, holderEyePos);
 
 		for(int i = 0; i <= 24; ++i) {
 			addChainLink(vertexConsumer, pose, f, f1, f2, mobLightLevel, holderLightLevel, mobBrightness, holderBrightness, 0.025F, 0.025F, f5, f6, i, false, distance);
@@ -115,7 +115,7 @@ public class ChainUtils {
 
 		VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.leash());
 		Matrix4f pose = poseStack.last().pose();
-		float f4 = Mth.invSqrt(x * x + z * z) * 0.025F / 2.0F;
+		float f4 = MathUtilities.invsqrt(x * x + z * z) * 0.025F / 2.0F;
 		float f5 = z * f4;
 		float f6 = x * f4;
         Vec3 _mEye = entityFrom.getEyePosition(partialTicks);
@@ -124,8 +124,8 @@ public class ChainUtils {
 		BlockPos holderEyePos = new BlockPos((int)Math.floor(_hEye.x), (int)Math.floor(_hEye.y), (int)Math.floor(_hEye.z));
 		int mobLightLevel = getBlockLightLevel(entityFrom, mobEyePosition);
 		int holderLightLevel = getBlockLightLevel(entityTo, holderEyePos);
-		int mobBrightness = entityFrom.level().getBrightness(LightLayer.SKY, mobEyePosition);
-		int holderBrightness = entityFrom.level().getBrightness(LightLayer.SKY, holderEyePos);
+		int mobBrightness = entityFrom.getLevel().getBrightness(LightLayer.SKY, mobEyePosition);
+		int holderBrightness = entityFrom.getLevel().getBrightness(LightLayer.SKY, holderEyePos);
 
 		for(int i = 0; i <= 24; ++i) {
 			addChainLink(vertexConsumer, pose, x, y, z, mobLightLevel, holderLightLevel, mobBrightness, holderBrightness, 0.025F, 0F, f5, f6, i, true, distance);
@@ -139,12 +139,11 @@ public class ChainUtils {
 			return;
 		poseStack.pushPose(); 
 
-
 		Vec3 startPos = entityTo.getRopeHoldPosition(partialTicks);
 		
 		double d0 = (double)(Mth.lerp(partialTicks, entityFrom.yRotO, entityFrom.yRotO) * ((float)Math.PI / 180F)) + (Math.PI / 2D);
 
-		Vec3 endPosOffset = entityFrom.getLeashOffset(partialTicks);
+		Vec3 endPosOffset = entityFrom.getLeashOffset();
 
 		double d1 = Math.cos(d0) * endPosOffset.z + Math.sin(d0) * endPosOffset.x;
 		double d2 = Math.sin(d0) * endPosOffset.z - Math.cos(d0) * endPosOffset.x;
@@ -162,7 +161,7 @@ public class ChainUtils {
 		VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.leash());
 		Matrix4f pose = poseStack.last().pose();
 
-		float f4 = Mth.invSqrt(f * f + f2 * f2) * 0.025F / 2.0F;
+		float f4 = MathUtilities.invsqrt(f * f + f2 * f2) * 0.025F / 2.0F;
 		float f5 = f2 * f4;
 		float f6 = f * f4;
 
@@ -173,8 +172,8 @@ public class ChainUtils {
 		BlockPos holderEyePos = new BlockPos((int)Math.floor(_hEye.x), (int)Math.floor(_hEye.y), (int)Math.floor(_hEye.z));
 		int mobLightLevel = getBlockLightLevel(entityFrom, mobEyePosition);
 		int holderLightLevel = getBlockLightLevel(entityTo, holderEyePos);
-		int mobBrightness = entityFrom.level().getBrightness(LightLayer.SKY, mobEyePosition);
-		int holderBrightness = entityFrom.level().getBrightness(LightLayer.SKY, holderEyePos);
+		int mobBrightness = entityFrom.getLevel().getBrightness(LightLayer.SKY, mobEyePosition);
+		int holderBrightness = entityFrom.getLevel().getBrightness(LightLayer.SKY, holderEyePos);
 
 		for(int i = 0; i <= 24; ++i) {
 			addChainLink(vertexConsumer, pose, f, f1, f2, mobLightLevel, holderLightLevel, mobBrightness, holderBrightness, 0.025F, 0.025F, f5, f6, i, false, distance);
@@ -191,7 +190,7 @@ public class ChainUtils {
 		
 		double d0 = (double)(Mth.lerp(partialTicks, entityFrom.yRotO, entityFrom.yRotO) * ((float)Math.PI / 180F)) + (Math.PI / 2D);
 
-		Vec3 endPosOffset = entityFrom.getLeashOffset(partialTicks);
+		Vec3 endPosOffset = entityFrom.getLeashOffset();
 
 		double d1 = Math.cos(d0) * endPosOffset.z + Math.sin(d0) * endPosOffset.x;
 		double d2 = Math.sin(d0) * endPosOffset.z - Math.cos(d0) * endPosOffset.x;
@@ -208,7 +207,7 @@ public class ChainUtils {
 
 		VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.leash());
 		Matrix4f pose = poseStack.last().pose();
-		float f4 = Mth.invSqrt(x * x + z * z) * 0.025F / 2.0F;
+		float f4 = MathUtilities.invsqrt(x * x + z * z) * 0.025F / 2.0F;
 		float f5 = z * f4;
 		float f6 = x * f4;
         Vec3 _mEye = entityFrom.getEyePosition(partialTicks);
@@ -217,8 +216,8 @@ public class ChainUtils {
 		BlockPos holderEyePos = new BlockPos((int)Math.floor(_hEye.x), (int)Math.floor(_hEye.y), (int)Math.floor(_hEye.z));
 		int mobLightLevel = getBlockLightLevel(entityFrom, mobEyePosition);
 		int holderLightLevel = getBlockLightLevel(entityTo, holderEyePos);
-		int mobBrightness = entityFrom.level().getBrightness(LightLayer.SKY, mobEyePosition);
-		int holderBrightness = entityFrom.level().getBrightness(LightLayer.SKY, holderEyePos);
+		int mobBrightness = entityFrom.getLevel().getBrightness(LightLayer.SKY, mobEyePosition);
+		int holderBrightness = entityFrom.getLevel().getBrightness(LightLayer.SKY, holderEyePos);
 
 		for(int i = 0; i <= 24; ++i) {
 			addChainLink(vertexConsumer, pose, x, y, z, mobLightLevel, holderLightLevel, mobBrightness, holderBrightness, 0.025F, 0F, f5, f6, i, true, distance);
@@ -228,7 +227,7 @@ public class ChainUtils {
 
 
 	protected static int getBlockLightLevel(Entity mob, BlockPos pos) {
-		return mob.isOnFire() ? 15 : mob.level().getBrightness(LightLayer.BLOCK, pos);
+		return mob.isOnFire() ? 15 : mob.getLevel().getBrightness(LightLayer.BLOCK, pos);
 	}
 
 	/**

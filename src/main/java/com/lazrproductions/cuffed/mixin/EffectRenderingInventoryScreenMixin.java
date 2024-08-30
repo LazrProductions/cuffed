@@ -20,7 +20,7 @@ public class EffectRenderingInventoryScreenMixin {
     private void getEffectName(MobEffectInstance effect, CallbackInfoReturnable<Component> callback) {
         if (effect.getEffect() instanceof WoundedEffect) {
             MutableComponent c = effect.getEffect().getDisplayName().copy();
-            c.append(CommonComponents.SPACE).append(Component.literal(effect.getAmplifier() + "%"));
+            c.append(CommonComponents.EMPTY).append(Component.literal(effect.getAmplifier() + "%"));
             callback.setReturnValue(c);
         } else if(effect.getEffect() instanceof RestrainedEffect) {
             callback.setReturnValue(effect.getEffect().getDisplayName().copy());

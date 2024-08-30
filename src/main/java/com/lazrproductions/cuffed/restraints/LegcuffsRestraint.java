@@ -13,6 +13,7 @@ import com.lazrproductions.cuffed.restraints.base.AbstractLegRestraint;
 import com.lazrproductions.cuffed.restraints.base.IBreakableRestraint;
 import com.lazrproductions.cuffed.restraints.base.IEnchantableRestraint;
 import com.lazrproductions.cuffed.restraints.base.RestraintType;
+import com.lazrproductions.lazrslib.client.gui.GuiGraphics;
 import com.lazrproductions.lazrslib.client.screen.ScreenUtilities;
 import com.lazrproductions.lazrslib.client.screen.base.BlitCoordinates;
 import com.lazrproductions.lazrslib.client.screen.base.ScreenTexture;
@@ -20,7 +21,6 @@ import com.lazrproductions.lazrslib.common.math.MathUtilities;
 import com.mojang.blaze3d.platform.Window;
 
 import net.minecraft.client.Options;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
@@ -182,26 +182,20 @@ public class LegcuffsRestraint extends AbstractLegRestraint implements IBreakabl
         super.renderOverlay(player, graphics, partialTick, window);
 
         // Display Icon and chain overlay
-        int screenWidth = 183;
-        int screenHeight = 24;
-        int x = (window.getGuiScaledWidth() / 2) - (screenWidth / 2);
-        int y = (window.getGuiScaledHeight()) - (screenHeight) + 1;
-
         float f = (Mth.clamp(breakCooldown / 10, 0, 1)+1);
         graphics.setColor(f, f, f, 1);
 
-        screenWidth = (int) (16 * 1.75f);
-        screenHeight = (int) (16 * 1.75f);
-        x = (window.getGuiScaledWidth() / 2) - (screenWidth / 2);
-        y = (window.getGuiScaledHeight() / 2) - (screenHeight) - 50;
-        if(CuffedAPI.Capabilities.getRestrainableCapability(player).armsRestrained())
-            x -= 16;
-        ScreenUtilities.drawTexture(graphics, new BlitCoordinates(x, y, screenWidth, screenHeight), CHAIN_ICON);
+        int iconWidth = (int) (16 * 1.75f);
+        int iconHeight = (int) (16 * 1.75f);
+        int x = (window.getGuiScaledWidth() / 2) - (iconWidth / 2);
+        int y = (window.getGuiScaledHeight() / 2) - (iconHeight) - 30;
+        
+        ScreenUtilities.drawTexture(graphics, new BlitCoordinates(x, y, iconWidth, iconHeight), CHAIN_ICON);
         graphics.setColor(1, 1, 1, 1);
 
         // Display break progress
         float p = Mth.clamp((float)clientSidedDurability / (float)getMaxDurability(), 0, 1);
-        ScreenUtilities.drawGenericProgressBar(graphics, new BlitCoordinates(x, y+screenHeight+2, screenWidth, screenHeight), p);
+        ScreenUtilities.drawGenericProgressBar(graphics, new BlitCoordinates(x, y+iconHeight-2, iconWidth, iconHeight), p);
     }
 
     public void onKeyInput(Player player, int keyCode, int action) {
@@ -295,7 +289,7 @@ public class LegcuffsRestraint extends AbstractLegRestraint implements IBreakabl
         CuffedAPI.Networking.sendRestraintUtilityPacketToClient(player, getType(), 103, 0, false, 0, "");
 
         Random random = new Random();
-        player.level().playSound(null, player.blockPosition(), getBreakSound(), SoundSource.PLAYERS, 0.8f,
+        player.getLevel().playSound(null, player.blockPosition(), getBreakSound(), SoundSource.PLAYERS, 0.8f,
                 (random.nextFloat() * 0.2f) + 0.9f);
                 
         ModStatistics.awardRestraintBroken(player, this);
@@ -303,9 +297,9 @@ public class LegcuffsRestraint extends AbstractLegRestraint implements IBreakabl
         if (dropItemOnBroken()) {
             ItemStack stack = this.saveToItemStack();
             stack.setDamageValue(stack.getMaxDamage() - 1); // instead of 0 durability
-            ItemEntity e = new ItemEntity(player.level(), player.getX(), player.getY() + 0.6D, player.getZ(), stack);
+            ItemEntity e = new ItemEntity(player.getLevel(), player.getX(), player.getY() + 0.6D, player.getZ(), stack);
             e.setDefaultPickUpDelay();
-            player.level().addFreshEntity(e);
+            player.getLevel().addFreshEntity(e);
         }
 
         IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(player);

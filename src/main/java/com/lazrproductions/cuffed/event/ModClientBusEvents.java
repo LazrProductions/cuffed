@@ -1,12 +1,9 @@
 package com.lazrproductions.cuffed.event;
 
 import com.lazrproductions.cuffed.CuffedMod;
-import com.lazrproductions.cuffed.api.CuffedAPI;
-import com.lazrproductions.cuffed.api.IRestrainableCapability;
-import com.lazrproductions.cuffed.client.gui.screen.GenericScreen;
+import com.lazrproductions.lazrslib.client.screen.base.GenericScreen;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -28,13 +25,6 @@ public class ModClientBusEvents {
                     inst.setOverlay(null);
                 }
             }
-            
-            LocalPlayer p = inst.player;
-            if (p != null) {
-                IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(p);
-                if(cap!=null)
-                    cap.onKeyInput(p, event.getKey(), event.getAction());
-            }
         }
     }
 
@@ -45,13 +35,6 @@ public class ModClientBusEvents {
         if (inst != null) {
             if (inst.screen instanceof GenericScreen sc)
                 sc.handleMouseAction(event.getButton(), event.getAction());
-
-            LocalPlayer p = inst.player;
-            if (p != null) {
-                IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(p);
-                if(cap!=null)
-                    cap.onMouseInput(p, event.getButton(), event.getAction());
-            }   
         }
     }
 }

@@ -5,13 +5,12 @@ import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.joml.Vector3f;
-
 import com.lazrproductions.cuffed.api.CuffedAPI;
 import com.lazrproductions.cuffed.api.IRestrainableCapability;
 import com.lazrproductions.cuffed.blocks.base.DetentionBlock;
 import com.lazrproductions.cuffed.entity.base.IDetainableEntity;
 import com.lazrproductions.cuffed.init.ModSounds;
+import com.mojang.math.Vector3f;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -246,7 +245,7 @@ public class PilloryBlock extends DetentionBlock {
                 : (state.getValue(FACING) == Direction.WEST) ? 0.363d : 0;
         double zOffset = (state.getValue(FACING) == Direction.SOUTH) ? -0.363d
                 : (state.getValue(FACING) == Direction.NORTH) ? 0.363d : 0;
-        return pos.getCenter().add(new Vec3(xOffset, -1.5F, zOffset));
+        return new Vec3(pos.getX() + 0.5d, pos.getY() + 0.5d, pos.getZ() + 0.5d).add(new Vec3(xOffset, -1.5F, zOffset));
     }
 
     /**
@@ -304,7 +303,7 @@ public class PilloryBlock extends DetentionBlock {
     public boolean canDetainPlayer(@Nonnull Level level, @Nonnull BlockState state, @Nonnull BlockPos pos,
             @Nonnull Player player) {
         IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(player);
-        if (cap.armsRestrained())
+        if (cap.armsRestrained() || cap.headRestrained())
             return false;
         return getClosed(state);
     }

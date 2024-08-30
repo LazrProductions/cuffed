@@ -29,15 +29,16 @@ import com.lazrproductions.cuffed.restraints.base.IEnchantableRestraint;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -51,6 +52,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.Tags.Blocks;
+import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
@@ -80,7 +82,7 @@ public class ModServerEvents {
             if (deadEntityRestraintData.containsKey(event.getEntity().getUUID())) {
                 event.getEntity().getCapability(CuffedAPI.Capabilities.RESTRAINABLE_CAPABILITY).ifPresent(n -> {
                     n.copyFrom(deadEntityRestraintData.get(event.getEntity().getUUID()),
-                            (ServerLevel) event.getEntity().level());
+                            (ServerLevel) event.getEntity().getLevel());
                     deadEntityRestraintData.remove(event.getEntity().getUUID());
                 });
             }
@@ -114,7 +116,7 @@ public class ModServerEvents {
         BlockState pickresult = event.getState();
         if (pickresult.is(ModTags.Blocks.REINFORCED_BLOCKS))
             if (!event.getPlayer().isCreative()
-                    && !event.getPlayer().getItemInHand(InteractionHand.MAIN_HAND).is(ItemTags.PICKAXES)) {
+                    && !event.getPlayer().getItemInHand(InteractionHand.MAIN_HAND).canPerformAction(ToolActions.PICKAXE_DIG)) {
                 event.setCanceled(true);
                 return;
             }
@@ -136,7 +138,7 @@ public class ModServerEvents {
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void playerInteractBlock(PlayerInteractEvent.RightClickBlock event) {
         if (event.getHand() == InteractionHand.MAIN_HAND) {
-            Level level = event.getEntity().level();
+            Level level = event.getEntity().getLevel();
             if (!level.isClientSide()) {
 
                 Player interacting = event.getEntity();
@@ -249,7 +251,7 @@ public class ModServerEvents {
                     if(CuffedMod.SERVER_CONFIG.ANCHORING_ANCHOR_ONLY_WHEN_RESTRAINED.get()) {
                         if(event.getTarget() instanceof Player p) {
                             IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(p);
-                            if(!cap.armsOrLegsRestrained())
+                            if(!cap.isRestrained())
                                 return;
                         }
                     }
@@ -258,7 +260,7 @@ public class ModServerEvents {
                         if (player.getItemInHand(event.getHand()).is(Items.AIR)) {
                             anchorableEntity.setAnchoredTo(null);
 
-                            player.level().playSound(null, event.getPos(), SoundEvents.CHAIN_BREAK, SoundSource.PLAYERS,
+                            player.getLevel().playSound(null, event.getPos(), SoundEvents.CHAIN_BREAK, SoundSource.PLAYERS,
                                     0.7f, 1);
 
                             event.setCancellationResult(InteractionResult.SUCCESS);
@@ -269,7 +271,7 @@ public class ModServerEvents {
                         anchorableEntity.setAnchoredTo(player);
                         player.getItemInHand(InteractionHand.MAIN_HAND).shrink(1);
 
-                        player.level().playSound(null, event.getPos(), SoundEvents.CHAIN_PLACE, SoundSource.PLAYERS,
+                        player.getLevel().playSound(null, event.getPos(), SoundEvents.CHAIN_PLACE, SoundSource.PLAYERS,
                                 0.7f, 1);
 
                         event.setCancellationResult(InteractionResult.SUCCESS);
@@ -281,10 +283,8 @@ public class ModServerEvents {
 
                 if (event.getTarget() instanceof Animal && myCap != null && myCap.getWhoImEscorting() != null) {
                     myCap.getWhoImEscorting().startRiding(event.getTarget());
-                    player.sendSystemMessage(
-                            Component.translatable("info.cuffed.forced_ride",
-                                    myCap.getWhoImEscorting().getDisplayName(), event.getTarget().getDisplayName()),
-                            true);
+                    player.connection.send(new ClientboundSetActionBarTextPacket(Component.translatable("info.cuffed.forced_ride",
+                    myCap.getWhoImEscorting().getDisplayName(), event.getTarget().getDisplayName())));
                     myCap.stopEscortingPlayer();
                     event.setCancellationResult(InteractionResult.SUCCESS);
                     event.setCanceled(true);
@@ -355,11 +355,11 @@ public class ModServerEvents {
 
     @SubscribeEvent
     public void onLivingDamaged(LivingDamageEvent event) {
-        if (event.getEntity() instanceof Player captor && !event.getEntity().level().isClientSide()) {
+        if (event.getEntity() instanceof Player captor && !event.getEntity().getLevel().isClientSide()) {
             float originalAmount = event.getAmount();
 
-            ServerLevel level = (ServerLevel) event.getEntity().level();
-            MinecraftServer server = event.getEntity().level().getServer();
+            ServerLevel level = (ServerLevel) event.getEntity().getLevel();
+            MinecraftServer server = event.getEntity().getLevel().getServer();
             if (server != null) {
                 boolean activateImbue = true;
 
@@ -397,7 +397,7 @@ public class ModServerEvents {
 
                         // each restrained player takes a percentage of the total damage negated by
                         // imbue
-                        pl.hurt(captor.damageSources().magic(), amountNegated / (float) playersToTakeDamage.size());
+                        pl.hurt(DamageSource.indirectMagic(pl, captor), amountNegated / (float) playersToTakeDamage.size());
                     }
 
                     // CuffedMod.LOGGER.info("Imbue activated! -> original: " +originalAmount + ",

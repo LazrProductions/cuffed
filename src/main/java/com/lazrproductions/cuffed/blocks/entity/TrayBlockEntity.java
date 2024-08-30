@@ -109,7 +109,9 @@ public class TrayBlockEntity extends BlockEntity {
                 }
             } else {
                 if(TrayItem.itemIsFood(itemInMainHand) && !hasFood()) {
-                    setItem(itemInMainHand.copyWithCount(1), 0);
+                    ItemStack stackToSet = itemInMainHand.copy();
+                    stackToSet.setCount(1);
+                    setItem(stackToSet, 0);
                     itemInMainHand.shrink(1);
 
                     level.playSound((Player) null, getBlockPos().getX() + 0.5f, getBlockPos().getY(), getBlockPos().getZ() + 0.5f,
@@ -119,7 +121,9 @@ public class TrayBlockEntity extends BlockEntity {
                     sendUpdate(level, pos, state);
                     return InteractionResult.SUCCESS;
                 } else if(TrayItem.itemIsFork(itemInMainHand) && !hasFork()) {
-                    setItem(itemInMainHand.copyWithCount(1), 1);
+                    ItemStack stackToSet = itemInMainHand.copy();
+                    stackToSet.setCount(1);
+                    setItem(stackToSet, 1);
                     itemInMainHand.shrink(1);
 
                     level.playSound((Player) null, getBlockPos().getX() + 0.5f, getBlockPos().getY(), getBlockPos().getZ() + 0.5f,
@@ -129,7 +133,9 @@ public class TrayBlockEntity extends BlockEntity {
                     sendUpdate(level, pos, state);
                     return InteractionResult.SUCCESS;
                 } else if(TrayItem.itemIsSpoon(itemInMainHand) && !hasSpoon()) {
-                    setItem(itemInMainHand.copyWithCount(1), 2);
+                    ItemStack stackToSet = itemInMainHand.copy();
+                    stackToSet.setCount(1);
+                    setItem(stackToSet, 2);
                     itemInMainHand.shrink(1);
 
                     level.playSound((Player) null, getBlockPos().getX() + 0.5f, getBlockPos().getY(), getBlockPos().getZ() + 0.5f,
@@ -139,7 +145,9 @@ public class TrayBlockEntity extends BlockEntity {
                     sendUpdate(level, pos, state);
                     return InteractionResult.SUCCESS;
                 } else if(TrayItem.itemIsKnife(itemInMainHand) && !hasKnife()) {
-                    setItem(itemInMainHand.copyWithCount(1), 3);
+                    ItemStack stackToSet = itemInMainHand.copy();
+                    stackToSet.setCount(1);
+                    setItem(stackToSet, 3);
                     itemInMainHand.shrink(1);
 
                     level.playSound((Player) null, getBlockPos().getX() + 0.5f, getBlockPos().getY(), getBlockPos().getZ() + 0.5f,
