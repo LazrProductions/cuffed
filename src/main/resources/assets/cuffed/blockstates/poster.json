@@ -123,6 +123,81 @@
         },
         "poster=zooom,half=lower,facing=west": {
             "model": "cuffed:block/poster_zooom", "y": 270
+        },
+        
+        "poster=a_shadow_locked_away,half=upper,facing=north": {
+            "model": "cuffed:block/blank"
+        },
+        "poster=a_shadow_locked_away,half=upper,facing=east": {
+            "model": "cuffed:block/blank", "y": 90
+        },
+        "poster=a_shadow_locked_away,half=upper,facing=south": {
+            "model": "cuffed:block/blank", "y": 180
+        },
+        "poster=a_shadow_locked_away,half=upper,facing=west": {
+            "model": "cuffed:block/blank", "y": 270
+        },
+        "poster=a_shadow_locked_away,half=lower,facing=north": {
+            "model": "cuffed:block/poster_a_shadow_locked_away"
+        },
+        "poster=a_shadow_locked_away,half=lower,facing=east": {
+            "model": "cuffed:block/poster_a_shadow_locked_away", "y": 90
+        },
+        "poster=a_shadow_locked_away,half=lower,facing=south": {
+            "model": "cuffed:block/poster_a_shadow_locked_away", "y": 180
+        },
+        "poster=a_shadow_locked_away,half=lower,facing=west": {
+            "model": "cuffed:block/poster_a_shadow_locked_away", "y": 270
+        },
+        
+        "poster=prisoner,half=upper,facing=north": {
+            "model": "cuffed:block/blank"
+        },
+        "poster=prisoner,half=upper,facing=east": {
+            "model": "cuffed:block/blank", "y": 90
+        },
+        "poster=prisoner,half=upper,facing=south": {
+            "model": "cuffed:block/blank", "y": 180
+        },
+        "poster=prisoner,half=upper,facing=west": {
+            "model": "cuffed:block/blank", "y": 270
+        },
+        "poster=prisoner,half=lower,facing=north": {
+            "model": "cuffed:block/poster_prisoner"
+        },
+        "poster=prisoner,half=lower,facing=east": {
+            "model": "cuffed:block/poster_prisoner", "y": 90
+        },
+        "poster=prisoner,half=lower,facing=south": {
+            "model": "cuffed:block/poster_prisoner", "y": 180
+        },
+        "poster=prisoner,half=lower,facing=west": {
+            "model": "cuffed:block/poster_prisoner", "y": 270
+        },
+        
+        "poster=lantern,half=upper,facing=north": {
+            "model": "cuffed:block/blank"
+        },
+        "poster=lantern,half=upper,facing=east": {
+            "model": "cuffed:block/blank", "y": 90
+        },
+        "poster=lantern,half=upper,facing=south": {
+            "model": "cuffed:block/blank", "y": 180
+        },
+        "poster=lantern,half=upper,facing=west": {
+            "model": "cuffed:block/blank", "y": 270
+        },
+        "poster=lantern,half=lower,facing=north": {
+            "model": "cuffed:block/poster_lantern"
+        },
+        "poster=lantern,half=lower,facing=east": {
+            "model": "cuffed:block/poster_lantern", "y": 90
+        },
+        "poster=lantern,half=lower,facing=south": {
+            "model": "cuffed:block/poster_lantern", "y": 180
+        },
+        "poster=lantern,half=lower,facing=west": {
+            "model": "cuffed:block/poster_lantern", "y": 270
         }
     }
 }

@@ -304,7 +304,7 @@ public class PilloryBlock extends DetentionBlock {
     public boolean canDetainPlayer(@Nonnull Level level, @Nonnull BlockState state, @Nonnull BlockPos pos,
             @Nonnull Player player) {
         IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(player);
-        if (cap.armsRestrained())
+        if (cap.armsRestrained() || cap.headRestrained())
             return false;
         return getClosed(state);
     }

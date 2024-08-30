@@ -124,6 +124,84 @@
             }
           }
         ]
+      },
+      {
+        "rolls": 1,
+        "entries": [
+          {
+            "type": "minecraft:item",
+
+            "name": "cuffed:poster",
+            "functions": [
+              {
+                "function": "set_nbt",
+                "tag": "{Poster:\"a_shadow_locked_away\"}"
+              }
+            ]
+          }
+        ],
+        "conditions": [
+          {
+            "block": "cuffed:poster",
+            "condition": "minecraft:block_state_property",
+            "properties": {
+              "half": "lower",
+              "poster": "a_shadow_locked_away"
+            }
+          }
+        ]
+      },
+      {
+        "rolls": 1,
+        "entries": [
+          {
+            "type": "minecraft:item",
+
+            "name": "cuffed:poster",
+            "functions": [
+              {
+                "function": "set_nbt",
+                "tag": "{Poster:\"prisoner\"}"
+              }
+            ]
+          }
+        ],
+        "conditions": [
+          {
+            "block": "cuffed:poster",
+            "condition": "minecraft:block_state_property",
+            "properties": {
+              "half": "lower",
+              "poster": "prisoner"
+            }
+          }
+        ]
+      },
+      {
+        "rolls": 1,
+        "entries": [
+          {
+            "type": "minecraft:item",
+
+            "name": "cuffed:poster",
+            "functions": [
+              {
+                "function": "set_nbt",
+                "tag": "{Poster:\"lantern\"}"
+              }
+            ]
+          }
+        ],
+        "conditions": [
+          {
+            "block": "cuffed:poster",
+            "condition": "minecraft:block_state_property",
+            "properties": {
+              "half": "lower",
+              "poster": "lantern"
+            }
+          }
+        ]
       }
     ]
   }

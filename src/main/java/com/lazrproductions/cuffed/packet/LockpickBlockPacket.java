@@ -1,8 +1,7 @@
 package com.lazrproductions.cuffed.packet;
 
 import java.util.UUID;
-
-import javax.annotation.Nonnull;
+import java.util.function.Supplier;
 
 import com.lazrproductions.cuffed.api.CuffedAPI;
 import com.lazrproductions.lazrslib.common.network.packet.ParameterizedLazrPacket;
@@ -10,8 +9,7 @@ import com.lazrproductions.lazrslib.common.network.packet.ParameterizedLazrPacke
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.network.NetworkEvent;
 
 public class LockpickBlockPacket extends ParameterizedLazrPacket {
     
@@ -59,16 +57,28 @@ public class LockpickBlockPacket extends ParameterizedLazrPacket {
     }
 
     @Override
-    public void handleClientside(@Nonnull Player arg0) {
-        if(stopCode<=-1) {
-            Minecraft instance = Minecraft.getInstance();
-            CuffedAPI.Lockpicking.beginLockpickingCellDoor(instance, new BlockPos(x,y,z), speedIncreasePerPick, progressPerPick);
-        }
+    public void handleClientside(Supplier<NetworkEvent.Context> ctx) {
+        Clientside.handleClientside(ctx, speedIncreasePerPick, progressPerPick, stopCode, x, y, z, lockpickerUUID);
     }
 
     @Override
-    public void handleServerside(@Nonnull ServerPlayer arg0) {
-        if(stopCode>-1)
-            CuffedAPI.Lockpicking.finishLockpickingCellDoor(stopCode == 0, new BlockPos(x,y,z), UUID.fromString(lockpickerUUID));
+    public void handleServerside(Supplier<NetworkEvent.Context> ctx) {
+        Serverside.handleServerside(ctx, speedIncreasePerPick, progressPerPick, stopCode, x, y, z, lockpickerUUID);
+    }
+
+    static class Clientside {
+        public static void handleClientside(Supplier<NetworkEvent.Context> ctx, int speedIncreasePerPick, int progressPerPick, int stopCode, int x, int y, int z, String lockpickerUUID) {
+            if(stopCode<=-1) {
+                Minecraft instance = Minecraft.getInstance();
+                CuffedAPI.Lockpicking.beginLockpickingCellDoor(instance, new BlockPos(x,y,z), speedIncreasePerPick, progressPerPick);
+            }
+        }
+    }
+
+    static class Serverside {
+        public static void handleServerside(Supplier<NetworkEvent.Context> ctx, int speedIncreasePerPick, int progressPerPick, int stopCode, int x, int y, int z, String lockpickerUUID) {
+            if(stopCode>-1)
+                CuffedAPI.Lockpicking.finishLockpickingCellDoor(stopCode == 0, new BlockPos(x,y,z), UUID.fromString(lockpickerUUID));
+        }
     }
 }

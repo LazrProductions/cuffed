@@ -27,6 +27,24 @@
           "cuffed:poster": 4
         },
         "model": "cuffed:item/poster_zooom"
+      },
+      {
+        "predicate": {
+          "cuffed:poster": 5
+        },
+        "model": "cuffed:item/poster_ashadowlockedaway"
+      },
+      {
+        "predicate": {
+          "cuffed:poster": 6
+        },
+        "model": "cuffed:item/poster_prisoner"
+      },
+      {
+        "predicate": {
+          "cuffed:poster": 7
+        },
+        "model": "cuffed:item/poster_lantern"
       }
     ]
 }

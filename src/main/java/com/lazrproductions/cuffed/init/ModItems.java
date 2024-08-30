@@ -8,6 +8,8 @@ import com.lazrproductions.cuffed.items.KnifeItem;
 import com.lazrproductions.cuffed.items.LegShacklesItem;
 import com.lazrproductions.cuffed.items.LegcuffsItem;
 import com.lazrproductions.cuffed.items.BakedKeyMoldItem;
+import com.lazrproductions.cuffed.items.BandageItem;
+import com.lazrproductions.cuffed.items.DuckTapeItem;
 import com.lazrproductions.cuffed.items.HandcuffsItem;
 import com.lazrproductions.cuffed.items.InformationBookletItem;
 import com.lazrproductions.cuffed.items.Padlock;
@@ -95,7 +97,10 @@ public class ModItems {
                         () -> new Item(new Item.Properties().stacksTo(1).durability(5)));
         public static final RegistryObject<Item> KNIFE = ITEMS.register("knife",
                         () -> new KnifeItem(new Item.Properties().stacksTo(1).durability(5)));
-                                
+                               
+
+        public static final RegistryObject<Item> DUCK_TAPE = ITEMS.register("duck_tape", () -> new DuckTapeItem(new Item.Properties()));
+        public static final RegistryObject<Item> BANDAGE = ITEMS.register("bandage", () -> new BandageItem(new Item.Properties()));
 
         // Block Items
         public static final RegistryObject<Item> CELL_DOOR_ITEM = ITEMS.register("cell_door",

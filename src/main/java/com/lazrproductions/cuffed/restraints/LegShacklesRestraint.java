@@ -181,26 +181,20 @@ public class LegShacklesRestraint extends AbstractLegRestraint implements IBreak
         super.renderOverlay(player, graphics, partialTick, window);
 
         // Display Icon and chain overlay
-        int screenWidth = 183;
-        int screenHeight = 24;
-        int x = (window.getGuiScaledWidth() / 2) - (screenWidth / 2);
-        int y = (window.getGuiScaledHeight()) - (screenHeight) + 1;
-
         float f = (Mth.clamp(breakCooldown / 10, 0, 1)+1);
         graphics.setColor(f, f, f, 1);
 
-        screenWidth = (int) (16 * 1.75f);
-        screenHeight = (int) (16 * 1.75f);
-        x = (window.getGuiScaledWidth() / 2) - (screenWidth / 2);
-        y = (window.getGuiScaledHeight() / 2) - (screenHeight) - 50;
-        if(CuffedAPI.Capabilities.getRestrainableCapability(player).armsRestrained())
-            x -= 16;
-        ScreenUtilities.drawTexture(graphics, new BlitCoordinates(x, y, screenWidth, screenHeight), CHAIN_ICON);
+        int iconWidth = (int) (16 * 1.75f);
+        int iconHeight = (int) (16 * 1.75f);
+        int x = (window.getGuiScaledWidth() / 2) - (iconWidth / 2);
+        int y = (window.getGuiScaledHeight() / 2) - (iconHeight) - 30;
+
+        ScreenUtilities.drawTexture(graphics, new BlitCoordinates(x, y, iconWidth, iconHeight), CHAIN_ICON);
         graphics.setColor(1, 1, 1, 1);
 
         // Display break progress
         float p = Mth.clamp((float)clientSidedDurability / (float)getMaxDurability(), 0, 1);
-        ScreenUtilities.drawGenericProgressBar(graphics, new BlitCoordinates(x, y+screenHeight+2, screenWidth, screenHeight), p);
+        ScreenUtilities.drawGenericProgressBar(graphics, new BlitCoordinates(x, y+iconHeight-2, iconWidth, iconHeight), p);
     }
 
     public void onKeyInput(Player player, int keyCode, int action) {

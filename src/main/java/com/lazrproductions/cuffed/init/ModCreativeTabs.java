@@ -31,6 +31,9 @@ public class ModCreativeTabs {
                         output.accept(ModItems.POSSESSIONSBOX.get());
                         output.accept(ModItems.PRISONER_TAG.get());
 
+                        output.accept(ModItems.DUCK_TAPE.get());
+                        output.accept(ModItems.BANDAGE.get());
+
                         output.accept(ModItems.PADLOCK.get());
                         output.accept(ModItems.KEY.get());
                         output.accept(ModItems.KEY_RING.get());

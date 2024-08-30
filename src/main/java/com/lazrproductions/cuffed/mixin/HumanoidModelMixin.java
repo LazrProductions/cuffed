@@ -10,9 +10,9 @@ import com.lazrproductions.cuffed.entity.animation.ArmRestraintAnimationFlags;
 import com.lazrproductions.cuffed.entity.animation.HumanoidAnimationHelper;
 import com.lazrproductions.cuffed.entity.base.IDetainableEntity;
 import com.lazrproductions.cuffed.entity.base.IRestrainableEntity;
+import com.lazrproductions.cuffed.restraints.PilloryRestraint;
 import com.lazrproductions.cuffed.restraints.Restraints;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.entity.LivingEntity;
@@ -50,54 +50,35 @@ public class HumanoidModelMixin<T extends LivingEntity> {
             head.z = 0;
             body.z = 0;
 
-            Minecraft instance = Minecraft.getInstance();
-            if (p.isLocalPlayer() && instance.options.getCameraType().isFirstPerson()) {
-                if (detained == 0) {
-                    HumanoidAnimationHelper.animatePilloryDetainedAnimation(entity, model, f1, f2, f3, headYRot,
-                            headXRot, detainableEntity.getDetainedRotation());
-                    shouldCancel = true;
-                } else {
-                    if(p instanceof IRestrainableEntity restrainable) {
-                        ArmRestraintAnimationFlags armAnimationFlags = Restraints.getArmAnimationFlagById(restrainable.getArmRestraintId());
-                        switch (armAnimationFlags) {
-                            case ARMS_TIED_FRONT:
-                                HumanoidAnimationHelper.animateArmsTiedFrontFirstPerson(entity, model, f1, f2, f3, headYRot,
-                                        headXRot);
-                                shouldCancel = true;
-                                break;
-                            case ARMS_TIED_BEHIND:
-                                HumanoidAnimationHelper.animateArmsTiedBack(entity, model, f1, f2, f3, headYRot, headXRot);
-                                shouldCancel = true;
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                }
-            } else {
-                if (detained == 0) {
-                    HumanoidAnimationHelper.animatePilloryDetainedAnimation(entity, model, f1, f2, f3, headYRot,
-                            headXRot, detainableEntity.getDetainedRotation());
-                    shouldCancel = true;
-                } else {
-                    if(p instanceof IRestrainableEntity restrainable) {
-                        ArmRestraintAnimationFlags armAnimationFlags = Restraints.getArmAnimationFlagById(restrainable.getArmRestraintId());
-                        switch (armAnimationFlags) {
-                            case ARMS_TIED_FRONT:
-                                HumanoidAnimationHelper.animateArmsTiedFront(entity, model, f1, f2, f3, headYRot, headXRot);
-                                shouldCancel = true;
-                                break;
-                            case ARMS_TIED_BEHIND:
-                                HumanoidAnimationHelper.animateArmsTiedBack(entity, model, f1, f2, f3, headYRot, headXRot);
-                                shouldCancel = true;
-                                break;
-                            default:
-                                break;
 
-                        }
+            if (detained == 0) {
+                HumanoidAnimationHelper.animatePilloryDetainedAnimation(entity, model, f1, f2, f3, headYRot,
+                        headXRot, detainableEntity.getDetainedRotation());
+                shouldCancel = true;
+            } else {
+                if(p instanceof IRestrainableEntity restrainable) {
+                    ArmRestraintAnimationFlags armAnimationFlags = Restraints.getArmAnimationFlagById(restrainable.getArmRestraintId());
+                    
+                    if(restrainable.getHeadRestraintId() == PilloryRestraint.ID) {
+                        p.setXRot(10);
+                    }
+                    
+                    switch (armAnimationFlags) {
+                        case ARMS_TIED_FRONT:
+                            HumanoidAnimationHelper.animateArmsTiedFront(entity, model, f1, f2, f3, headYRot, headXRot);
+                            shouldCancel = true;
+                            break;
+                        case ARMS_TIED_BEHIND:
+                            HumanoidAnimationHelper.animateArmsTiedBack(entity, model, f1, f2, f3, headYRot, headXRot);
+                            shouldCancel = true;
+                            break;
+                        default:
+                            break;
+
                     }
                 }
             }
+            
 
             if (shouldCancel)
                 callback.cancel();

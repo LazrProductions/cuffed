@@ -22,7 +22,6 @@ public class ShacklesEntityLayer<T extends LivingEntity, M extends HumanoidModel
         extends RenderLayer<T, M> {
     private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation(CuffedMod.MODID,
             "textures/entity/shackles.png");
-
     private final A model;
 
     public ShacklesEntityLayer(RenderLayerParent<T, M> parent, A model) {
