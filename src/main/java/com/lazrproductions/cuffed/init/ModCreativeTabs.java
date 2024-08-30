@@ -33,6 +33,13 @@ public class ModCreativeTabs {
                         output.add(ModItems.DUCK_TAPE.get().getDefaultInstance());
                         output.add(ModItems.BANDAGE.get().getDefaultInstance());
 
+
+                        output.add(ModItems.TRAY.get().getDefaultInstance());
+                        output.add(ModItems.FORK.get().getDefaultInstance());
+                        output.add(ModItems.SPOON.get().getDefaultInstance());
+                        output.add(ModItems.KNIFE.get().getDefaultInstance());
+
+
                         output.add(ModItems.PADLOCK.get().getDefaultInstance());
                         output.add(ModItems.KEY.get().getDefaultInstance());
                         output.add(ModItems.KEY_RING.get().getDefaultInstance());
