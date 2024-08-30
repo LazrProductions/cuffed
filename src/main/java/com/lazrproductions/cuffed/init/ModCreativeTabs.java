@@ -33,6 +33,11 @@ public class ModCreativeTabs {
 
                         output.accept(ModItems.DUCK_TAPE.get());
                         output.accept(ModItems.BANDAGE.get());
+                        
+                        output.accept(ModItems.TRAY.get());
+                        output.accept(ModItems.FORK.get());
+                        output.accept(ModItems.SPOON.get());
+                        output.accept(ModItems.KNIFE.get());
 
                         output.accept(ModItems.PADLOCK.get());
                         output.accept(ModItems.KEY.get());

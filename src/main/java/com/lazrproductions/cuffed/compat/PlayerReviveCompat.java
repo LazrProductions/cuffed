@@ -16,4 +16,9 @@ public class PlayerReviveCompat {
         IBleeding revive = PlayerReviveServer.getBleeding(player);
         revive.revive();
     }
+
+    public static void Kill(Player player) {
+        IBleeding revive = PlayerReviveServer.getBleeding(player);
+        revive.forceBledOut();
+    }
 }

@@ -29,28 +29,28 @@ import net.minecraftforge.server.command.EnumArgument;
 public class HandcuffCommand {
     public HandcuffCommand(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext ctx) {
         dispatcher.register(
-                Commands.literal("cuffed").requires((player) -> {
-                    return player.hasPermission(3);
-                }).then(Commands.argument("player", EntityArgument.player())
+                Commands.literal("cuffed").requires((source) -> {
+                    return source.hasPermission(3) || !source.isPlayer();
+                 }).then(Commands.argument("player", EntityArgument.player())
                         .then(Commands.literal("apply")
-                                .then(Commands.argument("item", ItemArgument.item(ctx))
-                                    .then(Commands.argument("type", EnumArgument.enumArgument(RestraintType.class))
-                                        .executes(this::executeApply))))
-                        .then(Commands.literal("remove")
+                            .then(Commands.argument("item", ItemArgument.item(ctx))
                                 .then(Commands.argument("type", EnumArgument.enumArgument(RestraintType.class))
-                                        .executes(this::executeRemove)))
+                                    .executes(this::executeApply))))
+                        .then(Commands.literal("remove")
+                            .then(Commands.argument("type", EnumArgument.enumArgument(RestraintType.class))
+                                .executes(this::executeRemove)))
                         .then(Commands.literal("anchor")
                                 .then(Commands.literal("set")
-                                        .then(Commands.argument("entity", EntityArgument.entity())
-                                                .executes(this::executeSetAnchor)))
+                                    .then(Commands.argument("entity", EntityArgument.entity())
+                                        .executes(this::executeSetAnchor)))
                                 .then(Commands.literal("remove")
-                                        .executes(this::executeRemoveAnchor)))
+                                    .executes(this::executeRemoveAnchor)))
                         .then(Commands.literal("nickname")
                                 .then(Commands.literal("set")
                                         .then(Commands.argument("new nickname", ComponentArgument.textComponent())
-                                                .executes(this::executeSetNickname)))
+                                            .executes(this::executeSetNickname)))
                                 .then(Commands.literal("reset")
-                                        .executes(this::executeResetNickname)))));
+                                    .executes(this::executeResetNickname)))));
     }
 
     private int executeApply(CommandContext<CommandSourceStack> ctx) {
@@ -59,39 +59,42 @@ public class HandcuffCommand {
             ServerPlayer sender = ctx.getSource().getPlayer();
             RestraintType type = ctx.getArgument("type", RestraintType.class);
             ItemStack stack = ItemArgument.getItem(ctx, "item").createItemStack(1, false);
-            if (player != null && sender != null && stack != null && !stack.isEmpty()) {
+            if (player != null && stack != null && !stack.isEmpty()) {
+                ServerPlayer captor = sender != null ? sender : player;
                 if(type == RestraintType.Arm) {
-                    if (Restraints.GetRestraintFromStack(stack, RestraintType.Arm, player, sender) instanceof AbstractArmRestraint arm) {
+                    if (Restraints.GetRestraintFromStack(stack, RestraintType.Arm, player, captor) instanceof AbstractArmRestraint arm) {
                         RestrainableCapability c = (RestrainableCapability) CuffedAPI.Capabilities
                                 .getRestrainableCapability(player);
-                        if (c.TryEquipRestraint(player, sender, arm))
-                            sender.sendSystemMessage(Component.translatable("command.cuffed.apply.arms.success", player.getName(), stack.getDisplayName()));
-                        else
+                        if (c.TryEquipRestraint(player, captor, arm)) {
+                            if(sender != null) sender.sendSystemMessage(Component.translatable("command.cuffed.apply.arms.success", player.getName(), stack.getDisplayName()));
+                        } else if(sender != null)
                             sender.sendSystemMessage(Component.translatable("command.cuffed.apply.arms.failure.alreadyrestrained", stack.getDisplayName(), player.getName()).withStyle(ChatFormatting.RED));
                     } else
-                        sender.sendSystemMessage(Component.translatable("command.cuffed.apply.arms.failure.wrong_type", stack.getDisplayName(), player.getName()).withStyle(ChatFormatting.RED));
+                        if(sender != null) sender.sendSystemMessage(Component.translatable("command.cuffed.apply.arms.failure.wrong_type", stack.getDisplayName(), player.getName()).withStyle(ChatFormatting.RED));
                 } else if(type == RestraintType.Leg) {
-                    if (Restraints.GetRestraintFromStack(stack, RestraintType.Leg,  player, sender) instanceof AbstractLegRestraint leg) {
+                    if (Restraints.GetRestraintFromStack(stack, RestraintType.Leg,  player, captor) instanceof AbstractLegRestraint leg) {
                         RestrainableCapability c = (RestrainableCapability) CuffedAPI.Capabilities
                                 .getRestrainableCapability(player);
-                        if (c.TryEquipRestraint(player, sender, leg))
-                            sender.sendSystemMessage(Component.translatable("command.cuffed.apply.legs.success",
+                        if (c.TryEquipRestraint(player, captor, leg)) {
+                            if(sender != null) 
+                                sender.sendSystemMessage(Component.translatable("command.cuffed.apply.legs.success",
                                     player.getName(), stack.getDisplayName()));
-                        else
+                        } else if(sender != null) 
                             sender.sendSystemMessage(Component.translatable("command.cuffed.apply.legs.failure.alreadyrestrained", stack.getDisplayName(), player.getName()).withStyle(ChatFormatting.RED));
-                    } else
+                    } else if(sender != null) 
                         sender.sendSystemMessage(Component.translatable("command.cuffed.apply.legs.failure.wrong_type", stack.getDisplayName(), player.getName()).withStyle(ChatFormatting.RED));
                 } else if(type == RestraintType.Head) {
-                    if (Restraints.GetRestraintFromStack(stack, RestraintType.Head, player, sender) instanceof AbstractHeadRestraint head) {
+                    if (Restraints.GetRestraintFromStack(stack, RestraintType.Head, player, captor) instanceof AbstractHeadRestraint head) {
                         RestrainableCapability c = (RestrainableCapability) CuffedAPI.Capabilities
                                 .getRestrainableCapability(player);
-                        if (c.TryEquipRestraint(player, sender, head))
-                            sender.sendSystemMessage(Component.translatable("command.cuffed.apply.head.success", player.getName(), stack.getDisplayName()));
-                        else
+                        if (c.TryEquipRestraint(player, captor, head)) {
+                            if(sender != null) 
+                                sender.sendSystemMessage(Component.translatable("command.cuffed.apply.head.success", player.getName(), stack.getDisplayName()));
+                        } else if(sender != null) 
                             sender.sendSystemMessage(Component.translatable("command.cuffed.apply.head.failure.alreadyrestrained", stack.getDisplayName(), player.getName()).withStyle(ChatFormatting.RED));
-                    } else
+                    } else if(sender != null) 
                         sender.sendSystemMessage(Component.translatable("command.cuffed.apply.head.failure.wrong_type", stack.getDisplayName(), player.getName()).withStyle(ChatFormatting.RED));
-                } else
+                } else if(sender != null) 
                     sender.sendSystemMessage(Component.translatable("command.cuffed.apply.failure", stack.getDisplayName(), player.getName()));
                 return 1;
             }
@@ -106,15 +109,17 @@ public class HandcuffCommand {
             ServerPlayer player = EntityArgument.getPlayer(ctx, "player");
             ServerPlayer sender = ctx.getSource().getPlayer();
             RestraintType t = ctx.getArgument("type", RestraintType.class);
-            if (player != null && sender != null) {
+            if (player != null) {
                 RestrainableCapability c = (RestrainableCapability) CuffedAPI.Capabilities
                         .getRestrainableCapability(player);
-                if (c.TryUnequipRestraint(player, sender, t))
-                    sender.sendSystemMessage(Component.translatable("command.cuffed.remove.success", player.getName(), 
+                ServerPlayer captor = sender != null ? sender : player;
+                if (c.TryUnequipRestraint(player, captor, t)) {
+                    if(sender != null) 
+                        sender.sendSystemMessage(Component.translatable("command.cuffed.remove.success", player.getName(),
                             Component.translatable(t == RestraintType.Arm ? "info.cuffed.arms" : t == RestraintType.Head ? "info.cuffed.head" : "info.cuffed.legs")));
-                else
+                } else if(sender != null) 
                     sender.sendSystemMessage(Component.translatable("command.cuffed.remove.failure", player.getName(),
-                            Component.translatable(t == RestraintType.Arm ? "info.cuffed.arms" : t == RestraintType.Head ? "info.cuffed.head" : "info.cuffed.legs")));
+                        Component.translatable(t == RestraintType.Arm ? "info.cuffed.arms" : t == RestraintType.Head ? "info.cuffed.head" : "info.cuffed.legs")));
                 return 1;
             }
             return 0;
@@ -128,10 +133,10 @@ public class HandcuffCommand {
             ServerPlayer player = EntityArgument.getPlayer(ctx, "player");
             ServerPlayer sender = ctx.getSource().getPlayer();
             Component n = ComponentArgument.getComponent(ctx, "new nickname");
-            if (player != null && sender != null && n != null) {
+            if (player != null && n != null) {
                 INicknamable nicknamable = (INicknamable) player;
                 nicknamable.setNickname(n);
-                sender.sendSystemMessage(Component.translatable("command.cuffed.nickname.set", player.getName(), n));
+                if(sender != null) sender.sendSystemMessage(Component.translatable("command.cuffed.nickname.set", player.getName(), n));
                 return 1;
             }
             return 0;
@@ -144,10 +149,11 @@ public class HandcuffCommand {
         try {
             ServerPlayer player = EntityArgument.getPlayer(ctx, "player");
             ServerPlayer sender = ctx.getSource().getPlayer();
-            if (player != null && sender != null) {
+            if (player != null) {
                 INicknamable nicknamable = (INicknamable) player;
                 nicknamable.setNickname(null);
-                sender.sendSystemMessage(Component.translatable("command.cuffed.nickname.reset", player.getName()));
+                
+                if(sender != null) sender.sendSystemMessage(Component.translatable("command.cuffed.nickname.reset", player.getName()));
                 return 1;
             }
             return 0;
@@ -161,11 +167,11 @@ public class HandcuffCommand {
             Entity anchor = EntityArgument.getEntity(ctx, "entity");
             ServerPlayer player = EntityArgument.getPlayer(ctx, "player");
             ServerPlayer sender = ctx.getSource().getPlayer();
-            if (anchor != null && player != null && sender != null) {
-                IAnchorableEntity anchorable = (IAnchorableEntity) player;
+            if (anchor != null && player != null) {
+                IAnchorableEntity anchorable = (IAnchorableEntity)player;
                 anchorable.setAnchoredTo(anchor);
-                sender.sendSystemMessage(Component.translatable("command.cuffed.anchor.set", player.getDisplayName(),
-                        anchor.getDisplayName()));
+
+                if(sender != null) sender.sendSystemMessage(Component.translatable("command.cuffed.anchor.set", player.getDisplayName(), anchor.getDisplayName()));
                 return 1;
             }
             return 0;
@@ -178,11 +184,10 @@ public class HandcuffCommand {
         try {
             ServerPlayer player = EntityArgument.getPlayer(ctx, "player");
             ServerPlayer sender = ctx.getSource().getPlayer();
-            if (player != null && sender != null) {
-                IAnchorableEntity anchorable = (IAnchorableEntity) player;
+            if (player != null) {
+                IAnchorableEntity anchorable = (IAnchorableEntity)player;
                 anchorable.setAnchoredTo(null);
-                sender.sendSystemMessage(
-                        Component.translatable("command.cuffed.anchor.remove", player.getDisplayName()));
+                if(sender != null) sender.sendSystemMessage(Component.translatable("command.cuffed.anchor.remove", player.getDisplayName()));
                 return 1;
             }
             return 0;

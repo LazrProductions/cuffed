@@ -181,7 +181,7 @@ public class PossessionsBox extends Item {
          @Nonnull TooltipFlag p_150752_) {
       CompoundTag compoundtag = stack.getOrCreateTag();
       if (!compoundtag.contains(TAG_ITEMS)) {
-         component.add(Component.translatable("item.cuffed.possessions_box.empty.lore").withStyle(ChatFormatting.GRAY));
+         component.add(Component.translatable("item.cuffed.possessions_box.lore.empty").withStyle(ChatFormatting.GRAY));
       } else {
          ListTag listtag = compoundtag.getList(TAG_ITEMS, 10);
          component.add(Component.translatable("item.cuffed.possessions_box.lore.full", listtag.size())
