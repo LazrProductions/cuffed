@@ -3,7 +3,9 @@ package com.lazrproductions.cuffed.blocks.entity;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.blocks.PilloryBlock;
+import com.lazrproductions.cuffed.compat.PlayerReviveCompat;
 import com.lazrproductions.cuffed.init.ModBlockEntities;
 import com.lazrproductions.cuffed.init.ModDamageTypes;
 import com.lazrproductions.cuffed.init.ModSounds;
@@ -51,7 +53,10 @@ public class GuillotineBlockEntity extends BlockEntity {
     public void chop(@Nonnull Level l, @Nonnull BlockPos pos, @Nonnull BlockState state) {
         Player player = PilloryBlock.getDetainedEntity(l, state, pos);
         if(player != null) {
-            player.hurt(ModDamageTypes.HANG, 999);
+            if(CuffedMod.PlayerReviveInstalled) {
+                PlayerReviveCompat.Kill(player);
+            } else
+                player.hurt(ModDamageTypes.HANG, 999);
 
             ItemStack stack = new ItemStack(Items.PLAYER_HEAD, 1);
             stack.getOrCreateTag().putString("SkullOwner", player.getGameProfile().getName());

@@ -16,6 +16,7 @@ public class CuffedServerConfig extends LazrConfig {
     public ConfigProperty<Integer> MAX_KEYS_PER_RING;
     public ConfigProperty<Integer> SAFE_SLOTS;
     public ConfigProperty<Boolean> REQUIRE_LOW_HEALTH_TO_RESTRAIN;
+    public ConfigProperty<Boolean> ALLOW_BREAKING_OUT_OF_PILLORY;
 
     public ConfigCategory ANCHORING_SETTINGS;
     public ConfigProperty<Boolean> ANCHORING_ANCHOR_ONLY_WHEN_RESTRAINED;
@@ -54,6 +55,8 @@ public class CuffedServerConfig extends LazrConfig {
         SAFE_SLOTS = createGenericProperty(new ConfigProperty<Integer>(this, "Safes Slots", "The total number of slots in the safe.", 36));
 
         REQUIRE_LOW_HEALTH_TO_RESTRAIN = createGenericProperty(new ConfigProperty<Boolean>(this, "Require Low Health To Restrain", "Whether or not to require players to be under 30% health to be restrained. If PlayerRevive is installed, then it requires players to be bleeding out. If a player is already restrained then this setting doesn't take effect.", false));
+
+        ALLOW_BREAKING_OUT_OF_PILLORY = createGenericProperty(new ConfigProperty<Boolean>(this, "Allow breaking out of the pillory", "Whether or not to allow players to spam crouch to break out of pillories.", true));
 
 
         ANCHORING_SETTINGS = createCategory(new ConfigCategory(this, "Anchoring Settings"), (c) -> {
