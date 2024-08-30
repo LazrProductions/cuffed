@@ -20,6 +20,8 @@ import com.lazrproductions.cuffed.compat.ElenaiDodge2Compat;
 import com.lazrproductions.cuffed.compat.EpicFightCompat;
 import com.lazrproductions.cuffed.compat.IronsSpellsnSpellbooksCompat;
 import com.lazrproductions.cuffed.compat.ParcoolCompat;
+import com.lazrproductions.cuffed.compat.PlayerReviveCompat;
+import com.lazrproductions.cuffed.compat.SimpleVoiceChatCompat;
 import com.lazrproductions.cuffed.config.CuffedServerConfig;
 import com.lazrproductions.cuffed.entity.renderer.ChainKnotEntityRenderer;
 import com.lazrproductions.cuffed.entity.renderer.CrumblingBlockRenderer;
@@ -55,6 +57,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -91,6 +94,7 @@ public class CuffedMod {
     public static boolean IronsSpellsnSpellbooksInstalled = false;
     public static boolean ArsNouveauInstalled = false;
     public static boolean PlayerReviveInstalled = false;
+    public static boolean VoiceChatInstalled = false;
 
     public CuffedMod() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -140,10 +144,14 @@ public class CuffedMod {
             ArsNouveauInstalled = true;
             ArsNouveauCompat.load();
         }
-        // if (ModList.get().isLoaded("playerrevive")) {
-        //     PlayerReviveInstalled = true;
-        //     PlayerReviveCompat.load();
-        // }
+        if (ModList.get().isLoaded("playerrevive")) {
+            PlayerReviveInstalled = true;
+            PlayerReviveCompat.load();
+        }
+        if (ModList.get().isLoaded("voicechat")) {
+            VoiceChatInstalled = true;
+            SimpleVoiceChatCompat.load();
+        }
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
@@ -159,6 +167,8 @@ public class CuffedMod {
         DispenseItemBehavior dispenseitembehavior = new OptionalDispenseItemBehavior() {
             protected ItemStack execute(@Nonnull BlockSource source, @Nonnull ItemStack stack) {
                 this.setSuccess(AbstractRestraintItem.dispenseRestraint(source, stack));
+                if(this.isSuccess())
+                    stack.shrink(1);
                 return stack;
             }
         };
@@ -167,6 +177,7 @@ public class CuffedMod {
         DispenserBlock.registerBehavior(ModItems.SHACKLES.get(), dispenseitembehavior);
         DispenserBlock.registerBehavior(ModItems.LEGCUFFS.get(), dispenseitembehavior);
         DispenserBlock.registerBehavior(ModItems.LEG_SHACKLES.get(), dispenseitembehavior);
+        DispenserBlock.registerBehavior(Items.BUNDLE, dispenseitembehavior);
     }
 
     private void registerSounds(RegisterEvent event) {

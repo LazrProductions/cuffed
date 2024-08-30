@@ -9,13 +9,17 @@
         "PlayerMixin",
         "ItemMixin",
         "LivingEntityMixin",
-        "EntityMixin"
+        "EntityMixin",
+        "BundleItemMixin"
     ],
     "client": [
         "HumanoidModelMixin",
         "PlayerRendererMixin",
         "EntityRendererMixin",
-        "EffectRenderingInventoryScreenMixin"
+        "EffectRenderingInventoryScreenMixin",
+        "KeyboardHandlerMixin",
+        "MouseHandlerMixin",
+        "ItemInHandRendererMixin"
     ],
     "minVersion": "0.8"
 }

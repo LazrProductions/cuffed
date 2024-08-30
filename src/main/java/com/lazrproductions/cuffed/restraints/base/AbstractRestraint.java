@@ -1,5 +1,6 @@
 package com.lazrproductions.cuffed.restraints.base;
 
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.UUID;
 
@@ -32,6 +33,7 @@ public abstract class AbstractRestraint {
 
     private ServerPlayer s_player;
     private Player c_player;
+    private CompoundTag itemData;
     @Nonnull private UUID captor;
 
     public AbstractRestraint(){ captor = UUID.randomUUID(); }
@@ -41,6 +43,9 @@ public abstract class AbstractRestraint {
         if(this instanceof IEnchantableRestraint enchantable)
             enchantable.setEnchantments(stack.getEnchantmentTags());
     
+        itemData = new CompoundTag();
+        stack.save(itemData);
+
         this.captor = captor.getUUID();    
     } 
 
@@ -77,6 +82,8 @@ public abstract class AbstractRestraint {
     public abstract int getLockpickingSpeedIncreasePerPick();
     /** Get the lockpick progress per pick for this restraint. */
     public abstract int getLockpickingProgressPerPick();
+
+    public abstract ArrayList<Integer> getBlockedKeyCodes();
 
     //#endregion
 
@@ -223,6 +230,7 @@ public abstract class AbstractRestraint {
             tag.put("Enchantments", ench.getEnchantments());
 
         tag.putUUID("Captor", captor);
+        tag.put("ItemData", itemData);
         return tag;
     }
     public void deserializeNBT(CompoundTag nbt) {
@@ -231,11 +239,12 @@ public abstract class AbstractRestraint {
             ench.setEnchantments(t);
         }
         this.captor = nbt.getUUID("Captor");
+        this.itemData = nbt.getCompound("ItemData");
     }
 
     /** Save this restraint to an item stack */
     public ItemStack saveToItemStack() {
-        ItemStack stack = this.getItem().getDefaultInstance();
+        ItemStack stack = ItemStack.of(itemData);
         stack.setCount(1);
         if(this instanceof IBreakableRestraint breakable)
             stack.setDamageValue(breakable.getMaxDurability() - breakable.getDurability());

@@ -250,7 +250,7 @@ public class ModServerEvents {
                     if(CuffedMod.SERVER_CONFIG.ANCHORING_ANCHOR_ONLY_WHEN_RESTRAINED.get()) {
                         if(event.getTarget() instanceof Player p) {
                             IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(p);
-                            if(!cap.armsOrLegsRestrained())
+                            if(!cap.isRestrained())
                                 return;
                         }
                     }

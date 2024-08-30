@@ -48,6 +48,8 @@
     "item.cuffed.possessions_box": "Box of Possessions",
     "item.cuffed.possessions_box.desc": "A simple box that can store many items. Use an Empty box on a player to frisk them, then choose items to store in the box.",
     "item.cuffed.possessions_box.empty": "Empty Box",
+    "item.cuffed.possessions_box.lore.empty": "Empty",
+    "item.cuffed.possessions_box.lore.full": "Contains %1$s stack(s) of items.",
     "item.cuffed.possessions_box.full": "Box of Possessions",
 
     "item.cuffed.padlock": "Padlock",
@@ -65,9 +67,14 @@
     "item.cuffed.spoon.desc": "A basic utensil.",
     "item.cuffed.knife": "Knife",
     "item.cuffed.knife.desc": "A basic utensil.",
+    
+    "item.cuffed.duck_tape": "Duck Tape",
+    "item.cuffed.duck_tape.desc": "A vertsatile material that can be used to restrain a player's arms, legs or head.",
+    "item.cuffed.bandage": "Bandage",
+    "item.cuffed.bandage.desc": "Cloth soaked with healing juice. Can be used to treat Wounded players",
 
 
-
+    
     "block.cuffed.cell_door": "Cell Door",
     "block.cuffed.cell_door.desc": "A lockable door that can only be broken with a pickaxe. Is reinforced.",
     "block.cuffed.reinforced_bars": "Reinforced Bars",
@@ -105,6 +112,9 @@
     "block.cuffed.poster.skeleton": "Skeleton - by Lazr",
     "block.cuffed.poster.impunity": "Impunity - by Chreal",
     "block.cuffed.poster.zooom": "Zooom - by Chreal",
+    "block.cuffed.poster.a_shadow_locked_away": "A Shadow Locked Away - by Oliveinparis",
+    "block.cuffed.poster.prisoner": "Prisoner - by Zeloid",
+    "block.cuffed.poster.lantern": "Lantern - by David",
     
 
 
@@ -139,6 +149,7 @@
 
 
     "death.attack.hang": "%1$s fell victim to capital punishment",
+    "death.attack.hang.player": "%1$s fell victim to capital punishment",
 
 
     
@@ -147,6 +158,7 @@
     
     "info.cuffed.restraint_type.arm": "Arm Restraint",
     "info.cuffed.restraint_type.leg": "Leg Restraint",
+    "info.cuffed.restraint_type.head": "Head Restraint",
 
     "info.cuffed.restraints.handcuffs.name": "Handcuffs",
     "info.cuffed.restraints.handcuffs.action_bar": "You are handcuffed!",
@@ -162,7 +174,21 @@
 
     "info.cuffed.restraints.leg_shackles.name": "Leg Shackles",
     "info.cuffed.restraints.leg_shackles.action_bar": "Your legs are shackled!",
+    
+    "info.cuffed.restraints.pillory.name": "Pillory",
+    "info.cuffed.restraints.pillory.action_bar": "Your head is stuck in a pillory!",
 
+    "info.cuffed.restraints.duck_tape_head.name": "Duck Tape",
+    "info.cuffed.restraints.duck_tape_head.action_bar": "Your mouth is taped by Duck Tape!",
+    "info.cuffed.restraints.duck_tape_arms.name": "Duck Tape",
+    "info.cuffed.restraints.duck_tape_arms.action_bar": "Your arms are bound by Duck Tape!",
+    "info.cuffed.restraints.duck_tape_legs.name": "Duck Tape",
+    "info.cuffed.restraints.duck_tape_legs.action_bar": "Your legs are bound by Duck Tape!",
+    
+    "info.cuffed.restraints.bundle.name": "bundle",
+    "info.cuffed.restraints.bundle.action_bar": "Your head is in a bundle!",
+
+    
     "info.cuffed.escorting": "You are escorting ",
     "info.cuffed.cancel_escorting": "You stopped escorting ",
     "info.cuffed.forced_ride": "You force %1$s to ride %2$s",
@@ -170,6 +196,9 @@
     "info.cuffed.reinforced_item": "Reinforced",
 
 
+    "info.cuffed.arms": "arms",
+    "info.cuffed.legs": "legs",
+    "info.cuffed.head": "head",
 
     "stat.cuffed.handcuffs_times_restrained": "Players Restrained with Handcuffs",
     "stat.cuffed.handcuffs_broken": "Handcuffs Broken",
@@ -201,10 +230,15 @@
 
 
     "command.cuffed.apply.arms.success": "Equipped %2$s on %1$s's arms.",
-    "command.cuffed.apply.arms.failure.alreadyrestrained": "%1$s's arms are already restrained!",
+    "command.cuffed.apply.arms.failure.alreadyrestrained": "Failed to restrain %2$s's arms with %1$s.",
+    "command.cuffed.apply.arms.failure.wrong_type": "%1$s is not an arm restraint!",
     "command.cuffed.apply.legs.success": "Equipped %2$s on %1$s's legs.",
-    "command.cuffed.apply.legs.failure.alreadyrestrained": "%1$s's legs are already restrained!",
-    "command.cuffed.apply.failure.invaliditem": "%1$s is not a restraint!",
+    "command.cuffed.apply.legs.failure.alreadyrestrained": "Failed to restrain %2$s's legs with %1$s.",
+    "command.cuffed.apply.legs.failure.wrong_type": "%1$s is not a leg restraint!",
+    "command.cuffed.apply.head.success": "Equipped %2$s on %1$s's head.",
+    "command.cuffed.apply.head.failure.alreadyrestrained": "Failed to restrain %2$s's head with %1$s.",
+    "command.cuffed.apply.head.failure.wrong_type": "%1$s is not a head restraint!",
+    "command.cuffed.apply.failure": "Failed to apply %1$s to %2$s",
 
     "command.cuffed.remove.success": "Removed the restraints from %1$s's %2$ss",
     "command.cuffed.remove.failure": "%1$s does not have restraints on their %2$ss",

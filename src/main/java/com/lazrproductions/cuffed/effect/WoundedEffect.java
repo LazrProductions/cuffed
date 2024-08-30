@@ -12,6 +12,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -97,5 +98,10 @@ public class WoundedEffect extends MobEffect {
     }
     public static void woundEntity(@Nonnull LivingEntity entity, int percentage) {
         woundEntity(entity, percentage, false);
+    }
+    public static void treatEntity(@Nonnull LivingEntity entity) {
+        if(entity.hasEffect(ModEffects.WOUNDED_EFFECT.get()))
+            entity.removeEffect(ModEffects.WOUNDED_EFFECT.get());
+        entity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 60, 2));
     }
 }

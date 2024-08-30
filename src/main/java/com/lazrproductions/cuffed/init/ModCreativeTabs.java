@@ -30,6 +30,9 @@ public class ModCreativeTabs {
                         output.add(ModItems.POSSESSIONSBOX.get().getDefaultInstance());
                         output.add(ModItems.PRISONER_TAG.get().getDefaultInstance());
 
+                        output.add(ModItems.DUCK_TAPE.get().getDefaultInstance());
+                        output.add(ModItems.BANDAGE.get().getDefaultInstance());
+
                         output.add(ModItems.PADLOCK.get().getDefaultInstance());
                         output.add(ModItems.KEY.get().getDefaultInstance());
                         output.add(ModItems.KEY_RING.get().getDefaultInstance());
