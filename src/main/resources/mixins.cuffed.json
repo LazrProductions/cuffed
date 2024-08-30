@@ -9,7 +9,8 @@
         "PlayerMixin",
         "ItemMixin",
         "LivingEntityMixin",
-        "EntityMixin"
+        "EntityMixin",
+        "BundleItemMixin"
     ],
     "client": [
         "HumanoidModelMixin",
