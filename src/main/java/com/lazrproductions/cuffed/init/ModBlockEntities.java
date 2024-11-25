@@ -3,6 +3,7 @@ package com.lazrproductions.cuffed.init;
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.blocks.entity.BunkBlockEntity;
 import com.lazrproductions.cuffed.blocks.entity.GuillotineBlockEntity;
+import com.lazrproductions.cuffed.blocks.entity.LockableBlockEntity;
 import com.lazrproductions.cuffed.blocks.entity.SafeBlockEntity;
 import com.lazrproductions.cuffed.blocks.entity.TrayBlockEntity;
 
@@ -33,6 +34,10 @@ public class ModBlockEntities {
                         .register("tray_block_entity", () -> BlockEntityType.Builder.of(TrayBlockEntity::new,
                                         ModBlocks.TRAY.get()).build(null));
         
+        public static final RegistryObject<BlockEntityType<LockableBlockEntity>> CELL_DOOR_BLOCK_ENTITY = BLOCK_ENTITIES
+                        .register("cell_door_block_entity", () -> BlockEntityType.Builder.of(LockableBlockEntity::new,
+                                        ModBlocks.CELL_DOOR.get()).build(null));
+
         //public static final RegistryObject<BlockEntityType<ToiletBlockEntity>> TOILET = BLOCK_ENTITIES
         //                .register("toilet_block_entity", () -> BlockEntityType.Builder.of(ToiletBlockEntity::new,
         //                                ModBlocks.TOILET.get()).build(null));

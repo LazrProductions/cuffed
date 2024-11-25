@@ -1,5 +1,8 @@
 package com.lazrproductions.cuffed.entity;
 
+import java.util.Optional;
+import java.util.UUID;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -44,9 +47,11 @@ public class PadlockEntity extends HangingEntity {
 
     private static final EntityDataAccessor<Boolean> DATA_LOCKED = SynchedEntityData.defineId(PadlockEntity.class,
             EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> DATA_HAS_KEY = SynchedEntityData.defineId(PadlockEntity.class,
-            EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DATA_REINFORCED = SynchedEntityData.defineId(PadlockEntity.class,
+            EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Optional<UUID>> DATA_LOCK_ID = SynchedEntityData.defineId(PadlockEntity.class,
+            EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<Boolean> DATA_HAS_BEEN_BOUND = SynchedEntityData.defineId(PadlockEntity.class,
             EntityDataSerializers.BOOLEAN);
 
     public PadlockEntity(EntityType<? extends HangingEntity> type, Level level) {
@@ -56,7 +61,7 @@ public class PadlockEntity extends HangingEntity {
     public PadlockEntity(Level world, BlockPos pos) {
         super(ModEntityTypes.PADLOCK.get(), world, pos);
         this.setPos((double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D);
-        this.getPersistentData().putBoolean("Locked", true);
+        entityData.set(DATA_LOCK_ID, Optional.of(UUID.randomUUID()));
     }
 
     public boolean isOnSuitableBlock() {
@@ -81,7 +86,7 @@ public class PadlockEntity extends HangingEntity {
         } else {
             ItemStack stack = interactor.getItemInHand(hand);
             if (stack.is(ModItems.KEY.get())) {
-                if (KeyItem.isBoundToBlock(stack, pos)) {
+                if (KeyItem.isBoundToLock(stack, getLockId())) {
                     interactor.awardStat(Stats.ITEM_USED.get(ModItems.KEY.get()));
                     // Toggle locked
                     if (!interactor.isCrouching()) {
@@ -95,20 +100,20 @@ public class PadlockEntity extends HangingEntity {
                         return InteractionResult.SUCCESS;
                     } else {
                         // pickup lock
-                        KeyItem.removeBoundBlock(stack);
+                        KeyItem.removeBoundLock(stack);
                         this.RemoveLock();
                         return InteractionResult.SUCCESS;
                     }
-                } else if (!hasKey()) {
-                    if (KeyItem.tryToSetBoundBlock(interactor, stack, this.pos)) {
-                        setHasKey(true);
+                } else if(!getHasBeenBound()) {
+                    if (KeyItem.tryToSetBoundId(interactor, stack, getLockId(), "Padlock")) {
+                        bind();
                         return InteractionResult.SUCCESS;
                     }
                 }
             }
 
             if (stack.is((ModItems.KEY_RING.get()))) {
-                if (KeyRingItem.hasBoundBlockAt(stack, this.pos)) {
+                if (KeyRingItem.hasBoundId(stack, getLockId())) {
                     interactor.awardStat(Stats.ITEM_USED.get(ModItems.KEY_RING.get()));
                     // Unlock
                     if (!interactor.isCrouching()) {
@@ -121,13 +126,14 @@ public class PadlockEntity extends HangingEntity {
                         return InteractionResult.CONSUME;
                     } else {
                         // pickup lock
-                        KeyRingItem.removeBoundDoorAt(stack, this.pos);
+                        KeyRingItem.removeBoundId(stack, getLockId());
                         this.RemoveLock();
                         return InteractionResult.CONSUME;
                     }
-                } else if (!hasKey() && KeyRingItem.canBindBlock(stack)) {
-                    if (KeyRingItem.tryToAddBoundBlock(interactor, stack, this.pos)) {
-                        setHasKey(true);
+                } else if (KeyRingItem.canBindLock(stack) && !getHasBeenBound()) {
+                    if (KeyRingItem.tryToAddBoundId(interactor, stack, getLockId(), "entity.cuffed.padlock"))
+                    {
+                        bind();
                         return InteractionResult.CONSUME;
                     }
                 }
@@ -248,16 +254,18 @@ public class PadlockEntity extends HangingEntity {
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(DATA_LOCKED, false);
-        this.entityData.define(DATA_HAS_KEY, false);
         this.entityData.define(DATA_REINFORCED, false);
+        this.entityData.define(DATA_LOCK_ID, Optional.empty());
+        this.entityData.define(DATA_HAS_BEEN_BOUND, false);
     }
 
     @Override
     public void addAdditionalSaveData(@Nonnull CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         tag.putBoolean("Locked", this.isLocked());
-        tag.putBoolean("HasKey", this.hasKey());
         tag.putBoolean("Reinforced", this.isReinforced());
+        tag.putUUID("LockId", this.getLockId());
+        tag.putBoolean("HasBeenBound", this.getHasBeenBound());
     }
 
     @Override
@@ -267,11 +275,12 @@ public class PadlockEntity extends HangingEntity {
         this.entityData.set(DATA_LOCKED, tag.getBoolean("Locked"));
         this.setLocked(tag.getBoolean("Locked"));
 
-        this.entityData.set(DATA_HAS_KEY, tag.getBoolean("HasKey"));
-        this.setHasKey(tag.getBoolean("HasKey"));
-
         this.entityData.set(DATA_REINFORCED, tag.getBoolean("Reinforced"));
         this.setReinforced(tag.getBoolean("Reinforced"));
+        
+        this.entityData.set(DATA_LOCK_ID, Optional.of(tag.getUUID("LockId")));
+
+        this.entityData.set(DATA_HAS_BEEN_BOUND, tag.getBoolean("HasBeenBound"));
     }
 
     @Override
@@ -298,10 +307,6 @@ public class PadlockEntity extends HangingEntity {
         this.entityData.set(DATA_LOCKED, value);
     }
 
-    public void setHasKey(boolean value) {
-        this.entityData.set(DATA_HAS_KEY, value);
-    }
-
     public void setReinforced(boolean value) {
         this.entityData.set(DATA_REINFORCED, value);
     }
@@ -310,12 +315,19 @@ public class PadlockEntity extends HangingEntity {
         return this.entityData.get(DATA_LOCKED);
     }
 
-    public boolean hasKey() {
-        return this.entityData.get(DATA_HAS_KEY);
-    }
-
     public boolean isReinforced() {
         return this.entityData.get(DATA_REINFORCED);
+    }
+
+    public UUID getLockId() {
+        return entityData.get(DATA_LOCK_ID).get();
+    }
+
+    public boolean getHasBeenBound() {
+        return entityData.get(DATA_HAS_BEEN_BOUND);
+    }
+    public void bind() {
+        entityData.set(DATA_HAS_BEEN_BOUND, true);
     }
 
     @Override

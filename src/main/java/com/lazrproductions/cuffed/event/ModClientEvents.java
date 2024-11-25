@@ -1,8 +1,8 @@
 package com.lazrproductions.cuffed.event;
 
 import com.lazrproductions.cuffed.api.CuffedAPI;
-import com.lazrproductions.cuffed.api.IRestrainableCapability;
 import com.lazrproductions.cuffed.blocks.base.ILockableBlock;
+import com.lazrproductions.cuffed.cap.base.IRestrainableCapability;
 import com.lazrproductions.cuffed.client.gui.screen.GenericScreen;
 import com.lazrproductions.cuffed.effect.RestrainedEffectInstance;
 import com.lazrproductions.cuffed.entity.base.IRestrainableEntity;

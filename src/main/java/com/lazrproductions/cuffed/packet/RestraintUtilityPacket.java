@@ -3,7 +3,7 @@ package com.lazrproductions.cuffed.packet;
 import java.util.function.Supplier;
 
 import com.lazrproductions.cuffed.api.CuffedAPI;
-import com.lazrproductions.cuffed.api.IRestrainableCapability;
+import com.lazrproductions.cuffed.cap.base.IRestrainableCapability;
 import com.lazrproductions.cuffed.restraints.base.AbstractRestraint;
 import com.lazrproductions.cuffed.restraints.base.RestraintType;
 import com.lazrproductions.lazrslib.common.network.packet.ParameterizedLazrPacket;

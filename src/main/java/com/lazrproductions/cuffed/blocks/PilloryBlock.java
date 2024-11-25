@@ -8,8 +8,8 @@ import javax.annotation.Nullable;
 import org.joml.Vector3f;
 
 import com.lazrproductions.cuffed.api.CuffedAPI;
-import com.lazrproductions.cuffed.api.IRestrainableCapability;
 import com.lazrproductions.cuffed.blocks.base.DetentionBlock;
+import com.lazrproductions.cuffed.cap.base.IRestrainableCapability;
 import com.lazrproductions.cuffed.entity.base.IDetainableEntity;
 import com.lazrproductions.cuffed.init.ModSounds;
 

@@ -5,7 +5,6 @@ import javax.annotation.Nullable;
 
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.api.CuffedAPI;
-import com.lazrproductions.cuffed.blocks.base.ILockableBlock;
 import com.lazrproductions.cuffed.blocks.entity.SafeBlockEntity;
 import com.lazrproductions.cuffed.init.ModItems;
 import com.lazrproductions.cuffed.init.ModStatistics;
@@ -49,7 +48,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 @SuppressWarnings("deprecation")
-public class SafeBlock extends BaseEntityBlock implements SimpleWaterloggedBlock, ILockableBlock {
+public class SafeBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
     public static final VoxelShape SHAPE_EW = Block.box(16 * 0.0625F, 16 * 0F, 16 * 0.125F,
             16 * 0.9375F, 16 * 1F, 16 * 0.875F);
     public static final VoxelShape SHAPE_NS = Block.box(16 * 0.125F, 16 * 0F, 16 * 0.0625F,
@@ -65,9 +64,7 @@ public class SafeBlock extends BaseEntityBlock implements SimpleWaterloggedBlock
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(OPEN, Boolean.FALSE)
-                .setValue(LOCKED, Boolean.FALSE)
-                .setValue(WATERLOGGED, Boolean.FALSE)
-                .setValue(BOUND, Boolean.FALSE));
+                .setValue(WATERLOGGED, Boolean.FALSE));
     }
 
     @Override
@@ -84,29 +81,32 @@ public class SafeBlock extends BaseEntityBlock implements SimpleWaterloggedBlock
         if (level.isClientSide) {
             return InteractionResult.SUCCESS;
         } else {
+            
             ItemStack stack = player.getInventory().getSelected();
 
-            boolean flag = stack.is((ModItems.KEY.get())) && KeyItem.isBoundToBlock(stack, pos);
-            boolean flag1 = stack.is((ModItems.KEY_RING.get())) && KeyRingItem.hasBoundBlockAt(stack, pos);
-            boolean flag2 = stack.is(ModItems.LOCKPICK.get());
+            
+            BlockEntity blockentity = level.getBlockEntity(pos);
+            if (blockentity instanceof SafeBlockEntity safe) {
 
-            if (!flag2) {
-                if ((flag || flag1) && ILockableBlock.isBound(state)) {
-                    boolean willEndUpLocked = !ILockableBlock.isLocked(state);
-                    ILockableBlock.setIsLocked(player, state, pos, willEndUpLocked);
+                boolean isKeyItemAndIsBoundToThis = stack.is((ModItems.KEY.get())) && KeyItem.isBoundToLock(stack, safe.getLockId());
+                boolean isKeyRingItemAndIsBoundToThis = stack.is((ModItems.KEY_RING.get())) && KeyRingItem.hasBoundId(stack, safe.getLockId());
+                boolean isHoldingLockpick = stack.is(ModItems.LOCKPICK.get());
 
+                if (!isHoldingLockpick) {
+                    if ((isKeyItemAndIsBoundToThis || isKeyRingItemAndIsBoundToThis)) {
+                        boolean willEndUpLocked = !safe.isLocked();
+                        safe.setLocked(willEndUpLocked, level, player, pos);
+
+                        return InteractionResult.sidedSuccess(level.isClientSide());
+                    }
+                } else if (safe.isLocked()) {
+                    CuffedAPI.Networking.sendLockpickBeginPickingCellDoorPacketToClient((ServerPlayer) player, pos,
+                            CuffedMod.SERVER_CONFIG.LOCKPICKING_SPEED_INCREASE_PER_PICK_FOR_BREAKING_SAFES.get(),
+                            CuffedMod.SERVER_CONFIG.LOCKPICKING_PROGRESS_PER_PICK_FOR_BREAKING_SAFES.get());
                     return InteractionResult.sidedSuccess(level.isClientSide());
                 }
-            } else if (ILockableBlock.isLocked(state)) {
-                CuffedAPI.Networking.sendLockpickBeginPickingCellDoorPacketToClient((ServerPlayer) player, pos,
-                        CuffedMod.SERVER_CONFIG.LOCKPICKING_SPEED_INCREASE_PER_PICK_FOR_BREAKING_SAFES.get(),
-                        CuffedMod.SERVER_CONFIG.LOCKPICKING_PROGRESS_PER_PICK_FOR_BREAKING_SAFES.get());
-                return InteractionResult.sidedSuccess(level.isClientSide());
-            }
 
-            if (!ILockableBlock.isLocked(state)) {
-                BlockEntity blockentity = level.getBlockEntity(pos);
-                if (blockentity instanceof SafeBlockEntity) {
+                if (!safe.isLocked()) {
                     player.openMenu((SafeBlockEntity) blockentity);
                     player.awardStat(ModStatistics.OPEN_SAFE.get());
                     PiglinAi.angerNearbyPiglins(player, true);
@@ -118,7 +118,7 @@ public class SafeBlock extends BaseEntityBlock implements SimpleWaterloggedBlock
     }
 
     protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, OPEN, LOCKED, BOUND, WATERLOGGED);
+        builder.add(FACING, OPEN, WATERLOGGED);
     }
 
     /* BLOCK ENTITY STUFFS */

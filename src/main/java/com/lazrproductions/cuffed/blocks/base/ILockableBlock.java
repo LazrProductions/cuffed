@@ -2,8 +2,6 @@ package com.lazrproductions.cuffed.blocks.base;
 
 import javax.annotation.Nonnull;
 
-import com.lazrproductions.cuffed.items.KeyItem;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -45,11 +43,11 @@ public interface ILockableBlock {
         if(!isBound(state)) {
             Level level = player.level();
             if(level != null) {        
-                if(KeyItem.tryToSetBoundBlock(player, stack, pos)) {
-                    state = state.setValue(BOUND, true);
-                    level.setBlock(pos, state, Block.UPDATE_NEIGHBORS);
-                    return true;
-                }
+                // if(KeyItem.tryToSetBoundBlock(player, stack, pos)) {
+                //     state = state.setValue(BOUND, true);
+                //     level.setBlock(pos, state, Block.UPDATE_NEIGHBORS);
+                //     return true;
+                // }
             }
         }
         return false;
@@ -58,10 +56,10 @@ public interface ILockableBlock {
     public static void bindToKey(@Nonnull Player player, @Nonnull BlockState state, @Nonnull BlockPos pos, @Nonnull ItemStack stack) {
         Level level = player.level();
         if(level != null) {        
-            if(KeyItem.tryToSetBoundBlock(player, stack, pos)) {
-                state = state.setValue(BOUND, true);
-                level.setBlock(pos, state, Block.UPDATE_NEIGHBORS);
-            }
+            // if(KeyItem.tryToSetBoundBlock(player, stack, pos)) {
+            //     state = state.setValue(BOUND, true);
+            //     level.setBlock(pos, state, Block.UPDATE_NEIGHBORS);
+            // }
         }
     }
 }

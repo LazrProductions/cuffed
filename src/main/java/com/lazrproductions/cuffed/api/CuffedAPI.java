@@ -1,5 +1,6 @@
 package com.lazrproductions.cuffed.api;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 import javax.annotation.Nonnull;
@@ -9,6 +10,7 @@ import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.blocks.PilloryBlock;
 import com.lazrproductions.cuffed.blocks.base.ILockableBlock;
 import com.lazrproductions.cuffed.cap.RestrainableCapability;
+import com.lazrproductions.cuffed.cap.base.IRestrainableCapability;
 import com.lazrproductions.cuffed.client.gui.screen.LockpickingScreen;
 import com.lazrproductions.cuffed.entity.PadlockEntity;
 import com.lazrproductions.cuffed.init.ModItems;
@@ -298,6 +300,18 @@ public class CuffedAPI {
             }
 
             return isLockedBlock;
+        }
+    
+        public static final HashMap<BlockPos, UUID> registeredLocks = new HashMap<>();
+
+        public static void loadWorld() {
+            registeredLocks.clear();
+
+            // Load keys from world files
+        }
+
+        public static void saveWorld() {
+
         }
     }
 

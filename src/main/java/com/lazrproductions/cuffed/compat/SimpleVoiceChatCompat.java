@@ -2,7 +2,7 @@ package com.lazrproductions.cuffed.compat;
 
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.entity.base.IRestrainableEntity;
-import com.lazrproductions.cuffed.restraints.DuckTapeHeadRestraint;
+import com.lazrproductions.cuffed.restraints.custom.DuckTapeHeadRestraint;
 
 import de.maxhenkel.voicechat.api.ForgeVoicechatPlugin;
 import de.maxhenkel.voicechat.api.VoicechatApi;

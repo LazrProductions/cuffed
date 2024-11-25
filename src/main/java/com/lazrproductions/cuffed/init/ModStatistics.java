@@ -6,12 +6,12 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import com.lazrproductions.cuffed.CuffedMod;
-import com.lazrproductions.cuffed.restraints.FuzzyHandcuffsRestraint;
-import com.lazrproductions.cuffed.restraints.HandcuffsRestraint;
-import com.lazrproductions.cuffed.restraints.LegShacklesRestraint;
-import com.lazrproductions.cuffed.restraints.LegcuffsRestraint;
-import com.lazrproductions.cuffed.restraints.ShacklesRestraint;
 import com.lazrproductions.cuffed.restraints.base.AbstractRestraint;
+import com.lazrproductions.cuffed.restraints.custom.FuzzyHandcuffsRestraint;
+import com.lazrproductions.cuffed.restraints.custom.HandcuffsArmsRestraint;
+import com.lazrproductions.cuffed.restraints.custom.HandcuffsLegsRestraint;
+import com.lazrproductions.cuffed.restraints.custom.ShacklesArmsRestraint;
+import com.lazrproductions.cuffed.restraints.custom.ShacklesLegsRestraint;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -86,39 +86,39 @@ public class ModStatistics {
 		player.awardStat(Stats.ITEM_USED.get(stack.getItem()), 1);
 	}
 	public static void awardRestrained(@Nonnull ServerPlayer player, @Nonnull AbstractRestraint restraint) {
-		if(restraint instanceof HandcuffsRestraint)
+		if(restraint instanceof HandcuffsArmsRestraint)
 			player.awardStat(HANDCUFFS_TIME_RESTRAINED.get(), 1);
 		else if(restraint instanceof FuzzyHandcuffsRestraint)
 			player.awardStat(FUZZY_HANDCUFFS_TIME_RESTRAINED.get(), 1);
-		else if(restraint instanceof ShacklesRestraint)
+		else if(restraint instanceof ShacklesArmsRestraint)
 			player.awardStat(SHACKLES_TIME_RESTRAINED.get(), 1);
-		else if(restraint instanceof LegcuffsRestraint)
+		else if(restraint instanceof HandcuffsLegsRestraint)
 			player.awardStat(LEGCUFFS_TIME_RESTRAINED.get(), 1);
-		else if(restraint instanceof LegShacklesRestraint)
+		else if(restraint instanceof ShacklesLegsRestraint)
 			player.awardStat(LEG_SHACKLES_TIME_RESTRAINED.get(), 1);
 	}
 	public static void awardRestraintBroken(@Nonnull ServerPlayer player, @Nonnull AbstractRestraint restraint) {
-		if(restraint instanceof HandcuffsRestraint)
+		if(restraint instanceof HandcuffsArmsRestraint)
 			player.awardStat(HANDCUFFS_BROKEN.get(), 1);
 		else if(restraint instanceof FuzzyHandcuffsRestraint)
 			player.awardStat(FUZZY_HANDCUFFS_BROKEN.get(), 1);
-		else if(restraint instanceof ShacklesRestraint)
+		else if(restraint instanceof ShacklesArmsRestraint)
 			player.awardStat(SHACKLES_BROKEN.get(), 1);
-		else if(restraint instanceof LegcuffsRestraint)
+		else if(restraint instanceof HandcuffsLegsRestraint)
 			player.awardStat(LEGCUFFS_BROKEN.get(), 1);
-		else if(restraint instanceof LegShacklesRestraint)
+		else if(restraint instanceof ShacklesLegsRestraint)
 			player.awardStat(LEG_SHACKLES_BROKEN.get(), 1);
 	}
 	public static void awardTimeSpentRestrained(@Nonnull ServerPlayer player, @Nonnull AbstractRestraint restraint) {
-		if(restraint instanceof HandcuffsRestraint)
+		if(restraint instanceof HandcuffsArmsRestraint)
 			player.awardStat(HANDCUFFS_TIME_SPENT_RESTRAINED.get(), 1);
 		else if(restraint instanceof FuzzyHandcuffsRestraint)
 			player.awardStat(FUZZY_HANDCUFFS_TIME_SPENT_RESTRAINED.get(), 1);
-		else if(restraint instanceof ShacklesRestraint)
+		else if(restraint instanceof ShacklesArmsRestraint)
 			player.awardStat(SHACKLES_TIME_SPENT_RESTRAINED.get(), 1);
-		else if(restraint instanceof LegcuffsRestraint)
+		else if(restraint instanceof HandcuffsLegsRestraint)
 			player.awardStat(LEGCUFFS_TIME_SPENT_RESTRAINED.get(), 1);
-		else if(restraint instanceof LegShacklesRestraint)
+		else if(restraint instanceof ShacklesLegsRestraint)
 			player.awardStat(LEG_SHACKLES_TIME_SPENT_RESTRAINED.get(), 1);
 	}
 }

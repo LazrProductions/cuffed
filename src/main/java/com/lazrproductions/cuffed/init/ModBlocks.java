@@ -87,25 +87,26 @@ public class ModBlocks {
                         () -> new GuillotineBlock(BlockBehaviour.Properties.of().sound(SoundType.WOOD)
                                         .mapColor(MapColor.WOOD).noCollission().strength(1.25F)));
 
-        public static final RegistryObject<Block> SAFE = BLOCKS.register("safe", 
+        public static final RegistryObject<Block> SAFE = BLOCKS.register("safe",
                         () -> new SafeBlock(BlockBehaviour.Properties.of().sound(SoundType.NETHERITE_BLOCK)
                                         .mapColor(MapColor.COLOR_GRAY).noOcclusion().strength(6.0F, 18.0F)));
-                                        
-        public static final RegistryObject<Block> BUNK = BLOCKS.register("bunk", 
+
+        public static final RegistryObject<Block> BUNK = BLOCKS.register("bunk",
                         () -> new BunkBlock(BlockBehaviour.Properties.of().sound(SoundType.NETHERITE_BLOCK)
                                         .mapColor(MapColor.COLOR_GRAY).noOcclusion().strength(6.0F, 18.0F)));
-                                        
-        public static final RegistryObject<Block> POSTER = BLOCKS.register("poster", 
+
+        public static final RegistryObject<Block> POSTER = BLOCKS.register("poster",
                         () -> new PosterBlock(BlockBehaviour.Properties.of().sound(SoundType.SCAFFOLDING)
                                         .mapColor(MapColor.COLOR_RED).noOcclusion().instabreak()));
 
-        public static final RegistryObject<Block> TRAY = BLOCKS.register("tray", 
+        public static final RegistryObject<Block> TRAY = BLOCKS.register("tray",
                         () -> new TrayBlock(BlockBehaviour.Properties.of().sound(SoundType.LANTERN)
                                         .mapColor(MapColor.COLOR_LIGHT_GRAY).noOcclusion()));
-                                        
-        //public static final RegistryObject<Block> TOILET = BLOCKS.register("toilet", 
-        //                () -> new ToiletBlock(BlockBehaviour.Properties.of().sound(SoundType.BONE_BLOCK)
-        //                                .mapColor(MapColor.COLOR_LIGHT_GRAY).noOcclusion().strength(0.75F)));
+
+        // public static final RegistryObject<Block> TOILET = BLOCKS.register("toilet",
+        // () -> new
+        // ToiletBlock(BlockBehaviour.Properties.of().sound(SoundType.BONE_BLOCK)
+        // .mapColor(MapColor.COLOR_LIGHT_GRAY).noOcclusion().strength(0.75F)));
 
         public static void register(IEventBus bus) {
                 BLOCKS.register(bus);

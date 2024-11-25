@@ -4,7 +4,7 @@ import com.lazrproductions.cuffed.api.CuffedAPI;
 import com.lazrproductions.cuffed.cap.RestrainableCapability;
 import com.lazrproductions.cuffed.entity.base.IAnchorableEntity;
 import com.lazrproductions.cuffed.entity.base.INicknamable;
-import com.lazrproductions.cuffed.restraints.Restraints;
+import com.lazrproductions.cuffed.restraints.RestraintAPI;
 import com.lazrproductions.cuffed.restraints.base.AbstractArmRestraint;
 import com.lazrproductions.cuffed.restraints.base.AbstractHeadRestraint;
 import com.lazrproductions.cuffed.restraints.base.AbstractLegRestraint;
@@ -62,7 +62,7 @@ public class HandcuffCommand {
             if (player != null && stack != null && !stack.isEmpty()) {
                 ServerPlayer captor = sender != null ? sender : player;
                 if(type == RestraintType.Arm) {
-                    if (Restraints.GetRestraintFromStack(stack, RestraintType.Arm, player, captor) instanceof AbstractArmRestraint arm) {
+                    if (RestraintAPI.getRestraintFromStack(stack, RestraintType.Arm, player, captor) instanceof AbstractArmRestraint arm) {
                         RestrainableCapability c = (RestrainableCapability) CuffedAPI.Capabilities
                                 .getRestrainableCapability(player);
                         if (c.TryEquipRestraint(player, captor, arm)) {
@@ -72,7 +72,7 @@ public class HandcuffCommand {
                     } else
                         if(sender != null) sender.sendSystemMessage(Component.translatable("command.cuffed.apply.arms.failure.wrong_type", stack.getDisplayName(), player.getName()).withStyle(ChatFormatting.RED));
                 } else if(type == RestraintType.Leg) {
-                    if (Restraints.GetRestraintFromStack(stack, RestraintType.Leg,  player, captor) instanceof AbstractLegRestraint leg) {
+                    if (RestraintAPI.getRestraintFromStack(stack, RestraintType.Leg,  player, captor) instanceof AbstractLegRestraint leg) {
                         RestrainableCapability c = (RestrainableCapability) CuffedAPI.Capabilities
                                 .getRestrainableCapability(player);
                         if (c.TryEquipRestraint(player, captor, leg)) {
@@ -84,7 +84,7 @@ public class HandcuffCommand {
                     } else if(sender != null) 
                         sender.sendSystemMessage(Component.translatable("command.cuffed.apply.legs.failure.wrong_type", stack.getDisplayName(), player.getName()).withStyle(ChatFormatting.RED));
                 } else if(type == RestraintType.Head) {
-                    if (Restraints.GetRestraintFromStack(stack, RestraintType.Head, player, captor) instanceof AbstractHeadRestraint head) {
+                    if (RestraintAPI.getRestraintFromStack(stack, RestraintType.Head, player, captor) instanceof AbstractHeadRestraint head) {
                         RestrainableCapability c = (RestrainableCapability) CuffedAPI.Capabilities
                                 .getRestrainableCapability(player);
                         if (c.TryEquipRestraint(player, captor, head)) {

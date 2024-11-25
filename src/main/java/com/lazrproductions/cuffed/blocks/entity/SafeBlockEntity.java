@@ -1,5 +1,7 @@
 package com.lazrproductions.cuffed.blocks.entity;
 
+import java.util.UUID;
+
 import com.lazrproductions.cuffed.blocks.SafeBlock;
 import com.lazrproductions.cuffed.init.ModBlockEntities;
 import com.lazrproductions.cuffed.init.ModSounds;
@@ -10,6 +12,7 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
@@ -25,6 +28,10 @@ import net.minecraft.world.level.block.state.BlockState;
 
 @SuppressWarnings("null")
 public class SafeBlockEntity extends RandomizableContainerBlockEntity {
+    private UUID lockId;
+    private boolean locked;
+    private boolean hasBeenBound;
+
     private NonNullList<ItemStack> items = NonNullList.withSize(27, ItemStack.EMPTY);
     private final ContainerOpenersCounter openersCounter = new ContainerOpenersCounter() {
         protected void onOpen(Level p_155062_, BlockPos p_155063_, BlockState p_155064_) {
@@ -51,25 +58,32 @@ public class SafeBlockEntity extends RandomizableContainerBlockEntity {
         }
     };
 
-    public SafeBlockEntity(BlockPos p_155052_, BlockState p_155053_) {
-        super(ModBlockEntities.SAFE_BLOCK_ENTITY.get(), p_155052_, p_155053_);
+    public SafeBlockEntity(BlockPos pos, BlockState state) {
+        super(ModBlockEntities.SAFE_BLOCK_ENTITY.get(), pos, state);
+        lockId = UUID.randomUUID();
+        locked = false;
+        hasBeenBound = false;
     }
 
-    protected void saveAdditional(CompoundTag p_187459_) {
-        super.saveAdditional(p_187459_);
-        if (!this.trySaveLootTable(p_187459_)) {
-            ContainerHelper.saveAllItems(p_187459_, this.items);
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
+        if (!this.trySaveLootTable(tag)) {
+            ContainerHelper.saveAllItems(tag, this.items);
         }
-
+        tag.putUUID("LockId", lockId);
+        tag.putBoolean("Locked", locked);
+        tag.putBoolean("HasBeenBound", hasBeenBound);
     }
 
-    public void load(CompoundTag p_155055_) {
-        super.load(p_155055_);
+    public void load(CompoundTag tag) {
+        super.load(tag);
         this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
-        if (!this.tryLoadLootTable(p_155055_)) {
-            ContainerHelper.loadAllItems(p_155055_, this.items);
+        if (!this.tryLoadLootTable(tag)) {
+            ContainerHelper.loadAllItems(tag, this.items);
         }
-
+        lockId = tag.getUUID("LockId");
+        locked = tag.getBoolean("Locked");
+        hasBeenBound = tag.getBoolean("HasBeenBound");
     }
 
     public int getContainerSize() {
@@ -80,28 +94,28 @@ public class SafeBlockEntity extends RandomizableContainerBlockEntity {
         return this.items;
     }
 
-    protected void setItems(NonNullList<ItemStack> p_58610_) {
-        this.items = p_58610_;
+    protected void setItems(NonNullList<ItemStack> newItems) {
+        this.items = newItems;
     }
 
     protected Component getDefaultName() {
         return Component.translatable("block.cuffed.safe");
     }
 
-    protected AbstractContainerMenu createMenu(int p_58598_, Inventory p_58599_) {
-        return ChestMenu.threeRows(p_58598_, p_58599_, this);
+    protected AbstractContainerMenu createMenu(int menuId, Inventory inventory) {
+        return ChestMenu.threeRows(menuId, inventory, this);
     }
 
-    public void startOpen(Player p_58616_) {
-        if (!this.remove && !p_58616_.isSpectator()) {
-            this.openersCounter.incrementOpeners(p_58616_, this.getLevel(), this.getBlockPos(), this.getBlockState());
+    public void startOpen(Player player) {
+        if (!this.remove && !player.isSpectator()) {
+            this.openersCounter.incrementOpeners(player, this.getLevel(), this.getBlockPos(), this.getBlockState());
         }
 
     }
 
-    public void stopOpen(Player p_58614_) {
-        if (!this.remove && !p_58614_.isSpectator()) {
-            this.openersCounter.decrementOpeners(p_58614_, this.getLevel(), this.getBlockPos(), this.getBlockState());
+    public void stopOpen(Player player) {
+        if (!this.remove && !player.isSpectator()) {
+            this.openersCounter.decrementOpeners(player, this.getLevel(), this.getBlockPos(), this.getBlockState());
         }
 
     }
@@ -113,16 +127,38 @@ public class SafeBlockEntity extends RandomizableContainerBlockEntity {
 
     }
 
-    void updateBlockState(BlockState p_58607_, boolean p_58608_) {
-        this.level.setBlock(this.getBlockPos(), p_58607_.setValue(SafeBlock.OPEN, Boolean.valueOf(p_58608_)), 3);
+
+    public void setLocked(boolean value, Level level, Player player, BlockPos pos) {
+        level.playSound(null, pos, SoundEvents.CHAIN_PLACE, SoundSource.BLOCKS, 1.0F,
+                level.getRandom().nextFloat() * 0.1F + 0.9F);
+        player.displayClientMessage(
+                Component.translatable("info.lock.toggle_" + (!locked ? "on" : "off")), true);
+        locked = value;
+    }
+    public boolean isLocked() {
+        return locked;
+    }
+    public UUID getLockId() {
+        return lockId;
+    }
+    public boolean hasBeenBound() {
+        return hasBeenBound;
+    }
+    public void bind() {
+        hasBeenBound = true;
     }
 
-    void playSound(BlockState p_58601_, SoundEvent p_58602_) {
-        Vec3i vec3i = p_58601_.getValue(SafeBlock.FACING).getNormal();
+
+    void updateBlockState(BlockState state, boolean b1) {
+        this.level.setBlock(this.getBlockPos(), state.setValue(SafeBlock.OPEN, Boolean.valueOf(b1)), 3);
+    }
+
+    void playSound(BlockState state, SoundEvent soundEvent) {
+        Vec3i vec3i = state.getValue(SafeBlock.FACING).getNormal();
         double d0 = (double) this.worldPosition.getX() + 0.5D + (double) vec3i.getX() / 2.0D;
         double d1 = (double) this.worldPosition.getY() + 0.5D + (double) vec3i.getY() / 2.0D;
         double d2 = (double) this.worldPosition.getZ() + 0.5D + (double) vec3i.getZ() / 2.0D;
-        this.level.playSound((Player) null, d0, d1, d2, p_58602_, SoundSource.BLOCKS, 0.5F,
+        this.level.playSound((Player) null, d0, d1, d2, soundEvent, SoundSource.BLOCKS, 0.5F,
                 this.level.random.nextFloat() * 0.1F + 0.9F);
     }
 }

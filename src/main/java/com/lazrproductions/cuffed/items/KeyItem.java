@@ -1,11 +1,14 @@
 package com.lazrproductions.cuffed.items;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.lazrproductions.cuffed.blocks.base.ILockableBlock;
+import com.lazrproductions.cuffed.blocks.CellDoor;
+import com.lazrproductions.cuffed.blocks.entity.LockableBlockEntity;
+import com.lazrproductions.cuffed.blocks.entity.SafeBlockEntity;
 import com.lazrproductions.cuffed.init.ModItems;
 
 import net.minecraft.ChatFormatting;
@@ -23,12 +26,12 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 
 public class KeyItem extends Item {
 
-    public static final String TAG_BOUND_BLOCK = "BoundBlock";
-    public static final String TAG_POSITION = "Position";
+    public static final String TAG_ID = "Id";
 
     public KeyItem(Properties p) {
         super(p);
@@ -40,67 +43,95 @@ public class KeyItem extends Item {
             return InteractionResult.FAIL;
 
         Level level = context.getLevel();
-        if (!level.isClientSide && context.getHand() == InteractionHand.MAIN_HAND)
-            if(level.getBlockState(context.getClickedPos()).getBlock() instanceof ILockableBlock) {
-                Player player = context.getPlayer();
-                if (player != null) {
-                    if (player.getItemInHand(context.getHand()).getTagElement(TAG_BOUND_BLOCK) == null) {
-                        BlockPos p = context.getClickedPos();
-                        if (level.getBlockState(context.getClickedPos().below()).getBlock() instanceof DoorBlock)
-                            p = context.getClickedPos().below();
+        if (!level.isClientSide && context.getHand() == InteractionHand.MAIN_HAND) {
+            Player player = context.getPlayer();
+            BlockState state = level.getBlockState(context.getClickedPos());
+            if (player != null) {
+                ItemStack stack = player.getItemInHand(context.getHand());
+                if (state.getBlock() instanceof CellDoor) {
+                    BlockPos bottomPos = context.getClickedPos();
+                    if(state.getValue(CellDoor.HALF) == DoubleBlockHalf.UPPER) {
+                        bottomPos = bottomPos.below();
+                        state = level.getBlockState(bottomPos);
+                    }
 
-                        if(ILockableBlock.tryToBindToKey(player, level.getBlockState(p), p, player.getItemInHand(context.getHand()))) {
+                    if (level.getBlockEntity(bottomPos) instanceof LockableBlockEntity lockable) {
+                        if (!isBoundToALock(stack) && !lockable.hasBeenBound()) {
+                            if (tryToSetBoundId(player, stack, lockable.getLockId(), "Cell Door")) {
+                                lockable.bind();
+                                player.awardStat(Stats.ITEM_USED.get(ModItems.KEY.get()), 1);
+                                return InteractionResult.SUCCESS;
+                            } else
+                                return InteractionResult.FAIL;
+                        }
+                    }
+                } else if (level.getBlockEntity(context.getClickedPos()) instanceof LockableBlockEntity lockable) {
+                    if (!isBoundToALock(stack) && !lockable.hasBeenBound()) {
+                        if (tryToSetBoundId(player, stack, lockable.getLockId(), lockable.getLockName())) {
+                            lockable.bind();
                             player.awardStat(Stats.ITEM_USED.get(ModItems.KEY.get()), 1);
                             return InteractionResult.SUCCESS;
                         } else
                             return InteractionResult.FAIL;
                     }
+
+                } else if (level.getBlockEntity(context.getClickedPos()) instanceof SafeBlockEntity safe) {
+                    if (!isBoundToALock(stack) && !safe.hasBeenBound()) {
+                        if (tryToSetBoundId(player, stack, safe.getLockId(), "block.cuffed.safe")) {
+                            safe.bind();
+                            player.awardStat(Stats.ITEM_USED.get(ModItems.KEY.get()), 1);
+                            return InteractionResult.SUCCESS;
+                        } else
+                            return InteractionResult.FAIL;
+                    }
+
                 }
-            } 
+            }
+        }
 
         return InteractionResult.FAIL;
     }
 
-    public static boolean tryToSetBoundBlock(Player player, ItemStack stack, BlockPos pos) {
-        if (stack.getTagElement(TAG_BOUND_BLOCK) == null) {
-            setBoundBlock(stack, pos);
+    public static boolean tryToSetBoundId(Player player, ItemStack stack, UUID id, String lockName) {
+        if (!stack.getOrCreateTag().contains(TAG_ID)) {
+            setBoundId(stack, id);
             if (!player.level().getGameRules().getBoolean(GameRules.RULE_REDUCEDDEBUGINFO))
-                player.displayClientMessage(Component.literal("Bound key to " + pos.getX() + " " + pos.getY() + " " + pos.getZ()), false);
+                player.displayClientMessage(Component.translatable("item.cuffed.key.info.bound").append(Component.literal(""+id)), false);
             else
-                player.displayClientMessage(Component.literal("Bound key to ").append(player.level().getBlockState(pos).getBlock().getName()), false);
+                player.displayClientMessage(Component.translatable("item.cuffed.key.info.bound").append(Component.translatable(lockName)), false);
             player.playSound(SoundEvents.CHAIN_FALL, 1.0F, 1.0F);
             return true;
         }
         return false;
     }
 
-
-    public static void setBoundBlock(ItemStack stack, BlockPos pos) {
-        stack.getOrCreateTagElement(TAG_BOUND_BLOCK).putIntArray(TAG_POSITION,
-                new int[] { pos.getX(), pos.getY(), pos.getZ() });
+    public static void setBoundId(ItemStack stack, UUID id) {
+        stack.getOrCreateTag().putUUID(TAG_ID, id);
     }
 
-
-    public static void removeBoundBlock(ItemStack stack) {
-        if (stack.getTagElement(TAG_BOUND_BLOCK) != null)
-            stack.removeTagKey(TAG_BOUND_BLOCK);
+    public static void removeBoundLock(ItemStack stack) {
+        if (stack.getOrCreateTag().contains(TAG_ID))
+            stack.removeTagKey(TAG_ID);
     }
 
     @Nullable
-    public static BlockPos getBoundBlock(ItemStack stack) {
-        CompoundTag tag = stack.getTagElement(TAG_BOUND_BLOCK);
-        if(tag == null)
+    public static UUID getBoundLock(ItemStack stack) {
+        CompoundTag tag = stack.getOrCreateTag();
+        if (!tag.contains(TAG_ID))
             return null;
-        int[] pos = tag.getIntArray(TAG_POSITION);
-        return new BlockPos(pos[0], pos[1], pos[2]);
+        return tag.getUUID(TAG_ID);
     }
-    public static boolean isBoundToBlock(@Nonnull ItemStack stack, @Nonnull BlockPos checkPos) {
-        CompoundTag tag = stack.getTagElement(TAG_BOUND_BLOCK);
-        if(tag == null)
+
+    public static boolean isBoundToLock(@Nonnull ItemStack stack, @Nonnull UUID id) {
+        CompoundTag tag = stack.getOrCreateTag();
+        if (!tag.contains(TAG_ID))
             return false;
-        int[] _p = tag.getIntArray(TAG_POSITION);
-        BlockPos pos = new BlockPos(_p[0], _p[1], _p[2]);
-        return checkPos.equals(pos);
+        return tag.getUUID(TAG_ID).equals(id);
+    }
+
+    public static boolean isBoundToALock(@Nonnull ItemStack stack) {
+        CompoundTag tag = stack.getOrCreateTag();
+        return tag.contains(TAG_ID);
     }
 
     @Override
@@ -110,11 +141,12 @@ public class KeyItem extends Item {
     }
 
     @Override
-    public void appendHoverText(@Nonnull ItemStack stack, @Nullable Level pLevel, @Nonnull List<Component> pTooltipComponents,
+    public void appendHoverText(@Nonnull ItemStack stack, @Nullable Level pLevel,
+            @Nonnull List<Component> pTooltipComponents,
             @Nonnull TooltipFlag pIsAdvanced) {
         super.appendHoverText(stack, pLevel, pTooltipComponents, pIsAdvanced);
 
-        if (stack.getTagElement(TAG_BOUND_BLOCK) != null)
+        if (stack.getOrCreateTag().contains(TAG_ID))
             pTooltipComponents.add(Component.translatable("item.cuffed.key.description.bound").withStyle(ChatFormatting.DARK_GRAY));
     }
 }

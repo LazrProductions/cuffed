@@ -7,19 +7,17 @@ import javax.annotation.Nullable;
 
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.api.CuffedAPI;
-import com.lazrproductions.cuffed.api.IRestrainableCapability;
+import com.lazrproductions.cuffed.cap.base.IRestrainableCapability;
 import com.lazrproductions.cuffed.compat.BetterCombatCompat;
 import com.lazrproductions.cuffed.compat.ElenaiDodge2Compat;
 import com.lazrproductions.cuffed.compat.EpicFightCompat;
 import com.lazrproductions.cuffed.compat.ParcoolCompat;
-import com.lazrproductions.cuffed.compat.PlayerReviveCompat;
 import com.lazrproductions.cuffed.effect.RestrainedEffectInstance;
 import com.lazrproductions.cuffed.init.ModEffects;
 import com.lazrproductions.cuffed.init.ModItems;
 import com.lazrproductions.cuffed.init.ModStatistics;
-import com.lazrproductions.cuffed.items.base.AbstractRestraintItem;
 import com.lazrproductions.cuffed.items.base.AbstractRestraintKeyItem;
-import com.lazrproductions.cuffed.restraints.Restraints;
+import com.lazrproductions.cuffed.restraints.RestraintAPI;
 import com.lazrproductions.cuffed.restraints.base.AbstractArmRestraint;
 import com.lazrproductions.cuffed.restraints.base.AbstractHeadRestraint;
 import com.lazrproductions.cuffed.restraints.base.AbstractLegRestraint;
@@ -31,6 +29,7 @@ import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
@@ -40,9 +39,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BundleItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.phys.Vec3;
 
@@ -54,6 +51,8 @@ public class RestrainableCapability implements IRestrainableCapability {
 
     public ServerPlayer playerEscortingMe = null;
     public ServerPlayer whoImEscorting = null;
+
+    public ServerPlayer playerFriskingMe = null;
 
     private boolean markedForSync = false;
 
@@ -93,7 +92,8 @@ public class RestrainableCapability implements IRestrainableCapability {
         // --- HANDLE ESCORTING
 
         if (playerEscortingMe != null) {
-            playerEscortingMe.sendSystemMessage(Component.translatable("info.cuffed.escorting").append(player.getDisplayName()), true);
+            playerEscortingMe.sendSystemMessage(
+                    Component.translatable("info.cuffed.escorting").append(player.getDisplayName()), true);
 
             if (!isRestrained()) {
                 CuffedAPI.Capabilities.getRestrainableCapability(playerEscortingMe).stopEscortingPlayer();
@@ -107,7 +107,7 @@ public class RestrainableCapability implements IRestrainableCapability {
                 CuffedAPI.Capabilities.getRestrainableCapability(playerEscortingMe).stopEscortingPlayer();
         }
 
-        if(whoImEscorting == null || whoImEscorting.isRemoved())
+        if (whoImEscorting == null || whoImEscorting.isRemoved())
             whoImEscorting = null;
 
         // ---
@@ -139,29 +139,28 @@ public class RestrainableCapability implements IRestrainableCapability {
 
     public void deserializeNBT(CompoundTag nbt) {
         if (nbt.contains("HeadRestraint"))
-            headRestraint = (AbstractHeadRestraint) Restraints.GetRestraintFromNBT(nbt.getCompound("HeadRestraint"));
+            headRestraint = (AbstractHeadRestraint) RestraintAPI.getRestraintFromTag(nbt.getCompound("HeadRestraint"));
         else
             headRestraint = null;
-        
+
         if (nbt.contains("ArmRestraint"))
-            armRestraint = (AbstractArmRestraint) Restraints.GetRestraintFromNBT(nbt.getCompound("ArmRestraint"));
+            armRestraint = (AbstractArmRestraint) RestraintAPI.getRestraintFromTag(nbt.getCompound("ArmRestraint"));
         else
             armRestraint = null;
 
         if (nbt.contains("LegRestraint"))
-            legRestraint = (AbstractLegRestraint) Restraints.GetRestraintFromNBT(nbt.getCompound("LegRestraint"));
+            legRestraint = (AbstractLegRestraint) RestraintAPI.getRestraintFromTag(nbt.getCompound("LegRestraint"));
         else
             legRestraint = null;
-
 
         markedForSync = true;
     }
 
     public void onInteractedByOther(ServerPlayer player, ServerPlayer other, double interactionHeight, ItemStack stack,
             InteractionHand hand) {
-        if (stack.getItem() instanceof AbstractRestraintItem) {
-            if(interactionHeight > 1.5f) {
-                AbstractRestraint r = Restraints.GetRestraintFromStack(stack, RestraintType.Head, player, other);
+        if (RestraintAPI.isRestraintItem(stack)) {
+            if (interactionHeight > 1.5f) {
+                AbstractRestraint r = RestraintAPI.getRestraintFromStack(stack, RestraintType.Head, player, other);
                 if (r instanceof AbstractHeadRestraint a)
                     if (TryEquipRestraint(player, other, a)) {
                         ModStatistics.awardRestraintItemUsed(other, stack);
@@ -169,7 +168,7 @@ public class RestrainableCapability implements IRestrainableCapability {
                     }
             }
             if (interactionHeight > 0.33f && interactionHeight <= 1.5f) {
-                AbstractRestraint r = Restraints.GetRestraintFromStack(stack, RestraintType.Arm, player, other);
+                AbstractRestraint r = RestraintAPI.getRestraintFromStack(stack, RestraintType.Arm, player, other);
                 if (r instanceof AbstractArmRestraint a)
                     if (TryEquipRestraint(player, other, a)) {
                         ModStatistics.awardRestraintItemUsed(other, stack);
@@ -177,70 +176,71 @@ public class RestrainableCapability implements IRestrainableCapability {
                     }
             }
             if (interactionHeight <= 0.33f) {
-                AbstractRestraint r = Restraints.GetRestraintFromStack(stack, RestraintType.Leg, player, other);
+                AbstractRestraint r = RestraintAPI.getRestraintFromStack(stack, RestraintType.Leg, player, other);
                 if (r instanceof AbstractLegRestraint l)
                     if (TryEquipRestraint(player, other, l)) {
                         ModStatistics.awardRestraintItemUsed(other, stack);
                         stack.shrink(1);
                     }
             }
-        } else if(stack.is(Items.BUNDLE)) {
-            if(BundleItem.getFullnessDisplay(stack) <= 0)
-            {
-                AbstractRestraint r = Restraints.GetRestraintFromStack(stack, RestraintType.Head, player, other);
-                if (r instanceof AbstractHeadRestraint l)
-                    if (TryEquipRestraint(player, other, l)) {
-                        ModStatistics.awardRestraintItemUsed(other, stack);
-                        stack.shrink(1);
-                    }
-            }
+        
         } else if (stack.getItem() instanceof AbstractRestraintKeyItem) {
-            if(interactionHeight > 1.5f) {
+            if (interactionHeight > 1.5f) {
                 if (headRestraint != null)
-                    if(headRestraint.getKeyItem() == null || headRestraint.getKeyItem() == stack.getItem())
-                        if(TryUnequipRestraint(player, other, RestraintType.Head))
+                    if (headRestraint.getKeyItem() == null || headRestraint.getKeyItem() == stack.getItem())
+                        if (TryUnequipRestraint(player, other, RestraintType.Head))
                             other.awardStat(Stats.ITEM_USED.get(stack.getItem()), 1);
-            } else if(interactionHeight > 0.33f && interactionHeight <= 1.5f) {
+            } else if (interactionHeight > 0.33f && interactionHeight <= 1.5f) {
                 if (armRestraint != null)
-                    if(armRestraint.getKeyItem() == null || armRestraint.getKeyItem() == stack.getItem())
-                        if(TryUnequipRestraint(player, other, RestraintType.Arm))
+                    if (armRestraint.getKeyItem() == null || armRestraint.getKeyItem() == stack.getItem())
+                        if (TryUnequipRestraint(player, other, RestraintType.Arm))
                             other.awardStat(Stats.ITEM_USED.get(stack.getItem()), 1);
-            } else if(interactionHeight <= 0.33f) {
+            } else if (interactionHeight <= 0.33f) {
                 if (legRestraint != null)
-                    if(legRestraint.getKeyItem() == null || legRestraint.getKeyItem() == stack.getItem())
-                        if(TryUnequipRestraint(player, other, RestraintType.Leg))
+                    if (legRestraint.getKeyItem() == null || legRestraint.getKeyItem() == stack.getItem())
+                        if (TryUnequipRestraint(player, other, RestraintType.Leg))
                             other.awardStat(Stats.ITEM_USED.get(stack.getItem()), 1);
             }
         } else if (stack.is(ModItems.LOCKPICK.get())) {
             int lockpickType = -1;
-            if(interactionHeight > 1.5f && headRestrained() && headRestraint.getLockpickable())
+            if (interactionHeight > 1.5f && headRestrained() && headRestraint.getLockpickable())
                 lockpickType = RestraintType.Head.toInteger();
-            else if(interactionHeight > 0.33f && interactionHeight <= 1.5f && armsRestrained() && armRestraint.getLockpickable())
+            else if (interactionHeight > 0.33f && interactionHeight <= 1.5f && armsRestrained()
+                    && armRestraint.getLockpickable())
                 lockpickType = RestraintType.Arm.toInteger();
-            else if(interactionHeight <= 0.33f && legsRestrained() && legRestraint.getLockpickable())
+            else if (interactionHeight <= 0.33f && legsRestrained() && legRestraint.getLockpickable())
                 lockpickType = RestraintType.Leg.toInteger();
-            
-            if(lockpickType > -1) {
-                int speedIncreasePerPick = lockpickType == RestraintType.Leg.toInteger() ? getLegRestraint().getLockpickingSpeedIncreasePerPick() : lockpickType == RestraintType.Arm.toInteger() ? getArmRestraint().getLockpickingSpeedIncreasePerPick() : getHeadRestraint().getLockpickingSpeedIncreasePerPick();
-                int progressPerPick = lockpickType == RestraintType.Leg.toInteger() ? getLegRestraint().getLockpickingProgressPerPick() : lockpickType == RestraintType.Arm.toInteger() ? getArmRestraint().getLockpickingProgressPerPick() : getHeadRestraint().getLockpickingProgressPerPick();
-                
-                CuffedAPI.Networking.sendLockpickBeginPickingRestraintPacketToClient((ServerPlayer)other, player.getUUID().toString(), lockpickType, speedIncreasePerPick, progressPerPick);
+
+            if (lockpickType > -1) {
+                int speedIncreasePerPick = lockpickType == RestraintType.Leg.toInteger()
+                        ? getLegRestraint().getLockpickingSpeedIncreasePerPick()
+                        : lockpickType == RestraintType.Arm.toInteger()
+                                ? getArmRestraint().getLockpickingSpeedIncreasePerPick()
+                                : getHeadRestraint().getLockpickingSpeedIncreasePerPick();
+                int progressPerPick = lockpickType == RestraintType.Leg.toInteger()
+                        ? getLegRestraint().getLockpickingProgressPerPick()
+                        : lockpickType == RestraintType.Arm.toInteger()
+                                ? getArmRestraint().getLockpickingProgressPerPick()
+                                : getHeadRestraint().getLockpickingProgressPerPick();
+
+                CuffedAPI.Networking.sendLockpickBeginPickingRestraintPacketToClient((ServerPlayer) other,
+                        player.getUUID().toString(), lockpickType, speedIncreasePerPick, progressPerPick);
             }
-        } else if(stack.isEmpty() && !other.isCrouching()) {
-            if(interactionHeight > 1.5f) {
+        } else if (stack.isEmpty() && !other.isCrouching()) {
+            if (interactionHeight > 1.5f) {
                 if (headRestraint != null)
-                    if(headRestraint.getKeyItem() == null)
-                        if(TryUnequipRestraint(player, other, RestraintType.Head))
+                    if (headRestraint.getKeyItem() == null)
+                        if (TryUnequipRestraint(player, other, RestraintType.Head))
                             other.awardStat(Stats.ITEM_USED.get(stack.getItem()), 1);
-            } else if(interactionHeight > 0.33f && interactionHeight <= 1.5f) {
+            } else if (interactionHeight > 0.33f && interactionHeight <= 1.5f) {
                 if (armRestraint != null)
-                    if(armRestraint.getKeyItem() == null)
-                        if(TryUnequipRestraint(player, other, RestraintType.Arm))
+                    if (armRestraint.getKeyItem() == null)
+                        if (TryUnequipRestraint(player, other, RestraintType.Arm))
                             other.awardStat(Stats.ITEM_USED.get(stack.getItem()), 1);
-            } else if(interactionHeight <= 0.33f) {
+            } else if (interactionHeight <= 0.33f) {
                 if (legRestraint != null)
-                    if(legRestraint.getKeyItem() == null)
-                        if(TryUnequipRestraint(player, other, RestraintType.Leg))
+                    if (legRestraint.getKeyItem() == null)
+                        if (TryUnequipRestraint(player, other, RestraintType.Leg))
                             other.awardStat(Stats.ITEM_USED.get(stack.getItem()), 1);
             }
         } else if (stack.isEmpty() && other.isCrouching() && isRestrained())
@@ -333,7 +333,6 @@ public class RestrainableCapability implements IRestrainableCapability {
         return RestrainedEffectInstance.encodeRestraintProperties(noMining, noItemUse, noMovement, noJumping);
     }
 
-
     public boolean armsRestrained() {
         return armRestraint != null;
     }
@@ -358,33 +357,31 @@ public class RestrainableCapability implements IRestrainableCapability {
         return headRestrained();
     }
 
-
-    public String getArmRestraintId() {
+    public ResourceLocation getArmRestraintId() {
         if (armRestraint != null)
             return armRestraint.getId();
-        return "";
+        return new ResourceLocation("air");
     }
 
-    public String getLegRestraintId() {
+    public ResourceLocation getLegRestraintId() {
         if (legRestraint != null)
             return legRestraint.getId();
-        return "";
+        return new ResourceLocation("air");
     }
 
-    public String getHeadRestraintId() {
+    public ResourceLocation getHeadRestraintId() {
         if (headRestraint != null)
             return headRestraint.getId();
-        return "";
+        return new ResourceLocation("air");
     }
 
-    public String getRestraintId(RestraintType type) {
+    public ResourceLocation getRestraintId(RestraintType type) {
         if (type == RestraintType.Arm)
             return getArmRestraintId();
         if (type == RestraintType.Head)
             return getHeadRestraintId();
         return getLegRestraintId();
     }
-
 
     public AbstractArmRestraint getArmRestraint() {
         return armRestraint;
@@ -405,7 +402,6 @@ public class RestrainableCapability implements IRestrainableCapability {
             return getHeadRestraint();
         return getLegRestraint();
     }
-
 
     public void setArmRestraintWithoutWarning(@Nonnull ServerPlayer player,
             @Nullable AbstractArmRestraint newRestraint) {
@@ -430,10 +426,10 @@ public class RestrainableCapability implements IRestrainableCapability {
         if (type == RestraintType.Arm) {
             if (newValue instanceof AbstractArmRestraint arm)
                 armRestraint = arm;
-        } else if(type == RestraintType.Head) {
+        } else if (type == RestraintType.Head) {
             if (newValue instanceof AbstractHeadRestraint head)
                 headRestraint = head;
-        } else if(type == RestraintType.Leg) {
+        } else if (type == RestraintType.Leg) {
             if (newValue instanceof AbstractLegRestraint leg)
                 legRestraint = leg;
         }
@@ -441,24 +437,15 @@ public class RestrainableCapability implements IRestrainableCapability {
         CuffedAPI.Networking.sendRestraintSyncPacket(player);
     }
 
-
     public boolean TryEquipRestraint(@Nonnull ServerPlayer player, @Nullable ServerPlayer captor,
             AbstractArmRestraint restraint) {
+        CuffedMod.LOGGER.info("attempting to put restraints on " + player.getName().getString());
         if (armRestraint == null) {
-            if(CuffedMod.SERVER_CONFIG.REQUIRE_LOW_HEALTH_TO_RESTRAIN.get() && !isRestrained()) {
-                if(!CuffedMod.PlayerReviveInstalled) {
-                    if(player.getHealth() / player.getMaxHealth() <= 0.3f) {
-                        player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100, 2));
-                        EquipRestraint(player, captor, restraint);
-                        return true;
-                    }
-                } else {
-                    if(PlayerReviveCompat.IsDowned(player))
-                    {
-                        PlayerReviveCompat.Revive(player);
-                        EquipRestraint(player, captor, restraint); 
-                        return true;
-                    }
+            if (CuffedMod.SERVER_CONFIG.REQUIRE_LOW_HEALTH_TO_RESTRAIN.get() && !isRestrained()) {
+                if (player.getHealth() / player.getMaxHealth() <= 0.3f) {
+                    player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100, 2));
+                    EquipRestraint(player, captor, restraint);
+                    return true;
                 }
             } else {
                 EquipRestraint(player, captor, restraint);
@@ -470,21 +457,13 @@ public class RestrainableCapability implements IRestrainableCapability {
 
     public boolean TryEquipRestraint(@Nonnull ServerPlayer player, @Nullable ServerPlayer captor,
             AbstractLegRestraint restraint) {
+        CuffedMod.LOGGER.info("attempting to put restraints on " + player.getName().getString());
         if (legRestraint == null) {
-            if(CuffedMod.SERVER_CONFIG.REQUIRE_LOW_HEALTH_TO_RESTRAIN.get() && !isRestrained()) {
-                if(!CuffedMod.PlayerReviveInstalled) {
-                    if(player.getHealth() / player.getMaxHealth() <= 0.3f) {
-                        player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100, 2));
-                        EquipRestraint(player, captor, restraint);
-                        return true;
-                    }
-                } else {
-                    if(PlayerReviveCompat.IsDowned(player))
-                    {
-                        PlayerReviveCompat.Revive(player);
-                        EquipRestraint(player, captor, restraint); 
-                        return true;
-                    }
+            if (CuffedMod.SERVER_CONFIG.REQUIRE_LOW_HEALTH_TO_RESTRAIN.get() && !isRestrained()) {
+                if (player.getHealth() / player.getMaxHealth() <= 0.3f) {
+                    player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100, 2));
+                    EquipRestraint(player, captor, restraint);
+                    return true;
                 }
             } else {
                 EquipRestraint(player, captor, restraint);
@@ -496,21 +475,13 @@ public class RestrainableCapability implements IRestrainableCapability {
 
     public boolean TryEquipRestraint(@Nonnull ServerPlayer player, @Nullable ServerPlayer captor,
             AbstractHeadRestraint restraint) {
+        CuffedMod.LOGGER.info("attempting to put restraints on " + player.getName().getString());
         if (headRestraint == null) {
-            if(CuffedMod.SERVER_CONFIG.REQUIRE_LOW_HEALTH_TO_RESTRAIN.get() && !isRestrained()) {
-                if(!CuffedMod.PlayerReviveInstalled) {
-                    if(player.getHealth() / player.getMaxHealth() <= 0.3f) {
-                        player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100, 2));
-                        EquipRestraint(player, captor, restraint);
-                        return true;
-                    }
-                } else {
-                    if(PlayerReviveCompat.IsDowned(player))
-                    {
-                        PlayerReviveCompat.Revive(player);
-                        EquipRestraint(player, captor, restraint); 
-                        return true;
-                    }
+            if (CuffedMod.SERVER_CONFIG.REQUIRE_LOW_HEALTH_TO_RESTRAIN.get() && !isRestrained()) {
+                if (player.getHealth() / player.getMaxHealth() <= 0.3f) {
+                    player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100, 2));
+                    EquipRestraint(player, captor, restraint);
+                    return true;
                 }
             } else {
                 EquipRestraint(player, captor, restraint);
@@ -519,7 +490,6 @@ public class RestrainableCapability implements IRestrainableCapability {
         }
         return false;
     }
-
 
     public void EquipRestraint(@Nonnull ServerPlayer player, @Nullable ServerPlayer captor,
             AbstractArmRestraint restraint) {
@@ -554,12 +524,11 @@ public class RestrainableCapability implements IRestrainableCapability {
         CuffedAPI.Networking.sendRestraintEquipPacket(player, captor, RestraintType.Head, headRestraint, oldRestraint);
     }
 
-
     public boolean TryUnequipRestraint(@Nonnull ServerPlayer player, @Nullable ServerPlayer releaser,
             RestraintType type) {
         if ((type == RestraintType.Arm && armRestraint != null)
                 || (type == RestraintType.Leg && legRestraint != null)
-                    || (type == RestraintType.Head && headRestraint != null)) {
+                || (type == RestraintType.Head && headRestraint != null)) {
             UnequipRestraint(player, releaser, type);
             return true;
         }
@@ -575,10 +544,11 @@ public class RestrainableCapability implements IRestrainableCapability {
         else if (type == RestraintType.Head)
             oldRestraint = headRestraint;
 
-        if(oldRestraint != null) {
+        if (oldRestraint != null) {
             ItemStack stack = oldRestraint.saveToItemStack();
             if (releaser == null || !releaser.addItem(stack)) {
-                ItemEntity e = new ItemEntity(player.level(), player.getX(), player.getY() + 0.6D, player.getZ(), stack);
+                ItemEntity e = new ItemEntity(player.level(), player.getX(), player.getY() + 0.6D, player.getZ(),
+                        stack);
                 e.setDefaultPickUpDelay();
                 player.level().addFreshEntity(e);
             }
@@ -588,9 +558,9 @@ public class RestrainableCapability implements IRestrainableCapability {
 
         if (type == RestraintType.Arm)
             armRestraint = null;
-        else if(type == RestraintType.Leg)
+        else if (type == RestraintType.Leg)
             legRestraint = null;
-        else if(type == RestraintType.Head)
+        else if (type == RestraintType.Head)
             headRestraint = null;
 
         // Send sync packet
@@ -652,7 +622,7 @@ public class RestrainableCapability implements IRestrainableCapability {
                 ElenaiDodge2Compat.Reset();
         }
 
-        if(headRestraint != null)
+        if (headRestraint != null)
             headRestraint.onTickClient(player);
         if (armRestraint != null)
             armRestraint.onTickClient(player);
@@ -689,11 +659,11 @@ public class RestrainableCapability implements IRestrainableCapability {
 
     public ArrayList<Integer> gatherBlockedInputs() {
         ArrayList<Integer> b = new ArrayList<Integer>();
-        if(headRestraint != null)
+        if (headRestraint != null)
             b.addAll(headRestraint.getBlockedKeyCodes());
-        if(armRestraint != null)
+        if (armRestraint != null)
             b.addAll(armRestraint.getBlockedKeyCodes());
-        if(legRestraint != null)
+        if (legRestraint != null)
             b.addAll(legRestraint.getBlockedKeyCodes());
         return b;
     }

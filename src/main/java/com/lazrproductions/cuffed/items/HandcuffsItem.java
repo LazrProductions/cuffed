@@ -1,8 +1,8 @@
 package com.lazrproductions.cuffed.items;
 
-import com.lazrproductions.cuffed.items.base.AbstractArmRestraintItem;
+import com.lazrproductions.cuffed.items.base.AbstractRestraintItem;
 
-public class HandcuffsItem extends AbstractArmRestraintItem
+public class HandcuffsItem extends AbstractRestraintItem
 {
     public HandcuffsItem(Properties p) {
         super(p);

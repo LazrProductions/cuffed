@@ -22,9 +22,6 @@ public class ModCreativeTabs {
                         output.accept(ModItems.SHACKLES.get());
                         output.accept(ModItems.FUZZY_HANDCUFFS.get());
 
-                        output.accept(ModItems.LEGCUFFS.get());
-                        output.accept(ModItems.LEG_SHACKLES.get());
-
                         output.accept(ModItems.HANDCUFFS_KEY.get());
                         output.accept(ModItems.SHACKLES_KEY.get());
 
@@ -52,6 +49,7 @@ public class ModCreativeTabs {
 
                         output.accept(ModItems.CELL_DOOR_ITEM.get());
                         output.accept(ModItems.REINFORCED_BARS_ITEM.get());
+                        output.accept(ModItems.REINFORCED_BARS_GAPPED_ITEM.get());
                         output.accept(ModItems.REINFORCED_SMOOTH_STONE_ITEM.get());
                         output.accept(ModItems.REINFORCED_STONE_ITEM.get());
                         output.accept(ModItems.REINFORCED_STONE_SLAB_ITEM.get());
@@ -63,11 +61,14 @@ public class ModCreativeTabs {
                         output.accept(ModItems.PILLORY_ITEM.get());
                         output.accept(ModItems.GUILLOTINE_ITEM.get());
 
+                        
+                        output.accept(ModItems.BUNK_ITEM.get());
+
 
                         output.accept(ModItems.SAFE_ITEM.get());
+
                         
-                        
-                        output.accept(ModItems.INFORMATION_BOOKLET.get());
+                        //output.accept(ModItems.INFORMATION_BOOKLET.get());
                     }).build());
 
     public static void register(IEventBus bus) {

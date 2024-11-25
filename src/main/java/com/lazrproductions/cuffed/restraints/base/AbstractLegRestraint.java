@@ -3,7 +3,6 @@ package com.lazrproductions.cuffed.restraints.base;
 import java.util.ArrayList;
 
 import com.lazrproductions.cuffed.CuffedMod;
-import com.lazrproductions.cuffed.entity.animation.LegRestraintAnimationFlags;
 import com.lazrproductions.lazrslib.client.screen.ScreenUtilities;
 import com.lazrproductions.lazrslib.client.screen.base.BlitCoordinates;
 import com.lazrproductions.lazrslib.client.screen.base.ScreenTexture;
@@ -115,6 +114,4 @@ public abstract class AbstractLegRestraint extends AbstractRestraint {
         ScreenUtilities.renderLabel(Minecraft.getInstance(), graphics, window.getGuiScaledWidth() / 2, y + screenHeight, c, 16579836);
 
     }
-
-    public abstract LegRestraintAnimationFlags getAnimationFlags();
 }

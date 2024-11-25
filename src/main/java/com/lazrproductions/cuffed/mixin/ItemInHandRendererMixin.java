@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.lazrproductions.cuffed.entity.base.IDetainableEntity;
 import com.lazrproductions.cuffed.entity.base.IRestrainableEntity;
-import com.lazrproductions.cuffed.restraints.PilloryRestraint;
+import com.lazrproductions.cuffed.restraints.custom.PilloryRestraint;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.player.AbstractClientPlayer;

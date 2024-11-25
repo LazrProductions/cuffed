@@ -28,7 +28,7 @@ public abstract class AbstractHeadRestraint extends AbstractRestraint {
     }
 
     public RestraintType getType() {
-        return RestraintType.Arm;
+        return RestraintType.Head;
     }
 
     public ArrayList<Integer> getBlockedKeyCodes() {

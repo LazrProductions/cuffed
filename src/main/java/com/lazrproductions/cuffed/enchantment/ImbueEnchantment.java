@@ -2,7 +2,7 @@ package com.lazrproductions.cuffed.enchantment;
 
 import javax.annotation.Nonnull;
 
-import com.lazrproductions.cuffed.restraints.Restraints;
+import com.lazrproductions.cuffed.restraints.RestraintAPI;
 
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
@@ -31,6 +31,6 @@ public class ImbueEnchantment extends Enchantment {
 
     @Override
 	public boolean canApplyAtEnchantingTable(@Nonnull ItemStack stack) {
-		return Restraints.IsRestraintItem(stack);
+		return RestraintAPI.isRestraintItem(stack);
 	}
 }

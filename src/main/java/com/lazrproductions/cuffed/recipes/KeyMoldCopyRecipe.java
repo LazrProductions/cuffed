@@ -37,7 +37,7 @@ public class KeyMoldCopyRecipe extends CustomRecipe {
 
         if (matches(inv, null)) {
             ItemStack keyStack = getKeyStackFromGrid(inv);
-            return keyStack.getOrCreateTag().contains(KeyItem.TAG_BOUND_BLOCK) ? KeyMoldItem.createFromKey(keyStack) : Items.CLAY_BALL.getDefaultInstance();
+            return keyStack.getOrCreateTag().contains(KeyItem.TAG_ID) ? KeyMoldItem.createFromKey(keyStack) : Items.CLAY_BALL.getDefaultInstance();
         }
 
         return ItemStack.EMPTY;
@@ -83,7 +83,7 @@ public class KeyMoldCopyRecipe extends CustomRecipe {
         for (int i = 0; i < inv.getContainerSize(); i++) {
             ItemStack checkingStack = inv.getItem(i);
             if (!checkingStack.isEmpty())
-                if (checkingStack.is(ModItems.KEY.get()) && checkingStack.getOrCreateTag().contains(KeyItem.TAG_BOUND_BLOCK))
+                if (checkingStack.is(ModItems.KEY.get()) && checkingStack.getOrCreateTag().contains(KeyItem.TAG_ID))
                     numOfKeys++;
                 else if(checkingStack.is(ModItems.KEY_MOLD.get()) || checkingStack.is(Items.CLAY_BALL))
                     numOfClayOrMolds++;

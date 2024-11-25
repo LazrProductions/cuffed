@@ -10,8 +10,8 @@ import com.lazrproductions.cuffed.entity.animation.ArmRestraintAnimationFlags;
 import com.lazrproductions.cuffed.entity.animation.HumanoidAnimationHelper;
 import com.lazrproductions.cuffed.entity.base.IDetainableEntity;
 import com.lazrproductions.cuffed.entity.base.IRestrainableEntity;
-import com.lazrproductions.cuffed.restraints.PilloryRestraint;
-import com.lazrproductions.cuffed.restraints.Restraints;
+import com.lazrproductions.cuffed.restraints.RestraintAPI;
+import com.lazrproductions.cuffed.restraints.custom.PilloryRestraint;
 
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -57,25 +57,26 @@ public class HumanoidModelMixin<T extends LivingEntity> {
                 shouldCancel = true;
             } else {
                 if(p instanceof IRestrainableEntity restrainable) {
-                    ArmRestraintAnimationFlags armAnimationFlags = Restraints.getArmAnimationFlagById(restrainable.getArmRestraintId());
-                    
+                    ArmRestraintAnimationFlags armAnimationFlags = RestraintAPI.getArmAnimationFlagByKey(restrainable.getArmRestraintId());
+
                     if(restrainable.getHeadRestraintId() == PilloryRestraint.ID) {
                         p.setXRot(10);
                     }
                     
-                    switch (armAnimationFlags) {
-                        case ARMS_TIED_FRONT:
-                            HumanoidAnimationHelper.animateArmsTiedFront(entity, model, f1, f2, f3, headYRot, headXRot);
-                            shouldCancel = true;
-                            break;
-                        case ARMS_TIED_BEHIND:
-                            HumanoidAnimationHelper.animateArmsTiedBack(entity, model, f1, f2, f3, headYRot, headXRot);
-                            shouldCancel = true;
-                            break;
-                        default:
-                            break;
+                    if(armAnimationFlags != null)
+                        switch (armAnimationFlags) {
+                            case ARMS_TIED_FRONT:
+                                HumanoidAnimationHelper.animateArmsTiedFront(entity, model, f1, f2, f3, headYRot, headXRot);
+                                shouldCancel = true;
+                                break;
+                            case ARMS_TIED_BEHIND:
+                                HumanoidAnimationHelper.animateArmsTiedBack(entity, model, f1, f2, f3, headYRot, headXRot);
+                                shouldCancel = true;
+                                break;
+                            default:
+                                break;
 
-                    }
+                        }
                 }
             }
             

@@ -1,12 +1,15 @@
 package com.lazrproductions.cuffed.items;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.lazrproductions.cuffed.blocks.CellDoor;
 import com.lazrproductions.cuffed.blocks.SafeBlock;
+import com.lazrproductions.cuffed.blocks.entity.LockableBlockEntity;
+import com.lazrproductions.cuffed.blocks.entity.SafeBlockEntity;
 import com.lazrproductions.cuffed.init.ModItems;
 
 import net.minecraft.ChatFormatting;
@@ -26,10 +29,12 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 
 public class KeyRingItem extends Item {
 
-    public static final String TAG_BOUND_BLOCKS = "BoundBlocks";
+    public static final String TAG_BOUND_LOCKS = "BoundLocks";
     public static final String TAG_KEYS = "Keys";
 
     public KeyRingItem(Properties p) {
@@ -43,201 +48,153 @@ public class KeyRingItem extends Item {
 
         Level level = context.getLevel();
         Player player = context.getPlayer();
+        BlockState state = level.getBlockState(context.getClickedPos());
         if (player != null) {
             ItemStack stack = player.getItemInHand(context.getHand());
-            if (!level.isClientSide && context.getHand() == InteractionHand.MAIN_HAND)
-                if (level.getBlockState(context.getClickedPos()).getBlock() instanceof CellDoor) {
+            if (!level.isClientSide && context.getHand() == InteractionHand.MAIN_HAND) {
+                if (canBindLock(stack)) {
+                    if (state.getBlock() instanceof CellDoor) {
+                        BlockPos bottomPos = context.getClickedPos();
+                        if (state.getValue(CellDoor.HALF) == DoubleBlockHalf.UPPER) {
+                            bottomPos = bottomPos.below();
+                            state = level.getBlockState(bottomPos);
+                        }
 
-                    if (player.getItemInHand(context.getHand()).getTagElement(TAG_BOUND_BLOCKS) == null) {
-                        if (canBindBlock(stack)) {
-                            if (!hasBoundBlockAt(context.getItemInHand(), context.getClickedPos())) {
-                                BlockPos p = context.getClickedPos();
-                                if (level.getBlockState(context.getClickedPos().below()).getBlock() instanceof CellDoor)
-                                    p = context.getClickedPos().below();
-
-                                addBoundBlock(context.getItemInHand(), p);
-
+                        if (level.getBlockEntity(bottomPos) instanceof LockableBlockEntity lockable) {
+                            if(!lockable.hasBeenBound()) {
+                                if (tryToAddBoundId(player, stack, lockable.getLockId(), "block.cuffed.cell_door")) {
+                                    lockable.bind();
+                                    player.awardStat(Stats.ITEM_USED.get(ModItems.KEY.get()), 1);
+                                    return InteractionResult.SUCCESS;
+                                } else
+                                    return InteractionResult.FAIL;
+                            }
+                        }
+                    } else if (level.getBlockEntity(context.getClickedPos()) instanceof LockableBlockEntity lockable) {
+                        if(!lockable.hasBeenBound()) {
+                            if(tryToAddBoundId(player, stack, lockable.getLockId(), lockable.getLockName())) {
+                                lockable.bind();
                                 player.awardStat(Stats.ITEM_USED.get(ModItems.KEY_RING.get()), 1);
-
-                                if (player.level().getGameRules().getBoolean(GameRules.RULE_REDUCEDDEBUGINFO))
-                                    player.displayClientMessage(
-                                            Component.literal(
-                                                    "Bound key to " + p.getX() + " " + p.getY() + " " + p.getZ()),
-                                            false);
-                                else
-                                    player.displayClientMessage(Component.literal("Bound key to ")
-                                            .append(player.level().getBlockState(p).getBlock().getName()), false);
-                                player.playSound(SoundEvents.CHAIN_FALL, 1.0F, 1.0F);
                                 return InteractionResult.SUCCESS;
                             }
                         }
-                    }
-                } else if (level.getBlockState(context.getClickedPos()).getBlock() instanceof SafeBlock) {
-
-                    if (player.getItemInHand(context.getHand()).getTagElement(TAG_BOUND_BLOCKS) == null) {
-                        if (canBindBlock(stack)) {
-                            if (!hasBoundBlockAt(context.getItemInHand(), context.getClickedPos())) {
-                                BlockPos p = context.getClickedPos();
-   
-                                addBoundBlock(context.getItemInHand(), p);
-
-                                player.awardStat(Stats.ITEM_USED.get(ModItems.KEY_RING.get()), 1);
-
-                                if (player.level().getGameRules().getBoolean(GameRules.RULE_REDUCEDDEBUGINFO))
-                                    player.displayClientMessage(
-                                            Component.literal(
-                                                    "Bound key to " + p.getX() + " " + p.getY() + " " + p.getZ()),
-                                            false);
-                                else
-                                    player.displayClientMessage(Component.literal("Bound key to ")
-                                            .append(player.level().getBlockState(p).getBlock().getName()), false);
-                                player.playSound(SoundEvents.CHAIN_FALL, 1.0F, 1.0F);
-                                return InteractionResult.SUCCESS;
+                    }else if (state.getBlock() instanceof SafeBlock) {
+                        if (level.getBlockEntity(context.getClickedPos()) instanceof SafeBlockEntity safe) {
+                            if(!safe.hasBeenBound()) {
+                                if(tryToAddBoundId(player, stack, safe.getLockId(), "block.cuffed.safe")) {
+                                    safe.bind();
+                                    player.awardStat(Stats.ITEM_USED.get(ModItems.KEY_RING.get()), 1);
+                                    return InteractionResult.SUCCESS;
+                                }
                             }
                         }
                     }
                 }
+            }
         }
 
         return InteractionResult.FAIL;
     }
 
-    /**
-     * Add an additional bound door to the given ItemStack.
-     * 
-     * @param stack (ItemStack) The item stack to bind to.
-     * @param pos   (BlockPos) The position of the door to bind.
-     */
-    public static void addBoundBlock(ItemStack stack, BlockPos pos) {
+    public static void addBoundId(ItemStack stack, UUID id) {
         CompoundTag compoundtag = stack.getOrCreateTag();
         ListTag listtag;
-        if (compoundtag.contains(TAG_BOUND_BLOCKS, 9))
-            listtag = compoundtag.getList(TAG_BOUND_BLOCKS, 10);
+        if (compoundtag.contains(TAG_BOUND_LOCKS, 9))
+            listtag = compoundtag.getList(TAG_BOUND_LOCKS, 10);
         else
             listtag = new ListTag();
 
         CompoundTag compoundtag1 = new CompoundTag();
-        compoundtag1.putIntArray(KeyItem.TAG_POSITION, new int[] { pos.getX(), pos.getY(), pos.getZ() });
+        compoundtag1.putUUID(KeyItem.TAG_ID, id);
         listtag.add(compoundtag1);
-        compoundtag.put(TAG_BOUND_BLOCKS, listtag);
+        compoundtag.put(TAG_BOUND_LOCKS, listtag);
     }
 
-    /**
-     * Attempt to add an additional bound door at a position to the given key.
-     * 
-     * @param player (Player) The player setting the key.
-     * @param stack  (ItemStack) The ItemStack to change
-     * @param pos    (BlockPos) The door to set as the bound door.
-     * @return (boolean) True if bound door has been set to a new door, false if the
-     *         key has already been bound.
-     */
-    public static boolean tryToAddBoundBlock(Player player, ItemStack stack, BlockPos pos) {
-        if (stack.getTagElement(TAG_BOUND_BLOCKS) == null) {
-            if (canBindBlock(stack)) {
-                if (!hasBoundBlockAt(stack, pos)) {
-                    addBoundBlock(stack, pos);
-                    if (player.level().getGameRules().getBoolean(GameRules.RULE_REDUCEDDEBUGINFO))
-                        player.displayClientMessage(
-                                Component.literal("Bound key to " + pos.getX() + " " + pos.getY() + " " + pos.getZ()),
-                                false);
-                    else
-                        player.displayClientMessage(Component.literal("Bound key to ")
-                                .append(player.level().getBlockState(pos).getBlock().getName()), false);
-                    player.playSound(SoundEvents.CHAIN_FALL, 1.0F, 1.0F);
-                    return true;
-                }
+    public static void addKey(ItemStack stack, ItemStack key) {
+        CompoundTag compoundtag = stack.getOrCreateTag();
+        ListTag listtag;
+        if (compoundtag.contains(TAG_BOUND_LOCKS, 9))
+            listtag = compoundtag.getList(TAG_BOUND_LOCKS, 10);
+        else
+            listtag = new ListTag();
+
+        CompoundTag compoundtag1 = new CompoundTag();
+        compoundtag1.putUUID(KeyItem.TAG_ID, key.getOrCreateTag().getUUID(KeyItem.TAG_ID));
+        if(key.getOrCreateTag().contains("display"))
+            compoundtag1.putString(KeyMoldItem.TAG_NAME, key.getOrCreateTag().getCompound("display").getString("Name"));
+        listtag.add(compoundtag1);
+        compoundtag.put(TAG_BOUND_LOCKS, listtag);
+    }
+
+    public static boolean tryToAddBoundId(Player player, ItemStack stack, UUID id, String lockName) {
+        if (canBindLock(stack)) {
+            if (!hasBoundId(stack, id)) {
+                addBoundId(stack, id);
+                if (player.level().getGameRules().getBoolean(GameRules.RULE_REDUCEDDEBUGINFO))
+                    player.displayClientMessage(
+                            Component.translatable("item.cuffed.key.info.bound").append(Component.literal(""+id)), false);
+                else
+                    player.displayClientMessage(Component.translatable("item.cuffed.key.info.bound").append(Component.translatable(lockName)), false);
+                player.playSound(SoundEvents.CHAIN_FALL, 1.0F, 1.0F);
+                return true;
             }
         }
-
+        
         return false;
     }
 
-    /**
-     * Remove a bound door from the given key.
-     * 
-     * @param stack (ItemStack) The item stack to change.
-     * @param pos   (BlockPos) The position of the door to remove.
-     */
-    public static void removeBoundDoorAt(ItemStack stack, BlockPos pos) {
+    public static void removeBoundId(ItemStack stack, UUID id) {
         CompoundTag compoundtag = stack.getOrCreateTag();
         ListTag listtag;
-        if (compoundtag.contains(TAG_BOUND_BLOCKS, 9)) {
-            listtag = compoundtag.getList(TAG_BOUND_BLOCKS, 10);
+        if (compoundtag.contains(TAG_BOUND_LOCKS, 9)) {
+            listtag = compoundtag.getList(TAG_BOUND_LOCKS, 10);
         } else {
             listtag = new ListTag();
         }
 
-        int index = getBoundBlockIndex(stack, pos);
+        int index = getBoundIdIndex(stack, id);
         if (index >= 0)
             listtag.remove(index);
-        compoundtag.put(TAG_BOUND_BLOCKS, listtag);
+        compoundtag.put(TAG_BOUND_LOCKS, listtag);
     }
 
-    /**
-     * Get whether or not the given key has bound a door at a position.
-     * 
-     * @param stack (ItemStack) The item stack to check.
-     * @param pos   (BlockPos) The position of the door to get;
-     * @return (boolean) True if this key ring has bound the given door.
-     */
-    public static boolean hasBoundBlockAt(ItemStack stack, BlockPos pos) {
-        CompoundTag compoundTag = stack.getTag();
+    public static boolean hasBoundId(ItemStack stack, UUID id) {
+        CompoundTag compoundTag = stack.getOrCreateTag();
         if (compoundTag == null)
             return false;
 
-        if (compoundTag.contains(TAG_BOUND_BLOCKS, 9)) {
-            ListTag boundPos = compoundTag.getList(TAG_BOUND_BLOCKS, 10);
-            for (int i = 0; i < boundPos.size(); i++) {
-                int x = boundPos.getCompound(i).getIntArray(KeyItem.TAG_POSITION)[0];
-                int y = boundPos.getCompound(i).getIntArray(KeyItem.TAG_POSITION)[1];
-                int z = boundPos.getCompound(i).getIntArray(KeyItem.TAG_POSITION)[2];
-                if (pos.getX() == x && pos.getY() == y && pos.getZ() == z)
+        if (compoundTag.contains(TAG_BOUND_LOCKS, 9)) {
+            ListTag boundPos = compoundTag.getList(TAG_BOUND_LOCKS, 10);
+            for (int i = 0; i < boundPos.size(); i++)
+                if (boundPos.getCompound(i).getUUID(KeyItem.TAG_ID).equals(id))
                     return true;
-            }
         }
         return false;
     }
 
-    /**
-     * Get the index of a bound door on the given key.
-     * 
-     * @param stack (ItemStack) The item stack to check.
-     * @param pos   (BlockPos) The the position of the bound door.
-     * @return (int) The index of the bound door, -1 if the given door is not bound.
-     */
-    public static int getBoundBlockIndex(ItemStack stack, BlockPos pos) {
+    public static int getBoundIdIndex(ItemStack stack, UUID id) {
         CompoundTag compoundTag = stack.getTag();
         if (compoundTag == null)
             return -1;
 
-        if (compoundTag.contains(TAG_BOUND_BLOCKS, 9)) {
-            ListTag boundPos = compoundTag.getList(TAG_BOUND_BLOCKS, 10);
-            for (int i = 0; i < boundPos.size(); i++) {
-                int x = boundPos.getCompound(i).getIntArray(KeyItem.TAG_POSITION)[0];
-                int y = boundPos.getCompound(i).getIntArray(KeyItem.TAG_POSITION)[1];
-                int z = boundPos.getCompound(i).getIntArray(KeyItem.TAG_POSITION)[2];
-                if (pos.getX() == x && pos.getY() == y && pos.getZ() == z)
+        if (compoundTag.contains(TAG_BOUND_LOCKS, 9)) {
+            ListTag boundPos = compoundTag.getList(TAG_BOUND_LOCKS, 10);
+            for (int i = 0; i < boundPos.size(); i++)
+                if (boundPos.getCompound(i).getUUID(KeyItem.TAG_ID) == id)
                     return i;
-            }
         }
         return -1;
     }
 
-    /**
-     * Get whether or not the given item can bind a new door.
-     * 
-     * @param stack (ItemStack) The item stack to check.
-     * @return (boolean) True is there is room on the key ring to bind more doors.
-     */
-    public static boolean canBindBlock(ItemStack stack) {
+    public static boolean canBindLock(ItemStack stack) {
         CompoundTag compoundTag = stack.getTag();
         if (compoundTag == null)
             return true;
 
         int bindings = 0;
         int keys = 0;
-        if (compoundTag.contains(TAG_BOUND_BLOCKS, 9)) {
-            ListTag boundPos = compoundTag.getList(TAG_BOUND_BLOCKS, 10);
+        if (compoundTag.contains(TAG_BOUND_LOCKS, 9)) {
+            ListTag boundPos = compoundTag.getList(TAG_BOUND_LOCKS, 10);
 
             bindings = boundPos.size();
 
@@ -270,8 +227,8 @@ public class KeyRingItem extends Item {
         int bindings = 0;
         CompoundTag compoundTag = stack.getTag();
         if (compoundTag != null) {
-            if (compoundTag.contains(TAG_BOUND_BLOCKS, 9)) {
-                ListTag boundPos = compoundTag.getList(TAG_BOUND_BLOCKS, 10);
+            if (compoundTag.contains(TAG_BOUND_LOCKS, 9)) {
+                ListTag boundPos = compoundTag.getList(TAG_BOUND_LOCKS, 10);
                 bindings = boundPos.size();
             }
         }

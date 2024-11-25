@@ -24,13 +24,12 @@ public class KeyboardHandlerMixin {
         Minecraft inst = Minecraft.getInstance();
         LocalPlayer player = inst.player;
 
-
         if(player!= null) {
             RestrainableCapability cap = (RestrainableCapability)CuffedAPI.Capabilities.getRestrainableCapability((Player)player);
             if(cap != null && cap.isRestrained()) {
                 cap.onKeyInput(player, keyCode, action);
                 for (int i : cap.gatherBlockedInputs()) {
-                    if(keyCode == i && action == 1) {
+                    if(keyCode == i && (action == 1 || action == 2)) {
                         callback.cancel();
                         return;
                     }
@@ -40,7 +39,7 @@ public class KeyboardHandlerMixin {
             if(player instanceof IDetainableEntity detainable)
                 if(detainable.getDetained() > -1)
                     for (int i : getBlockedKeyCodesWhenDetained()) {
-                        if(keyCode == i && action == 1) {
+                        if(keyCode == i && (action == 1 || action == 2)) {
                             callback.cancel();
                             return;
                         }

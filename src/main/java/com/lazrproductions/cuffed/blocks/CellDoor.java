@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.api.CuffedAPI;
-import com.lazrproductions.cuffed.blocks.base.ILockableBlock;
+import com.lazrproductions.cuffed.blocks.entity.LockableBlockEntity;
 import com.lazrproductions.cuffed.init.ModBlocks;
 import com.lazrproductions.cuffed.init.ModItems;
 import com.lazrproductions.cuffed.items.KeyItem;
@@ -27,7 +27,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.IronBarsBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
@@ -40,7 +42,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class CellDoor extends DoorBlock implements ILockableBlock{
+public class CellDoor extends DoorBlock implements EntityBlock {
 
     public static final BooleanProperty IN_BARS = BooleanProperty.create("in_bars");
 
@@ -56,9 +58,7 @@ public class CellDoor extends DoorBlock implements ILockableBlock{
                         .setValue(HINGE, DoorHingeSide.LEFT)
                         .setValue(POWERED, Boolean.valueOf(false))
                         .setValue(HALF, DoubleBlockHalf.LOWER)
-                        .setValue(IN_BARS, Boolean.valueOf(false))
-                        .setValue(LOCKED, Boolean.valueOf(false))
-                        .setValue(BOUND, Boolean.valueOf(false)));
+                        .setValue(IN_BARS, Boolean.valueOf(false)));
     }
 
     protected static final VoxelShape BARS_NS_AABB = Block.box(0.0D, 0.0D, 7.0D,
@@ -129,8 +129,7 @@ public class CellDoor extends DoorBlock implements ILockableBlock{
             return this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection())
                     .setValue(HINGE, this.getHinge(ctx)).setValue(POWERED, false)
                     .setValue(OPEN, false).setValue(HALF, DoubleBlockHalf.LOWER)
-                    .setValue(IN_BARS, checkForBars(level, blockpos, ctx.getHorizontalDirection()))
-                    .setValue(LOCKED, false);
+                    .setValue(IN_BARS, checkForBars(level, blockpos, ctx.getHorizontalDirection()));
         } else {
             return null;
         }
@@ -141,39 +140,40 @@ public class CellDoor extends DoorBlock implements ILockableBlock{
             @Nonnull Player player,
             @Nonnull InteractionHand hand, @Nonnull BlockHitResult hitResult) {
 
-        if(!level.isClientSide() && hand == InteractionHand.MAIN_HAND) {
+        if (!level.isClientSide() && hand == InteractionHand.MAIN_HAND) {
             ItemStack stack = player.getInventory().getSelected();
 
             BlockPos bottomPos = pos;
-            BlockState bottomState = state;
-            if (level.getBlockState(pos.below()).getBlock() instanceof CellDoor) {
+            if (level.getBlockState(pos.below()).getBlock() instanceof CellDoor)
                 bottomPos = pos.below();
-                bottomState = level.getBlockState(pos.below());
-            }
+            
 
-            boolean flag = stack.is((ModItems.KEY.get())) && KeyItem.isBoundToBlock(stack, bottomPos);
-            boolean flag1 = stack.is((ModItems.KEY_RING.get())) && KeyRingItem.hasBoundBlockAt(stack, bottomPos);
-            boolean flag2 = stack.is(ModItems.LOCKPICK.get());
+            if(level.getBlockEntity(bottomPos) instanceof LockableBlockEntity lockable) {
+                boolean isKeyThatIsBoundToThisLock = stack.is((ModItems.KEY.get())) && KeyItem.isBoundToLock(stack, lockable.getLockId());
+                boolean isKeyRingThatIsBoundToThisLock = stack.is((ModItems.KEY_RING.get())) && KeyRingItem.hasBoundId(stack, lockable.getLockId());
+                boolean isLockpick = stack.is(ModItems.LOCKPICK.get());
 
-            if(!flag2) {
-                if ((flag || flag1) && ILockableBlock.isBound(bottomState)) {
-                    boolean willEndUpLocked = !isLocked(bottomState);
-                    
-                    ILockableBlock.setIsLocked(player, bottomState, bottomPos, willEndUpLocked);
+                if(!isLockpick) {
+                    if ((isKeyThatIsBoundToThisLock || isKeyRingThatIsBoundToThisLock)) {
+                        boolean willEndUpLocked = !lockable.isLocked();
 
-                    return InteractionResult.SUCCESS;
-                } else if(!isLocked(bottomState)) {
-                    state = state.cycle(OPEN);
-                    level.setBlock(pos, state, 10);
-                    this.playSound(level, pos, state.getValue(OPEN));
-                    level.gameEvent(player, this.isOpen(state) ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
-                    return InteractionResult.SUCCESS;
-                }
-            } else {
-                CuffedAPI.Networking.sendLockpickBeginPickingCellDoorPacketToClient((ServerPlayer)player, pos,
-                        CuffedMod.SERVER_CONFIG.LOCKPICKING_SPEED_INCREASE_PER_PICK_FOR_BREAKING_CELL_DOORS.get(), 
-                        CuffedMod.SERVER_CONFIG.LOCKPICKING_PROGRESS_PER_PICK_FOR_BREAKING_CELL_DOORS.get());
-                return InteractionResult.sidedSuccess(level.isClientSide);
+                        lockable.setLocked(willEndUpLocked, level, player, bottomPos);
+
+                        return InteractionResult.SUCCESS;
+                    } else if(!lockable.isLocked()) {
+                        state = state.cycle(OPEN);
+                        level.setBlock(pos, state, 10);
+                        this.playSound(level, pos, state.getValue(OPEN));
+                        level.gameEvent(player, this.isOpen(state) ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
+                        return InteractionResult.SUCCESS;
+                    }
+                } else {
+                    CuffedAPI.Networking.sendLockpickBeginPickingCellDoorPacketToClient((ServerPlayer)player,
+                    pos,
+                    CuffedMod.SERVER_CONFIG.LOCKPICKING_SPEED_INCREASE_PER_PICK_FOR_BREAKING_CELL_DOORS.get(),
+                    CuffedMod.SERVER_CONFIG.LOCKPICKING_PROGRESS_PER_PICK_FOR_BREAKING_CELL_DOORS.get());
+                    return InteractionResult.sidedSuccess(level.isClientSide);
+                }              
             }
         }
         return InteractionResult.FAIL;
@@ -186,7 +186,7 @@ public class CellDoor extends DoorBlock implements ILockableBlock{
 
     @Override
     protected void createBlockStateDefinition(@Nonnull Builder<Block, BlockState> builder) {
-        builder.add(HALF, FACING, OPEN, HINGE, POWERED, IN_BARS, LOCKED, BOUND);
+        builder.add(HALF, FACING, OPEN, HINGE, POWERED, IN_BARS);
     }
 
     @Override
@@ -196,7 +196,7 @@ public class CellDoor extends DoorBlock implements ILockableBlock{
 
         Direction facing = state.getValue(FACING);
         boolean isBottom = state.getValue(HALF) == DoubleBlockHalf.LOWER;
-        
+
         boolean flag3 = false;
         if (isBottom) {
             BlockPos top = pos.above();
@@ -217,7 +217,8 @@ public class CellDoor extends DoorBlock implements ILockableBlock{
         boolean flag4 = (isBottom && pos.above().equals(otherPos) && otherState.is(ModBlocks.CELL_DOOR.get()));
         boolean flag5 = (!isBottom && pos.below().equals(otherPos) && otherState.is(ModBlocks.CELL_DOOR.get()));
         if (flag4 || flag5) {
-            state = state.setValue(LOCKED, otherState.getValue(LOCKED)).setValue(BOUND, otherState.getValue(BOUND)).setValue(OPEN, otherState.getValue(OPEN));
+            // state = state.setValue(LOCKED, otherState.getValue(LOCKED)).setValue(BOUND,
+            // otherState.getValue(BOUND)).setValue(OPEN, otherState.getValue(OPEN));
         }
 
         return super.updateShape(state, updateDirection, otherState, level, pos, otherPos);
@@ -230,7 +231,6 @@ public class CellDoor extends DoorBlock implements ILockableBlock{
         // do nothing, so redstone doesn't effect the door
 
     }
-
 
     public boolean isInBars(BlockState state) {
         return state.getValue(IN_BARS);
@@ -255,12 +255,6 @@ public class CellDoor extends DoorBlock implements ILockableBlock{
             return leftIs && rightIs;
         }
     }
-
-
-    public boolean isLocked(@Nonnull BlockState state) {
-        return state.getValue(LOCKED);
-    }
-
 
     private DoorHingeSide getHinge(BlockPlaceContext p_52805_) {
         BlockGetter blockgetter = p_52805_.getLevel();
@@ -298,5 +292,13 @@ public class CellDoor extends DoorBlock implements ILockableBlock{
         } else {
             return DoorHingeSide.RIGHT;
         }
+    }
+
+
+    @Nullable
+    public BlockEntity newBlockEntity(@Nonnull BlockPos pos, @Nonnull BlockState state) {
+        if(state.getValue(HALF) == DoubleBlockHalf.LOWER)
+            return new LockableBlockEntity(pos, state, getDescriptionId());
+        return null;
     }
 }

@@ -16,10 +16,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.api.CuffedAPI;
-import com.lazrproductions.cuffed.api.IRestrainableCapability;
 import com.lazrproductions.cuffed.blocks.PilloryBlock;
 import com.lazrproductions.cuffed.blocks.base.DetentionBlock;
 import com.lazrproductions.cuffed.cap.RestrainableCapability;
+import com.lazrproductions.cuffed.cap.base.IRestrainableCapability;
 import com.lazrproductions.cuffed.effect.RestrainedEffectInstance;
 import com.lazrproductions.cuffed.entity.base.IDetainableEntity;
 import com.lazrproductions.cuffed.entity.base.INicknamable;
@@ -35,6 +35,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntityType;
@@ -267,32 +268,32 @@ public class PlayerMixin extends LivingEntity implements IRestrainableEntity, ID
         return entityData.get(DATA_RESTRAINT_CODE);
     }
     @Override
-    public String getArmRestraintId() {
-        return entityData.get(DATA_ARM_RESTRAINT_ID);
+    public ResourceLocation getArmRestraintId() {
+        return new ResourceLocation(entityData.get(DATA_ARM_RESTRAINT_ID));
     }
     @Override
-    public String getLegRestraintId() {
-        return entityData.get(DATA_LEG_RESTRAINT_ID);
+    public ResourceLocation getLegRestraintId() {
+        return new ResourceLocation(entityData.get(DATA_LEG_RESTRAINT_ID));
     }
     @Override
-    public String getHeadRestraintId() {
-        return entityData.get(DATA_HEAD_RESTRAINT_ID);
+    public ResourceLocation getHeadRestraintId() {
+        return new ResourceLocation(entityData.get(DATA_HEAD_RESTRAINT_ID));
     }
     @Override
     public void setRestraintCode(int v) {
         entityData.set(DATA_RESTRAINT_CODE, v);
     }
     @Override
-    public void setArmRestraintId(String v) {
-        entityData.set(DATA_ARM_RESTRAINT_ID, v);
+    public void setArmRestraintId(ResourceLocation v) {
+        entityData.set(DATA_ARM_RESTRAINT_ID, v.toString());
     }
     @Override
-    public void setLegRestraintId(String v) {
-        entityData.set(DATA_LEG_RESTRAINT_ID, v);
+    public void setLegRestraintId(ResourceLocation v) {
+        entityData.set(DATA_LEG_RESTRAINT_ID, v.toString());
     }
     @Override
-    public void setHeadRestraintId(String v) {
-        entityData.set(DATA_HEAD_RESTRAINT_ID, v);
+    public void setHeadRestraintId(ResourceLocation v) {
+        entityData.set(DATA_HEAD_RESTRAINT_ID, v.toString());
     }
     
 

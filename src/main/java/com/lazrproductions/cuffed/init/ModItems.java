@@ -5,13 +5,11 @@ import com.lazrproductions.cuffed.items.KeyItem;
 import com.lazrproductions.cuffed.items.KeyMoldItem;
 import com.lazrproductions.cuffed.items.KeyRingItem;
 import com.lazrproductions.cuffed.items.KnifeItem;
-import com.lazrproductions.cuffed.items.LegShacklesItem;
-import com.lazrproductions.cuffed.items.LegcuffsItem;
 import com.lazrproductions.cuffed.items.BakedKeyMoldItem;
 import com.lazrproductions.cuffed.items.BandageItem;
 import com.lazrproductions.cuffed.items.DuckTapeItem;
+import com.lazrproductions.cuffed.items.FuzzyHandcuffsItem;
 import com.lazrproductions.cuffed.items.HandcuffsItem;
-import com.lazrproductions.cuffed.items.InformationBookletItem;
 import com.lazrproductions.cuffed.items.Padlock;
 import com.lazrproductions.cuffed.items.PossessionsBox;
 import com.lazrproductions.cuffed.items.PosterBlockItem;
@@ -54,20 +52,11 @@ public class ModItems {
                                 .durability(40)
                                 .defaultDurability(40)));
         public static final RegistryObject<Item> FUZZY_HANDCUFFS = ITEMS.register("fuzzy_handcuffs",
-                        () -> new HandcuffsItem(new Item.Properties().stacksTo(1)
+                        () -> new FuzzyHandcuffsItem(new Item.Properties().stacksTo(1)
                                 .durability(30)
                                 .defaultDurability(30)));
         public static final RegistryObject<Item> SHACKLES = ITEMS.register("shackles",
                         () -> new ShacklesItem(new Item.Properties().stacksTo(1)
-                                .durability(15)
-                                .defaultDurability(15)));
-                        
-        public static final RegistryObject<Item> LEGCUFFS = ITEMS.register("legcuffs",
-                        () -> new LegcuffsItem(new Item.Properties().stacksTo(1)
-                                .durability(40)
-                                .defaultDurability(40)));
-        public static final RegistryObject<Item> LEG_SHACKLES = ITEMS.register("leg_shackles",
-                        () -> new LegShacklesItem(new Item.Properties().stacksTo(1)
                                 .durability(15)
                                 .defaultDurability(15)));
 
@@ -75,8 +64,8 @@ public class ModItems {
         public static final RegistryObject<Item> WEIGHTED_ANCHOR_ITEM = ITEMS.register("weighted_anchor",
                         () -> new WeightedAnchorItem(new Item.Properties().stacksTo(1)));
 
-        public static final RegistryObject<Item> INFORMATION_BOOKLET = ITEMS.register("information_booklet",
-                        () -> new InformationBookletItem(new Item.Properties().stacksTo(1)));
+        // public static final RegistryObject<Item> INFORMATION_BOOKLET = ITEMS.register("information_booklet",
+        //                 () -> new InformationBookletItem(new Item.Properties().stacksTo(1)));
 
         public static final RegistryObject<Item> POSSESSIONSBOX = ITEMS.register("possessions_box",
                         () -> new PossessionsBox(new Item.Properties().stacksTo(1)));

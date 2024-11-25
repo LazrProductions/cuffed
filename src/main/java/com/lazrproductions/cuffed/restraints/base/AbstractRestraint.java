@@ -10,14 +10,18 @@ import javax.annotation.Nullable;
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.compat.ArsNouveauCompat;
 import com.lazrproductions.cuffed.compat.IronsSpellsnSpellbooksCompat;
+import com.lazrproductions.cuffed.entity.animation.ArmRestraintAnimationFlags;
+import com.lazrproductions.cuffed.entity.animation.LegRestraintAnimationFlags;
 import com.lazrproductions.cuffed.init.ModEnchantments;
 import com.lazrproductions.cuffed.init.ModStatistics;
+import com.lazrproductions.cuffed.restraints.client.RestraintModelInterface;
 import com.mojang.blaze3d.platform.Window;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -28,6 +32,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public abstract class AbstractRestraint {
 
@@ -54,7 +60,7 @@ public abstract class AbstractRestraint {
     //#region Restraint Properties
 
     /** Get the item version of this restraint. */
-    public abstract String getId();
+    public abstract ResourceLocation getId();
     /** Get where this restraint is applied, arms or legs. */
     public abstract RestraintType getType();
     /** Get the label to display on the action bar while this restraint is equipped. */
@@ -76,8 +82,6 @@ public abstract class AbstractRestraint {
     /** Get the sound played when this restraint is unequipped */
     public abstract SoundEvent getUnequipSound();
 
-    /** Whether or not this restraint can be broken out of. */
-    public abstract boolean getCanBeBrokenOutOf();
     /** Whether or not this restraint can be lockpicked. */
     public abstract boolean getLockpickable();
     /** Get the lockpick speed increase per pick for this restraint. */
@@ -86,6 +90,23 @@ public abstract class AbstractRestraint {
     public abstract int getLockpickingProgressPerPick();
 
     public abstract ArrayList<Integer> getBlockedKeyCodes();
+
+
+    public abstract ArmRestraintAnimationFlags getArmAnimationFlags();
+    public abstract LegRestraintAnimationFlags getLegAnimationFlags();
+
+
+    /**
+     * Do a check before actually equipping the restraint but after it has been chosen to be equipped to make sure the restraint can actually be equipped.
+     * <p>For instance, this is used with the bundle to ensure that it is empty before equipping.
+     * @param stack The itemstack of the restraint being equipped
+     * @param player The player being restrained
+     * @param captor The player restraining
+     * @return Wether or not to equip the restraint. If false the item wont be consumed, the interaction will just be cancelled.
+     */
+    public boolean canEquipRestraintItem(ItemStack stack, ServerPlayer player, ServerPlayer captor) {
+        return true;
+    }
 
     //#endregion
 
@@ -198,8 +219,7 @@ public abstract class AbstractRestraint {
 
     /** Called each frame only on the client to render overlays and such. */
     public abstract void renderOverlay(Player player, GuiGraphics graphics, float partialTick, Window window);
-
-
+    
     protected int clientSidedDurability = 100;
     /** Called on the client any time the client presses any key. */
     public void onKeyInput(Player player, int keyCode, int action) {
@@ -220,14 +240,18 @@ public abstract class AbstractRestraint {
                 breakable.attemptToBreak(player, keyCode, action, instance.options);
     }
 
+    @Nonnull
+    @OnlyIn(Dist.CLIENT)
+    public abstract RestraintModelInterface getModelInterface();
+
     //#endregion
 
     //#region Server-Side Handles
 
     public CompoundTag serializeNBT() {
         CompoundTag tag = new CompoundTag();
-        tag.putString("Id", getId());
-        tag.putString("Type", "arm");
+        tag.putString("Id", getId().toString());
+        tag.putString("Type", getType().toString());
         if(this instanceof IEnchantableRestraint ench)
             tag.put("Enchantments", ench.getEnchantments());
 

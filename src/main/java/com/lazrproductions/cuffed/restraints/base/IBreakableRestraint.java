@@ -11,6 +11,7 @@ public interface IBreakableRestraint {
     public boolean isKeyToAttemptBreak(int keyCode, Options options);
     public boolean requireAlternateKeysToAttemptBreak();
     public boolean dropItemOnBroken();
+    public boolean canBeBrokenOutOf();
 
     public int getDurability();
 

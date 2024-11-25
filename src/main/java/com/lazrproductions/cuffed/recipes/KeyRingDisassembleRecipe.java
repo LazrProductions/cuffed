@@ -5,8 +5,8 @@ import javax.annotation.Nonnull;
 import com.lazrproductions.cuffed.init.ModItems;
 import com.lazrproductions.cuffed.init.ModRecipes;
 import com.lazrproductions.cuffed.items.KeyItem;
+import com.lazrproductions.cuffed.items.KeyMoldItem;
 import com.lazrproductions.cuffed.items.KeyRingItem;
-import com.lazrproductions.lazrslib.common.tag.TagUtilities;
 
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
@@ -62,13 +62,21 @@ public class KeyRingDisassembleRecipe extends CustomRecipe {
 
             if (ringStack != null) {
                 CompoundTag tag = ringStack.getOrCreateTag();
-                if (tag.contains(KeyRingItem.TAG_BOUND_BLOCKS)) {
-                    ListTag boundKeysTag = tag.getList(KeyRingItem.TAG_BOUND_BLOCKS, 10);
+                if (tag.contains(KeyRingItem.TAG_BOUND_LOCKS)) {
+                    ListTag boundKeysTag = tag.getList(KeyRingItem.TAG_BOUND_LOCKS, 10);
                     if (boundKeysTag.size() > 0) {
                         ItemStack stack = ModItems.KEY.get().getDefaultInstance();
                         stack.setCount(1);
-                        KeyItem.setBoundBlock(stack, TagUtilities.fromTag(boundKeysTag.getCompound(boundKeysTag.size() - 1)));
 
+                        CompoundTag keyOnRingTag = boundKeysTag.getCompound(boundKeysTag.size() - 1);
+
+                        KeyItem.setBoundId(stack, keyOnRingTag.getUUID(KeyItem.TAG_ID));
+                        if(keyOnRingTag.contains(KeyMoldItem.TAG_NAME))
+                        {
+                            CompoundTag t = new CompoundTag();
+                            t.putString("Name", keyOnRingTag.getString(KeyMoldItem.TAG_NAME));
+                            stack.getOrCreateTag().put("display", t);
+                        }
                         return stack;
                     }
                 }
@@ -102,11 +110,11 @@ public class KeyRingDisassembleRecipe extends CustomRecipe {
                     && tag.contains(KeyRingItem.TAG_KEYS) 
                     && tag.getInt(KeyRingItem.TAG_KEYS) > 1) {
                 int numOfKeys = tag.getInt(KeyRingItem.TAG_KEYS);
-                if (tag.contains(KeyRingItem.TAG_BOUND_BLOCKS)) {
-                    ListTag boundKeysTag = tag.getList(KeyRingItem.TAG_BOUND_BLOCKS, 10);
+                if (tag.contains(KeyRingItem.TAG_BOUND_LOCKS)) {
+                    ListTag boundKeysTag = tag.getList(KeyRingItem.TAG_BOUND_LOCKS, 10);
                     if(boundKeysTag.size() > 0) {
                         boundKeysTag.remove(boundKeysTag.size() - 1);
-                        tag.put(KeyRingItem.TAG_BOUND_BLOCKS, boundKeysTag);
+                        tag.put(KeyRingItem.TAG_BOUND_LOCKS, boundKeysTag);
                         tag.putInt(KeyRingItem.TAG_KEYS, numOfKeys - 1);
                     }
                 }

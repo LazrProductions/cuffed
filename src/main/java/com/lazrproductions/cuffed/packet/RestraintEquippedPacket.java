@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.api.CuffedAPI;
 import com.lazrproductions.cuffed.cap.RestrainableCapability;
-import com.lazrproductions.cuffed.restraints.Restraints;
+import com.lazrproductions.cuffed.restraints.RestraintAPI;
 import com.lazrproductions.cuffed.restraints.base.AbstractArmRestraint;
 import com.lazrproductions.cuffed.restraints.base.AbstractHeadRestraint;
 import com.lazrproductions.cuffed.restraints.base.AbstractLegRestraint;
@@ -97,37 +97,37 @@ public class RestraintEquippedPacket extends ParameterizedLazrPacket {
                         // Sets the client-side version of the restraint AND sends onEquippedClient &
                         // onUnequipped events
                         if (!newData.toLowerCase().equals("null")) {
-                            cap.armRestraint = (AbstractArmRestraint) Restraints.GetRestraintFromNBT(newTag);
+                            cap.armRestraint = (AbstractArmRestraint) RestraintAPI.getRestraintFromTag(newTag);
                             cap.armRestraint.onEquippedClient(arg0, captor);
                         } else
                             cap.armRestraint = null;
     
                         if (!oldData.toLowerCase().equals("null")) {
-                            AbstractArmRestraint oldRestraint = (AbstractArmRestraint) Restraints.GetRestraintFromNBT(oldTag);
+                            AbstractArmRestraint oldRestraint = (AbstractArmRestraint) RestraintAPI.getRestraintFromTag(oldTag);
                             oldRestraint.onUnequippedClient(arg0);
                         }
                     } else if(type == RestraintType.Leg.toInteger()) {
                         // Sets the client-side version of the restraint AND sends onEquippedClient &
                         // onUnequipped events
                         if (!newData.toLowerCase().equals("null")) {
-                            cap.legRestraint = (AbstractLegRestraint) Restraints.GetRestraintFromNBT(newTag);
+                            cap.legRestraint = (AbstractLegRestraint) RestraintAPI.getRestraintFromTag(newTag);
                             cap.legRestraint.onEquippedClient(arg0, captor);
                         } else
                             cap.legRestraint = null;
                         if (!oldData.toLowerCase().equals("null")) {
-                            AbstractLegRestraint oldRestraint = (AbstractLegRestraint) Restraints.GetRestraintFromNBT(oldTag);
+                            AbstractLegRestraint oldRestraint = (AbstractLegRestraint) RestraintAPI.getRestraintFromTag(oldTag);
                             oldRestraint.onUnequippedClient(arg0);
                         }
                     }  else if(type == RestraintType.Head.toInteger())  {
                         // Sets the client-side version of the restraint AND sends onEquippedClient &
                         // onUnequipped events
                         if (!newData.toLowerCase().equals("null")) {
-                            cap.headRestraint = (AbstractHeadRestraint) Restraints.GetRestraintFromNBT(newTag);
+                            cap.headRestraint = (AbstractHeadRestraint) RestraintAPI.getRestraintFromTag(newTag);
                             cap.headRestraint.onEquippedClient(arg0, captor);
                         } else
                             cap.headRestraint = null;
                         if (!oldData.toLowerCase().equals("null")) {
-                            AbstractHeadRestraint oldRestraint = (AbstractHeadRestraint) Restraints.GetRestraintFromNBT(oldTag);
+                            AbstractHeadRestraint oldRestraint = (AbstractHeadRestraint) RestraintAPI.getRestraintFromTag(oldTag);
                             oldRestraint.onUnequippedClient(arg0);
                         }
                     }

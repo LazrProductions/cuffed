@@ -29,7 +29,7 @@ public class BakedKeyMoldItem extends Item {
         
         CompoundTag oldTag = oldMold.getOrCreateTagElement(KeyMoldItem.TAG_COPIED_KEY);
         CompoundTag tag = new CompoundTag();
-        tag.putIntArray(KeyItem.TAG_POSITION, oldTag.getIntArray(KeyItem.TAG_POSITION));
+        tag.putUUID(KeyItem.TAG_ID, oldTag.getUUID(KeyItem.TAG_ID));
         tag.putString(KeyMoldItem.TAG_NAME, oldTag.getString(KeyMoldItem.TAG_NAME));
         
         newMold.getOrCreateTag().put(KeyMoldItem.TAG_COPIED_KEY, tag);
@@ -46,7 +46,7 @@ public class BakedKeyMoldItem extends Item {
             return newKey;
 
         CompoundTag moldTag = moldStack.getOrCreateTag().getCompound(KeyMoldItem.TAG_COPIED_KEY);
-        newKey.getOrCreateTagElement(KeyItem.TAG_BOUND_BLOCK).putIntArray(KeyItem.TAG_POSITION, moldTag.getIntArray(KeyItem.TAG_POSITION));
+        newKey.getOrCreateTag().putUUID(KeyItem.TAG_ID, moldTag.getUUID(KeyItem.TAG_ID));
 
         if(moldTag.contains(KeyMoldItem.TAG_NAME))
             newKey.getOrCreateTagElement("display").putString("Name", moldTag.getString(KeyMoldItem.TAG_NAME));

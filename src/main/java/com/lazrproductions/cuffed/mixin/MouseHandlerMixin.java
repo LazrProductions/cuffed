@@ -29,7 +29,7 @@ public class MouseHandlerMixin {
 
             RestrainableCapability cap = (RestrainableCapability)CuffedAPI.Capabilities.getRestrainableCapability((Player)player);
             if(cap != null && cap.isRestrained()) {
-                cap.onMouseInput(player, keyCode, f3);
+                cap.onMouseInput(player, keyCode, scanCode);
                 for (int i : cap.gatherBlockedInputs()) {
                     if(keyCode == i) {
                         callback.cancel();

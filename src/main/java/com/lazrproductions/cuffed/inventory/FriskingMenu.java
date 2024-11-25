@@ -12,18 +12,21 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 public class FriskingMenu extends AbstractContainerMenu {
     private final Container container;
     private final int containerRows;
+    private final int otherPlayerId;
 
-    private FriskingMenu(MenuType<?> type, int containerId, Inventory otherPlayerInv, int rows) {
-        this(type, containerId, otherPlayerInv, new SimpleContainer(9 * rows), rows);
+    private FriskingMenu(MenuType<?> type, int containerId, Inventory otherPlayerInv, int otherPlayerId, int rows) {
+        this(type, containerId, otherPlayerInv, otherPlayerId, new SimpleContainer(9 * rows), rows);
     }
 
-    public FriskingMenu(MenuType<?> type, int containerId, Inventory playerInv, Container container, int rows) {
+    public FriskingMenu(MenuType<?> type, int containerId, Inventory playerInv, int otherPlayerId, Container container, int rows) {
         super(type, containerId);
         checkContainerSize(container, rows * 9);
+        this.otherPlayerId = otherPlayerId;
         this.container = container;
         this.containerRows = rows;
         container.startOpen(playerInv.player);
@@ -70,11 +73,18 @@ public class FriskingMenu extends AbstractContainerMenu {
     }
 
     public FriskingMenu(int containerId, Inventory inv) {
-        this(ModMenuTypes.FRISKING_MENU.get(), containerId, inv, 5);
+        this(ModMenuTypes.FRISKING_MENU.get(), containerId, inv, 0, 5);
     }
 
-
     public boolean stillValid(@Nonnull Player player) {
+        Level level = player.level();
+        if(level != null) {
+            if(level.getEntity(otherPlayerId) instanceof Player other) {
+                if(other.isRemoved())
+                    return false;
+            } else
+                return false;
+        }
         return this.container.stillValid(player);
     }
 

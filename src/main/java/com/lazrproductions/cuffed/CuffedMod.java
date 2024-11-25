@@ -13,6 +13,7 @@ import com.lazrproductions.cuffed.blocks.entity.renderer.GuillotineBlockEntityRe
 import com.lazrproductions.cuffed.blocks.entity.renderer.TrayBlockEntityRenderer;
 import com.lazrproductions.cuffed.cap.RestrainableCapability;
 import com.lazrproductions.cuffed.client.gui.screen.FriskingScreen;
+import com.lazrproductions.cuffed.command.CuffedDebugCommand;
 import com.lazrproductions.cuffed.command.HandcuffCommand;
 import com.lazrproductions.cuffed.compat.ArsNouveauCompat;
 import com.lazrproductions.cuffed.compat.BetterCombatCompat;
@@ -40,6 +41,7 @@ import com.lazrproductions.cuffed.init.ModMenuTypes;
 import com.lazrproductions.cuffed.init.ModModelLayers;
 import com.lazrproductions.cuffed.init.ModParticleTypes;
 import com.lazrproductions.cuffed.init.ModRecipes;
+import com.lazrproductions.cuffed.init.ModRestraints;
 import com.lazrproductions.cuffed.init.ModSounds;
 import com.lazrproductions.cuffed.init.ModStatistics;
 import com.lazrproductions.cuffed.inventory.tooltip.PossessionsBoxTooltip;
@@ -48,6 +50,8 @@ import com.lazrproductions.cuffed.items.KeyRingItem;
 import com.lazrproductions.cuffed.items.PossessionsBox;
 import com.lazrproductions.cuffed.items.TrayItem;
 import com.lazrproductions.cuffed.items.base.AbstractRestraintItem;
+import com.lazrproductions.cuffed.restraints.RestraintAPI;
+import com.lazrproductions.cuffed.restraints.base.AbstractRestraint;
 
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -77,6 +81,7 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegisterEvent;
 import net.minecraftforge.registries.ForgeRegistries.Keys;
 import net.minecraftforge.server.command.ConfigCommand;
@@ -115,6 +120,7 @@ public class CuffedMod {
         ModEffects.register(modEventBus);
         ModStatistics.register(modEventBus);
         ModMenuTypes.register(modEventBus);
+        ModRestraints.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.register(this);
 
@@ -177,8 +183,6 @@ public class CuffedMod {
         DispenserBlock.registerBehavior(ModItems.HANDCUFFS.get(), dispenseitembehavior);
         DispenserBlock.registerBehavior(ModItems.FUZZY_HANDCUFFS.get(), dispenseitembehavior);
         DispenserBlock.registerBehavior(ModItems.SHACKLES.get(), dispenseitembehavior);
-        DispenserBlock.registerBehavior(ModItems.LEGCUFFS.get(), dispenseitembehavior);
-        DispenserBlock.registerBehavior(ModItems.LEG_SHACKLES.get(), dispenseitembehavior);
         DispenserBlock.registerBehavior(Items.BUNDLE, dispenseitembehavior);
     }
 
@@ -186,6 +190,12 @@ public class CuffedMod {
         if (event.getRegistryKey().equals(Keys.SOUND_EVENTS)) {
             LOGGER.info("Registering sound for Cuffed");
             ModSounds.register(event);
+        }
+
+        IForgeRegistry<?> r = event.getForgeRegistry();
+        if(r != null && r.getValues().size() > 0 && r.getValues().toArray()[0] instanceof AbstractRestraint) {
+            LOGGER.info("Cuffed has found a foreign restraint registry, registering with Restraint API");
+            RestraintAPI.Registries.register(r);
         }
     }
 
@@ -202,6 +212,7 @@ public class CuffedMod {
     @SubscribeEvent
     public void registerCommands(RegisterCommandsEvent event) {
         new HandcuffCommand(event.getDispatcher(), event.getBuildContext());
+        new CuffedDebugCommand(event.getDispatcher(), event.getBuildContext());
 
         ConfigCommand.register(event.getDispatcher());
     }

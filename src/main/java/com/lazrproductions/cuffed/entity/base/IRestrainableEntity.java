@@ -1,5 +1,7 @@
 package com.lazrproductions.cuffed.entity.base;
 
+import net.minecraft.resources.ResourceLocation;
+
 public interface IRestrainableEntity {
     /** Get whether or not this entity is restrained. */
     public boolean isRestrained();
@@ -7,11 +9,11 @@ public interface IRestrainableEntity {
     /** Get the restraint code for this entity. */
     public int getRestraintCode();
     /** Get the arm restraint's id for this entity, cooresponding with each restraint item */
-    public String getArmRestraintId();
+    public ResourceLocation getArmRestraintId();
     /** Get the leg restraint's id for this entity, cooresponding with each restraint item */
-    public String getLegRestraintId();
+    public ResourceLocation getLegRestraintId();
     /** Get the head restraint's id for this entity, cooresponding with each restraint item */
-    public String getHeadRestraintId();
+    public ResourceLocation getHeadRestraintId();
 
     /** Get whether or not the arm restraint is enchanted. */
     public boolean getArmsAreEnchanted();
@@ -23,11 +25,11 @@ public interface IRestrainableEntity {
     /** Set and automatically sync the restraint code to all clients and server. */
     public void setRestraintCode(int v);
     /** Set and automatically sync the arm restraint id to all clients and server. */
-    public void setArmRestraintId(String v);
+    public void setArmRestraintId(ResourceLocation v);
     /** Set and automatically sync the leg restraint id to all clients and server. */
-    public void setLegRestraintId(String v);
+    public void setLegRestraintId(ResourceLocation v);
     /** Set and automatically sync the head restraint id to all clients and server. */
-    public void setHeadRestraintId(String v);
+    public void setHeadRestraintId(ResourceLocation v);
     
     /** Set and automatically sync whether or not the arms restraints are enchanted clients and server */
     public void setArmsEnchanted(boolean v);

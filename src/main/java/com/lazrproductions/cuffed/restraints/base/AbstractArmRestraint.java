@@ -3,7 +3,6 @@ package com.lazrproductions.cuffed.restraints.base;
 import java.util.ArrayList;
 
 import com.lazrproductions.cuffed.CuffedMod;
-import com.lazrproductions.cuffed.entity.animation.ArmRestraintAnimationFlags;
 import com.lazrproductions.lazrslib.client.screen.ScreenUtilities;
 import com.lazrproductions.lazrslib.client.screen.base.BlitCoordinates;
 import com.lazrproductions.lazrslib.client.screen.base.ScreenTexture;
@@ -89,7 +88,6 @@ public abstract class AbstractArmRestraint extends AbstractRestraint {
         return b;
     }
 
-
     public void renderOverlay(Player player, GuiGraphics graphics, float partialTick, Window window) {
         graphics.setColor(1, 1, 1, 1);
 
@@ -97,13 +95,10 @@ public abstract class AbstractArmRestraint extends AbstractRestraint {
         int screenHeight = (int) (16 * 1.75f);
         int x = (window.getGuiScaledWidth() / 2) - (screenWidth / 2);
         int y = (window.getGuiScaledHeight() / 2) - (screenHeight) - 65;
-
-
         ScreenUtilities.drawTexture(graphics, new BlitCoordinates(x, y, screenWidth, screenHeight), ARMS_ICON);
+
         ArrayList<Component> c = new ArrayList<>();
         c.add(Component.translatable(getActionBarLabel()));
         ScreenUtilities.renderLabel(Minecraft.getInstance(), graphics, window.getGuiScaledWidth() / 2, y + screenHeight, c, 16579836);
     }
-    
-    public abstract ArmRestraintAnimationFlags getAnimationFlags();
 }
