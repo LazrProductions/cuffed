@@ -86,10 +86,10 @@ public class DuckTapeArmsRestraint extends AbstractArmRestraint implements IBrea
     }
 
     public boolean AllowBreakingBlocks() {
-        return false;
+        return true;
     }
     public boolean AllowItemUse() {
-        return false;
+        return true;
     }
     public boolean AllowMovement() {
         return true;
