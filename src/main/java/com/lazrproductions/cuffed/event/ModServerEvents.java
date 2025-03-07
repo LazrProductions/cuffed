@@ -132,7 +132,7 @@ public class ModServerEvents {
             event.setCanceled(true);
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    @SubscribeEvent
     public void playerInteractBlock(PlayerInteractEvent.RightClickBlock event) {
         if (event.getHand() == InteractionHand.MAIN_HAND) {
             Level level = event.getEntity().level();
@@ -207,7 +207,7 @@ public class ModServerEvents {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void playerInteractEntity(PlayerInteractEvent.EntityInteract event) {
         if (event.getSide() == LogicalSide.CLIENT)
             return;
@@ -216,8 +216,6 @@ public class ModServerEvents {
                 ServerPlayer player = (ServerPlayer) event.getEntity();
                 IRestrainableCapability myCap = CuffedAPI.Capabilities.getRestrainableCapability(player);
                 IDetainableEntity detainableEntity = (IDetainableEntity) player;
-
-                CuffedMod.LOGGER.info(player.getName().getString() + " is interacting!");
 
                 if (detainableEntity.getDetained() > -1) {
                     event.setCancellationResult(InteractionResult.FAIL);
@@ -247,10 +245,10 @@ public class ModServerEvents {
                 if (event.getTarget().getType().is(ModTags.Entities.CHAINABLE_ENTITIES)) {
                     IAnchorableEntity anchorableEntity = (IAnchorableEntity) event.getTarget();
 
-                    if(CuffedMod.SERVER_CONFIG.ANCHORING_ANCHOR_ONLY_WHEN_RESTRAINED.get()) {
-                        if(event.getTarget() instanceof Player p) {
+                    if (CuffedMod.SERVER_CONFIG.ANCHORING_ANCHOR_ONLY_WHEN_RESTRAINED.get()) {
+                        if (event.getTarget() instanceof Player p) {
                             IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(p);
-                            if(!cap.isRestrained())
+                            if (!cap.isRestrained())
                                 return;
                         }
                     }
@@ -280,9 +278,9 @@ public class ModServerEvents {
 
                 }
 
-
-                if (event.getTarget() != null && !(event.getTarget() instanceof Player) && myCap != null && myCap.getWhoImEscorting() != null) {
-                    if(myCap.getWhoImEscorting().startRiding(event.getTarget())) {
+                if (event.getTarget() != null && !(event.getTarget() instanceof Player) && myCap != null
+                        && myCap.getWhoImEscorting() != null) {
+                    if (myCap.getWhoImEscorting().startRiding(event.getTarget())) {
                         player.sendSystemMessage(
                                 Component.translatable("info.cuffed.forced_ride",
                                         myCap.getWhoImEscorting().getDisplayName(), event.getTarget().getDisplayName()),
@@ -336,9 +334,9 @@ public class ModServerEvents {
             if (CuffedMod.SERVER_CONFIG.NICKNAME_PERSISTS_ON_DEATH.get())
                 deadEntityNicknameData.put(player.getUUID(), nick.serializeNickname());
         }
-        
-        if(event.getEntity() instanceof IAnchorableEntity anchorable) {
-            if(anchorable.isAnchored())
+
+        if (event.getEntity() instanceof IAnchorableEntity anchorable) {
+            if (anchorable.isAnchored())
                 anchorable.setAnchoredTo(null);
         }
     }

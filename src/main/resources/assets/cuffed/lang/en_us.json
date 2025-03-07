@@ -198,6 +198,8 @@
 
     "info.cuffed.reinforced_item": "Reinforced",
 
+    "info.cuffed.frisk.tooltip": "Hold Left Mouse to take",
+    "info.cuffed.frisk.taking": "Taking",
 
     "info.cuffed.arms": "arms",
     "info.cuffed.legs": "legs",

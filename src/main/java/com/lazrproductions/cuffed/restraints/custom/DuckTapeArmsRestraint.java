@@ -299,17 +299,11 @@ public class DuckTapeArmsRestraint extends AbstractArmRestraint implements IBrea
     public void onBrokenServer(ServerPlayer player) {
         CuffedAPI.Networking.sendRestraintUtilityPacketToClient(player, getType(), 103, 0, false, 0, "");
 
-        CuffedMod.LOGGER.info("test, 1");
-
         Random random = new Random();
         player.level().playSound(null, player.blockPosition(), getBreakSound(), SoundSource.PLAYERS, 0.8f,
                 (random.nextFloat() * 0.2f) + 0.9f);
                 
-        CuffedMod.LOGGER.info("test, 2");
-
         ModStatistics.awardRestraintBroken(player, this);
-
-        CuffedMod.LOGGER.info("test, 3");
 
         if (dropItemOnBroken()) {
            ItemStack stack = this.saveToItemStack();
@@ -318,17 +312,12 @@ public class DuckTapeArmsRestraint extends AbstractArmRestraint implements IBrea
            e.setDefaultPickUpDelay();
            player.level().addFreshEntity(e);
         }
-        
-        CuffedMod.LOGGER.info("test, 4");
-        
+                
         IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(player);
         if (getType() == RestraintType.Arm) {
-            CuffedMod.LOGGER.info("test, 5");
             cap.setArmRestraintWithoutWarning(player, null);
         } else
             cap.setLegRestraintWithoutWarning(player, null);
-
-        CuffedMod.LOGGER.info("test, 6");
     }
 
     public void onBrokenClient(Player player) {

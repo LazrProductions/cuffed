@@ -170,6 +170,8 @@ public class CuffedMod {
         ModStatistics.setup();
 
         MinecraftForge.EVENT_BUS.register(new ModServerEvents());
+        
+
 
         // Register Dispenser
         DispenseItemBehavior dispenseitembehavior = new OptionalDispenseItemBehavior() {

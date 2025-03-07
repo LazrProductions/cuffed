@@ -150,7 +150,7 @@ public interface IRestrainableCapability {
 
     //#region Event Handlers
 
-    public void onInteractedByOther(ServerPlayer player, ServerPlayer other, double interactionHeight, ItemStack stack, InteractionHand hand);
+    public boolean onInteractedByOther(ServerPlayer player, ServerPlayer other, double interactionHeight, ItemStack stack, InteractionHand hand);
 
     /** Called on the server when this player has died. */
     public abstract void onDeathServer(ServerPlayer player);

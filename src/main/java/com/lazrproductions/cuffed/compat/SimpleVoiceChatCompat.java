@@ -18,12 +18,12 @@ public class SimpleVoiceChatCompat implements VoicechatPlugin {
     public static VoicechatServerApi serverApi;
 
 
-    public static void load() {}
+    public static void load() {
+    }
 
     @Override
     public void initialize(VoicechatApi api) {
         voicechatApi = api;
-        CuffedMod.LOGGER.info("initialized CUFFED MOD VOICE CHAT PLUGIN");
     }
 
     @Override
@@ -47,7 +47,6 @@ public class SimpleVoiceChatCompat implements VoicechatPlugin {
         {
             if(res.getHeadRestraintId().equals(DuckTapeHeadRestraint.ID)) {
                 event.cancel();
-                CuffedMod.LOGGER.info("attempting to cancel voice packet");
             }
         }
     }

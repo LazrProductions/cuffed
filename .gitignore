@@ -25,6 +25,7 @@ run
 .fleet
 run/log4j2.xml
 blockbench
+libs/
 
 changelog.txt
 howtotestcuffed.txt

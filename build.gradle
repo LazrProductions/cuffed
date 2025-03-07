@@ -104,7 +104,7 @@ dependencies {
     compileOnly fg.deobf("curse.maven:irons-spells-n-spellbooks-855414:5377916") // Iron spell n' spellbooks
     compileOnly fg.deobf("curse.maven:ars-nouveau-401955:5371927") // Ars Nouveau
 
-    compileOnly fg.deobf("curse.maven:playerrevive-266890:5647065") // Player Revive
+    compileOnly files('libs/playerrevive.jar') // Player Revive
 
     compileOnly fg.deobf("curse.maven:simple-voice-chat-416089:5605428") // Simple Voice Chat
 
