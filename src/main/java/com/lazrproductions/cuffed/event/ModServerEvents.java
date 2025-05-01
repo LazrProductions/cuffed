@@ -11,6 +11,7 @@ import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.api.CuffedAPI;
 import com.lazrproductions.cuffed.blocks.PilloryBlock;
 import com.lazrproductions.cuffed.blocks.base.ILockableBlock;
+import com.lazrproductions.cuffed.cap.RestrainableCapability;
 import com.lazrproductions.cuffed.cap.base.IRestrainableCapability;
 import com.lazrproductions.cuffed.cap.provider.RestrainableCapabilityProvider;
 import com.lazrproductions.cuffed.entity.ChainKnotEntity;
@@ -27,8 +28,10 @@ import com.lazrproductions.cuffed.restraints.base.AbstractArmRestraint;
 import com.lazrproductions.cuffed.restraints.base.AbstractLegRestraint;
 import com.lazrproductions.cuffed.restraints.base.IEnchantableRestraint;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -51,6 +54,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.Tags.Blocks;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
@@ -418,6 +422,16 @@ public class ModServerEvents {
                     event.setAmount(Mth.clamp(originalAmount - (amountNegated), 0, originalAmount));
                 }
             }
+        }
+    }
+
+    @SubscribeEvent
+    public void onCommand(CommandEvent event) {
+        ServerPlayer player = event.getParseResults().getContext().getSource().getPlayer();
+        RestrainableCapability cap = (RestrainableCapability)CuffedAPI.Capabilities.getRestrainableCapability(player);
+        if(player != null && cap != null && cap.restraintsDisabledMovement()) {
+            player.sendSystemMessage(Component.literal("You cannot do this right now.").withStyle(ChatFormatting.RED));
+            event.setCanceled(true);
         }
     }
 }

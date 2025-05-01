@@ -23,7 +23,7 @@ public class MouseHandlerMixin {
     public void onPress(long windowId, int keyCode, int scanCode, int f3, CallbackInfo callback) {
         Minecraft inst = Minecraft.getInstance();
         LocalPlayer player = inst.player;
-        if(player!= null) {
+        if(player!= null && inst.screen == null) {
             if(inst.screen != null)
                 return;
 

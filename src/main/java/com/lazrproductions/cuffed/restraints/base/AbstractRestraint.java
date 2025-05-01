@@ -226,7 +226,7 @@ public abstract class AbstractRestraint {
         Minecraft instance = Minecraft.getInstance();
         
         if(action == 1) {
-            if(this instanceof IBreakableRestraint breakable) {
+            if(this instanceof IBreakableRestraint breakable && breakable.canBeBrokenOutOf()) {
                 breakable.attemptToBreak(player, keyCode, action, instance.options);
             }
         }
@@ -236,7 +236,7 @@ public abstract class AbstractRestraint {
         Minecraft instance = Minecraft.getInstance();
         
         if(action == 1)
-            if(this instanceof IBreakableRestraint breakable)
+            if(this instanceof IBreakableRestraint breakable && breakable.canBeBrokenOutOf())
                 breakable.attemptToBreak(player, keyCode, action, instance.options);
     }
 

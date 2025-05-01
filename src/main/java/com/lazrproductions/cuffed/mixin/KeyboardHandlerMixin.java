@@ -24,7 +24,7 @@ public class KeyboardHandlerMixin {
         Minecraft inst = Minecraft.getInstance();
         LocalPlayer player = inst.player;
 
-        if(player!= null) {
+        if(player!= null && inst.screen == null) {
             RestrainableCapability cap = (RestrainableCapability)CuffedAPI.Capabilities.getRestrainableCapability((Player)player);
             if(cap != null && cap.isRestrained()) {
                 cap.onKeyInput(player, keyCode, action);
