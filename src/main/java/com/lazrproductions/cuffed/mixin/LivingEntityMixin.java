@@ -118,10 +118,6 @@ public abstract class LivingEntityMixin extends Entity implements IAnchorableEnt
 
 
                 if (this.distanceTo(getAnchor()) > minDist) {
-                    if(distanceTo(getAnchor()) > maxDist) {
-                        hurt(ModDamageTypes.GetModSource(this, ModDamageTypes.HANG, anchor), 2);
-                    }
-
                     float distance = distanceTo(getAnchor());
 
                     double dx = (getAnchor().getX() - getX()) / (double) distance;
@@ -129,9 +125,13 @@ public abstract class LivingEntityMixin extends Entity implements IAnchorableEnt
                     double dz = (getAnchor().getZ() - getZ()) / (double) distance;
 
                     setDeltaMovement(
-                            Math.copySign(dx * dx * (distance / 5D) * .45, dx),
-                            Math.copySign(dy * dy * (distance / 5D) * .45, dy),
-                            Math.copySign(dz * dz * (distance / 5D) * .45, dz));
+                        Math.copySign(dx * dx * (distance / 5D) * .45, dx),
+                        Math.copySign(dy * dy * (distance / 5D) * .45, dy),
+                        Math.copySign(dz * dz * (distance / 5D) * .45, dz));
+
+                    if(distanceTo(getAnchor()) > maxDist) {
+                        hurt(ModDamageTypes.GetModSource(this, ModDamageTypes.HANG, anchor), 2);
+                    }
                 }
             } else
                 entityData.set(DATA_ANCHOR_ID, -1);

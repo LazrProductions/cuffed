@@ -1,19 +1,19 @@
 {
-    "type": "minecraft:crafting_shaped",
-    "pattern": [
-      "NIN",
-      "NIN"
-    ],
-    "key": {
-      "N": {
-        "item": "minecraft:iron_ingot"
-      },
-      "I": {
-        "item": "minecraft:iron_nugget"
-      }
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "NIN",
+    "NIN"
+  ],
+  "key": {
+    "N": {
+      "item": "minecraft:iron_ingot"
     },
-    "result": {
-      "item": "cuffed:reinforced_bars",
-      "count": 8
+    "I": {
+      "item": "minecraft:iron_bars"
     }
+  },
+  "result": {
+    "item": "cuffed:reinforced_bars",
+    "count": 8
   }
+}

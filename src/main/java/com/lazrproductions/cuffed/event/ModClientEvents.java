@@ -1,13 +1,14 @@
 package com.lazrproductions.cuffed.event;
 
+import java.util.Random;
+
 import com.lazrproductions.cuffed.api.CuffedAPI;
-import com.lazrproductions.cuffed.blocks.base.ILockableBlock;
 import com.lazrproductions.cuffed.cap.base.IRestrainableCapability;
 import com.lazrproductions.cuffed.client.gui.screen.GenericScreen;
 import com.lazrproductions.cuffed.effect.RestrainedEffectInstance;
 import com.lazrproductions.cuffed.entity.base.IRestrainableEntity;
-import com.lazrproductions.cuffed.init.ModItems;
 import com.lazrproductions.cuffed.init.ModTags;
+import com.lazrproductions.cuffed.restraints.custom.DuckTapeHeadRestraint;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -17,11 +18,11 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraftforge.client.event.ClientChatEvent;
 import net.minecraftforge.client.event.ComputeFovModifierEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.InputEvent.InteractionKeyMappingTriggered;
@@ -34,7 +35,6 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class ModClientEvents {
@@ -116,6 +116,45 @@ public class ModClientEvents {
         }
     }
 
+    @SubscribeEvent
+    public void chat(ClientChatEvent event) {
+        Minecraft instance = Minecraft.getInstance();
+        if(instance.player instanceof IRestrainableEntity e)
+            if(e.getHeadRestraintId().equals(DuckTapeHeadRestraint.ID))
+                event.setMessage(mufflifyPhrase(event.getMessage()));
+    }
+
+    static final String[] variants = new String[] { "mph", "mhm", "hmm", "fmp", "mpr", "mrp" };
+
+    String mufflifyPhrase(String message) {
+        String[] words = message.split(" ");
+
+        String output = "";
+        for (int i = 0; i < words.length; i++) {
+            output += mufflifyWord(words[i]);
+            if(i < words.length - 1)
+                output += " ";
+        }
+        return output;
+    }
+    String mufflifyWord(String word) {
+        String myVariant = variants[new Random().nextInt(3)];
+
+        String output = "";
+        for (int i = 0; i < word.length(); i++) {
+            char c = word.charAt(i);
+            if(Character.isLetter(c)) {
+                if(i == word.length()-1)
+                    output += myVariant.charAt(2);
+                else if(i == word.length()-2)
+                    output += myVariant.charAt(1);
+                else 
+                    output += myVariant.charAt(0);
+            } else 
+            output += c;
+        }
+        return output;
+    }
 
     ///////// MISC CLIENT EVENTS FOR HANDCUFFED PLAYERS //////////
 
@@ -147,7 +186,6 @@ public class ModClientEvents {
         if (inst != null) {
             Player player = inst.player;
             if (player != null) {
-                Level level = player.level();
                 IRestrainableEntity restrainable = (IRestrainableEntity) player;
                 if (restrainable.isRestrained()) {
                     if (!event.isAttack()) {
@@ -164,15 +202,6 @@ public class ModClientEvents {
                     if (pickresult != null && pickresult.is(ModTags.Blocks.REINFORCED_BLOCKS) && !(inst.hitResult instanceof EntityHitResult)) {
                             event.setCanceled(true);
                     }
-                } else if (event.isUseItem() && !(inst.hitResult instanceof EntityHitResult) && 
-                        !(player.getItemInHand(event.getHand()).is(ModItems.KEY.get()) || player.getItemInHand(event.getHand()).is(ModItems.KEY_RING.get()))) {
-                    BlockState pickresult = GetSelectedBlock(player, false);
-                    BlockPos pickpos = GetSelectedBlockPos(player, false);
-                    
-                    if(pickresult != null)
-                        if(CuffedAPI.Lockpicking.isLockedAt(level, pickresult, pickpos) && !(pickresult.getBlock() instanceof ILockableBlock))
-                                event.setCanceled(true);
-                    
                 }
             }
         }
@@ -191,15 +220,6 @@ public class ModClientEvents {
                 }
             }
         }
-    }
-
-    @SubscribeEvent
-    public void onInteractBlock(PlayerInteractEvent.RightClickBlock event) {
-        BlockState pickresult = event.getLevel().getBlockState(event.getPos());
-        BlockPos pickpos = event.getPos();
-
-        if(CuffedAPI.Lockpicking.isLockedAt(event.getLevel(), pickresult, pickpos) && !(pickresult.getBlock() instanceof ILockableBlock))
-            event.setCanceled(true);
     }
 
     @SubscribeEvent
@@ -231,6 +251,7 @@ public class ModClientEvents {
     }
 
     ////////// UTILITY FUNCTIONS FOR GENERAL USE /////////////
+    
     public static BlockState GetSelectedBlock(Player player, boolean isFluid) {
 
         HitResult block = player.pick(20.0D, 0.0F, isFluid);

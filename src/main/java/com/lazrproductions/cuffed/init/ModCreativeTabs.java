@@ -1,10 +1,13 @@
 package com.lazrproductions.cuffed.init;
 
 import com.lazrproductions.cuffed.CuffedMod;
+import com.lazrproductions.cuffed.blocks.base.PosterType;
+import com.lazrproductions.cuffed.items.PosterBlockItem;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
@@ -24,6 +27,8 @@ public class ModCreativeTabs {
 
                         output.accept(ModItems.HANDCUFFS_KEY.get());
                         output.accept(ModItems.SHACKLES_KEY.get());
+
+                        output.accept(Items.BUNDLE);
 
                         output.accept(ModItems.POSSESSIONSBOX.get());
                         output.accept(ModItems.PRISONER_TAG.get());
@@ -67,11 +72,26 @@ public class ModCreativeTabs {
 
                         output.accept(ModItems.SAFE_ITEM.get());
 
+
+                        output.accept(PosterBlockItem.newItemFromType(PosterType.NONE));
+                        output.accept(PosterBlockItem.newItemFromType(PosterType.SERENITY));
+                        output.accept(PosterBlockItem.newItemFromType(PosterType.SKELETON));
+                        output.accept(PosterBlockItem.newItemFromType(PosterType.IMPUNITY));
+                        output.accept(PosterBlockItem.newItemFromType(PosterType.ZOOOM));
+                        output.accept(PosterBlockItem.newItemFromType(PosterType.PRISONER));
+                        output.accept(PosterBlockItem.newItemFromType(PosterType.LANTERN));
+
+
+
+                        output.accept(ModItems.CREATIVE_RESTRAINT_CUTTER.get());
+                        output.accept(ModItems.CREATIVE_KEY.get());
+                        output.accept(ModItems.CREATIVE_BIND_BREAKER.get());
                         
                         //output.accept(ModItems.INFORMATION_BOOKLET.get());
                     }).build());
 
     public static void register(IEventBus bus) {
         CREATIVE_MODE_TABS.register(bus);
+
     }
 }

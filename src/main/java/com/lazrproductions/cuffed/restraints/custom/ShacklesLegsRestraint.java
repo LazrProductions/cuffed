@@ -1,5 +1,6 @@
 package com.lazrproductions.cuffed.restraints.custom;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import javax.annotation.Nonnull;
@@ -26,6 +27,8 @@ import com.lazrproductions.lazrslib.client.screen.base.ScreenTexture;
 import com.lazrproductions.lazrslib.common.math.MathUtilities;
 import com.mojang.blaze3d.platform.Window;
 
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.model.HumanoidModel;
@@ -124,6 +127,68 @@ public class ShacklesLegsRestraint extends AbstractLegRestraint implements IBrea
     }
     public int getLockpickingSpeedIncreasePerPick() {
         return CuffedMod.SERVER_CONFIG.SHACKLES_ON_LEGS_LOCKPICKING_SPEED_INCREASE_PER_PICK.get();
+    }
+
+    public ArrayList<Integer> getBlockedKeyCodes() {
+        ArrayList<Integer> b = new ArrayList<Integer>();
+        Minecraft inst = Minecraft.getInstance();
+        if(inst == null || inst.options == null)
+            return b;
+
+        b.add(inst.options.keyJump.getKey().getValue());
+        b.add(inst.options.keySprint.getKey().getValue());
+        
+        for (KeyMapping mapping : inst.options.keyMappings) {
+            switch (mapping.getName()) {
+                case "key.parcool.Crawl":
+                    b.add(mapping.getKey().getValue());
+                    break;
+                case "key.parcool.Breakfall":
+                    b.add(mapping.getKey().getValue());
+                    break;
+                case "key.parcool.WallSlide":
+                    b.add(mapping.getKey().getValue());
+                    break;
+                case "key.parcool.Dodge":
+                    b.add(mapping.getKey().getValue());
+                    break;
+                case "key.parcool.Vault":
+                    b.add(mapping.getKey().getValue());
+                    break;
+                case "key.parcool.Flipping":
+                    b.add(mapping.getKey().getValue());
+                    break;
+                case "key.parcool.FastRun":
+                    b.add(mapping.getKey().getValue());
+                    break;
+                case "key.parcool.ClingToCliff":
+                    b.add(mapping.getKey().getValue());
+                    break;
+                case "key.parcool.HangDown":
+                    b.add(mapping.getKey().getValue());
+                    break;
+                case "key.parcool.WallJump":
+                    b.add(mapping.getKey().getValue());
+                    break;
+                case "key.parcool.QuickTurn":
+                    b.add(mapping.getKey().getValue());
+                    break;
+                case "key.parcool.HorizontalWallRun":
+                    b.add(mapping.getKey().getValue());
+                    break;
+                case "key.elenaidodge2.dodge":
+                    b.add(mapping.getKey().getValue());
+                    break;
+                case "keybinds.combatroll.roll":
+                    b.add(mapping.getKey().getValue());
+                    break;
+                case "key.epicfight.dodge":
+                    b.add(mapping.getKey().getValue());
+                    break;
+            }
+        }
+
+        return b;
     }
     // #endregion
 

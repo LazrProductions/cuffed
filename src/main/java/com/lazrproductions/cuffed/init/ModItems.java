@@ -7,6 +7,8 @@ import com.lazrproductions.cuffed.items.KeyRingItem;
 import com.lazrproductions.cuffed.items.KnifeItem;
 import com.lazrproductions.cuffed.items.BakedKeyMoldItem;
 import com.lazrproductions.cuffed.items.BandageItem;
+import com.lazrproductions.cuffed.items.CreativeKey;
+import com.lazrproductions.cuffed.items.CreativeRestraintCutter;
 import com.lazrproductions.cuffed.items.DuckTapeItem;
 import com.lazrproductions.cuffed.items.FuzzyHandcuffsItem;
 import com.lazrproductions.cuffed.items.HandcuffsItem;
@@ -21,6 +23,7 @@ import com.lazrproductions.cuffed.items.base.AbstractRestraintKeyItem;
 
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -49,16 +52,16 @@ public class ModItems {
 
         public static final RegistryObject<Item> HANDCUFFS = ITEMS.register("handcuffs",
                         () -> new HandcuffsItem(new Item.Properties().stacksTo(1)
-                                .durability(40)
-                                .defaultDurability(40)));
+                                .durability(999)
+                                .defaultDurability(999)));
         public static final RegistryObject<Item> FUZZY_HANDCUFFS = ITEMS.register("fuzzy_handcuffs",
                         () -> new FuzzyHandcuffsItem(new Item.Properties().stacksTo(1)
-                                .durability(30)
-                                .defaultDurability(30)));
+                                .durability(999)
+                                .defaultDurability(999)));
         public static final RegistryObject<Item> SHACKLES = ITEMS.register("shackles",
                         () -> new ShacklesItem(new Item.Properties().stacksTo(1)
-                                .durability(15)
-                                .defaultDurability(15)));
+                                .durability(999)
+                                .defaultDurability(999)));
 
 
         public static final RegistryObject<Item> WEIGHTED_ANCHOR_ITEM = ITEMS.register("weighted_anchor",
@@ -131,6 +134,14 @@ public class ModItems {
                 
         //public static final RegistryObject<Item> TOILET_ITEM = ITEMS.register("toilet",
         //        () -> new BlockItem(ModBlocks.TOILET.get(), new Item.Properties()));
+
+
+
+        // Creative Items
+        public static final RegistryObject<Item> CREATIVE_RESTRAINT_CUTTER = ITEMS.register("creative_restraint_cutter", () -> new CreativeRestraintCutter(new Item.Properties()));
+        public static final RegistryObject<Item> CREATIVE_KEY = ITEMS.register("creative_key", () -> new CreativeKey(new Item.Properties().rarity(Rarity.EPIC)));
+        public static final RegistryObject<Item> CREATIVE_BIND_BREAKER = ITEMS.register("creative_bind_breaker", () -> new CreativeKey(new Item.Properties().rarity(Rarity.EPIC)));
+
 
         public static void register(IEventBus bus) {
                 ITEMS.register(bus);

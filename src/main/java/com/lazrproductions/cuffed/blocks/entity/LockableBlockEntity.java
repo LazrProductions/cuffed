@@ -76,4 +76,9 @@ public class LockableBlockEntity extends BlockEntity {
     public void bind() {
         hasBeenBound = true;
     }
+    public void resetBinding() {
+        lockId = UUID.randomUUID();
+        locked = false;
+        hasBeenBound = false;
+    }
 }

@@ -13,6 +13,7 @@ import com.lazrproductions.cuffed.items.KeyRingItem;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -151,10 +152,16 @@ public class CellDoor extends DoorBlock implements EntityBlock {
             if(level.getBlockEntity(bottomPos) instanceof LockableBlockEntity lockable) {
                 boolean isKeyThatIsBoundToThisLock = stack.is((ModItems.KEY.get())) && KeyItem.isBoundToLock(stack, lockable.getLockId());
                 boolean isKeyRingThatIsBoundToThisLock = stack.is((ModItems.KEY_RING.get())) && KeyRingItem.hasBoundId(stack, lockable.getLockId());
+                boolean isCreativeKey = stack.is(ModItems.CREATIVE_KEY.get());
+                boolean isCreativeBindBreaker = stack.is(ModItems.CREATIVE_BIND_BREAKER.get());
                 boolean isLockpick = stack.is(ModItems.LOCKPICK.get());
 
                 if(!isLockpick) {
-                    if ((isKeyThatIsBoundToThisLock || isKeyRingThatIsBoundToThisLock)) {
+                    if(isCreativeBindBreaker) {
+                        lockable.resetBinding();
+                        player.sendSystemMessage(Component.translatable("item.cuffed.creative_bind_breaker.use", Component.translatable(getDescriptionId())));
+                        return InteractionResult.SUCCESS;
+                    } else if (isKeyThatIsBoundToThisLock || isKeyRingThatIsBoundToThisLock || isCreativeKey) {
                         boolean willEndUpLocked = !lockable.isLocked();
 
                         lockable.setLocked(willEndUpLocked, level, player, bottomPos);

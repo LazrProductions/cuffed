@@ -10,6 +10,7 @@ import java.util.UUID;
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.api.CuffedAPI;
 import com.lazrproductions.cuffed.blocks.PilloryBlock;
+import com.lazrproductions.cuffed.blocks.base.ILockableBlock;
 import com.lazrproductions.cuffed.cap.base.IRestrainableCapability;
 import com.lazrproductions.cuffed.cap.provider.RestrainableCapabilityProvider;
 import com.lazrproductions.cuffed.entity.ChainKnotEntity;
@@ -28,7 +29,6 @@ import com.lazrproductions.cuffed.restraints.base.IEnchantableRestraint;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -203,6 +203,9 @@ public class ModServerEvents {
                         event.setCanceled(true);
                     }
                 }
+
+                if(CuffedAPI.Lockpicking.isLockedAt(level, state, pos) && !(state.getBlock() instanceof ILockableBlock))
+                    event.setCanceled(true);
             }
         }
     }
@@ -281,16 +284,18 @@ public class ModServerEvents {
                 if (event.getTarget() != null && !(event.getTarget() instanceof Player) && myCap != null
                         && myCap.getWhoImEscorting() != null) {
                     if (myCap.getWhoImEscorting().startRiding(event.getTarget())) {
-                        player.sendSystemMessage(
-                                Component.translatable("info.cuffed.forced_ride",
-                                        myCap.getWhoImEscorting().getDisplayName(), event.getTarget().getDisplayName()),
-                                true);
+                        Level level = player.level();
+                        if(level != null)
+                            level.playSound(null, event.getTarget(), SoundEvents.ARMOR_EQUIP_LEATHER, SoundSource.PLAYERS, 1, 1);
+
                         myCap.stopEscortingPlayer();
                         event.setCancellationResult(InteractionResult.SUCCESS);
                         event.setCanceled(true);
                         return;
                     }
                 }
+                 
+
             }
         }
     }

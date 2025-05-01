@@ -1,7 +1,6 @@
 {
     "replace": false,
     "values": [
-        "cuffed:cell_door",
         "cuffed:pillory",
         "cuffed:safe",
         "#forge:fence_gates",

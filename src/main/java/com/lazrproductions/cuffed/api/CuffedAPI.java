@@ -259,7 +259,6 @@ public class CuffedAPI {
             instance.setScreen(overlay);
         }
     
-    
         public static boolean isLockedAt(@Nonnull Level level, @Nonnull BlockState state, @Nonnull BlockPos pos) {
             boolean isLockedBlock = false;
             if (state.is(ModTags.Blocks.LOCKABLE_BLOCKS)) {

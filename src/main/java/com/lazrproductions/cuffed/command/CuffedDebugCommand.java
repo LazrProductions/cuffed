@@ -1,6 +1,5 @@
 package com.lazrproductions.cuffed.command;
 
-import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.restraints.RestraintAPI;
 import com.lazrproductions.cuffed.restraints.base.RestraintType;
 import com.mojang.brigadier.CommandDispatcher;
@@ -120,7 +119,6 @@ public class CuffedDebugCommand {
                                 RestraintType type = ctx.getArgument("type", RestraintType.class);
                                 ItemStack stack = ItemArgument.getItem(ctx, "item").createItemStack(1, false);
                                 if (stack != null && !stack.isEmpty()) {
-                                        CuffedMod.LOGGER.info("command - getting restraint for " + stack.getHoverName().getString());
                                         var r = RestraintAPI.getRestraintFromStack(stack, type, sender, sender);
                                         if(r != null) {
                                                 sender.sendSystemMessage(Component.literal("Found the following restraint for the given item and type:\n"+r.serializeNBT()));

@@ -7,6 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
 public class ModTags {
@@ -23,6 +24,13 @@ public class ModTags {
         
         public static TagKey<EntityType<?>> tag(String name) {
             return TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(CuffedMod.MODID, name));
+        }
+    }
+    public static class Items {
+        public static final TagKey<Item> CAN_REINFORCE_PADLOCK = tag("can_reinforce_padlock");
+        
+        public static TagKey<Item> tag(String name) {
+            return TagKey.create(Registries.ITEM, new ResourceLocation(CuffedMod.MODID, name));
         }
     }
 }

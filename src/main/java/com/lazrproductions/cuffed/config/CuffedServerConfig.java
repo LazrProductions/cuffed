@@ -41,6 +41,13 @@ public class CuffedServerConfig extends LazrConfig {
     public ConfigProperty<Integer> LOCKPICKING_SPEED_INCREASE_PER_PICK_FOR_BREAKING_SAFES;
 
 
+    
+    public ConfigCategory RESTRAINT_DURABILITY_SETTINGS;
+    public ConfigProperty<Integer> RESTRAINT_DURABILITY_HANDCUFFS;
+    public ConfigProperty<Integer> RESTRAINT_DURABILITY_FUZZY_HANDCUFFS;
+    public ConfigProperty<Integer> RESTRAINT_DURABILITY_SHACKLES;
+
+
 
     public ConfigCategory HANDCUFFS_ON_ARMS_SETTINGS;
     public ConfigProperty<Boolean> HANDCUFFS_ON_ARMS_CAN_BE_BROKEN_OUT_OF;
@@ -130,6 +137,13 @@ public class CuffedServerConfig extends LazrConfig {
 
             LOCKPICKING_PROGRESS_PER_PICK_FOR_BREAKING_SAFES = c.putProperty(new ConfigProperty<Integer>(this, "Progress Per Pick For Breaking Safes", "How much progress is gained on a successfull pick when lockpicking a SAFES.", 3));
             LOCKPICKING_SPEED_INCREASE_PER_PICK_FOR_BREAKING_SAFES = c.putProperty(new ConfigProperty<Integer>(this, "Speed Increase Per Pick For Breaking Safes", "How much the progress-loss speeds up per pick when lockpicking a SAFES.", 10));
+        });
+
+
+        RESTRAINT_DURABILITY_SETTINGS = createCategory(new ConfigCategory(this, "Restraint Durabilities"), (c) -> {
+            RESTRAINT_DURABILITY_HANDCUFFS = c.putProperty(new ConfigProperty<Integer>(this, "Handcuffs Durability", "The amount of durability handcuffs have.", 40));
+            RESTRAINT_DURABILITY_FUZZY_HANDCUFFS = c.putProperty(new ConfigProperty<Integer>(this, "Fuzzy Handcuffs Durability", "The amount of durability fuzzy handcuffs have.", 30));
+            RESTRAINT_DURABILITY_SHACKLES = c.putProperty(new ConfigProperty<Integer>(this, "Shackles Durability", "The amount of durability shackles have.", 15));
         });
 
 

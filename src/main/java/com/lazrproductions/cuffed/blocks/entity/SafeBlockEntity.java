@@ -147,6 +147,11 @@ public class SafeBlockEntity extends RandomizableContainerBlockEntity {
     public void bind() {
         hasBeenBound = true;
     }
+    public void resetBinding() {
+        lockId = UUID.randomUUID();
+        locked = false;
+        hasBeenBound = false;
+    }
 
 
     void updateBlockState(BlockState state, boolean b1) {

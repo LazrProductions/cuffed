@@ -3,6 +3,16 @@
 
 
 
+    "item.cuffed.creative_restraint_cutter": "Creative Restraint Cutter",
+    "item.cuffed.creative_restraint_cutter.lore": "Use on a restrained player to remove all of their restraints.",
+
+    "item.cuffed.creative_key": "Creative Key",
+    "item.cuffed.creative_key.lore": "Use on any lockable object to lock and unlock it.",
+
+    "item.cuffed.creative_bind_breaker": "Creative Bind Breaker",
+    "item.cuffed.creative_bind_breaker.lore": "Use on any lockable object to reset its bound keys and change it's ID.",
+    "item.cuffed.creative_bind_breaker.use": "Reset %1$s's bindings.",
+
     "item.cuffed.key": "Key",
     "item.cuffed.key.desc": "Keys can be used to lock padlocks and cell doors.",
     "item.cuffed.key.description.bound": "Bound",
@@ -192,9 +202,10 @@
     "info.cuffed.restraints.bundle.action_bar": "Your head is in a bundle!",
 
     
-    "info.cuffed.escorting": "You are escorting ",
-    "info.cuffed.cancel_escorting": "You stopped escorting ",
-    "info.cuffed.forced_ride": "You force %1$s to ride %2$s",
+    "info.cuffed.escorting.giving": "Crouch to stop escorting ",
+    "info.cuffed.escorting.getting": "You are being escorted by ",
+    "info.cuffed.escorting.giving.cancel": "You stopped escorting ",
+    "info.cuffed.escorting.getting.cancel": "%1$s stopped escorting you.",
 
     "info.cuffed.reinforced_item": "Reinforced",
 

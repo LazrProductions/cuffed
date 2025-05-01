@@ -13,6 +13,7 @@ import com.lazrproductions.cuffed.items.KeyRingItem;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
@@ -90,10 +91,17 @@ public class SafeBlock extends BaseEntityBlock implements SimpleWaterloggedBlock
 
                 boolean isKeyItemAndIsBoundToThis = stack.is((ModItems.KEY.get())) && KeyItem.isBoundToLock(stack, safe.getLockId());
                 boolean isKeyRingItemAndIsBoundToThis = stack.is((ModItems.KEY_RING.get())) && KeyRingItem.hasBoundId(stack, safe.getLockId());
+                boolean isCreativeKey = stack.is(ModItems.CREATIVE_KEY.get());
+                boolean isCreativeBindBreaker = stack.is(ModItems.CREATIVE_BIND_BREAKER.get());
                 boolean isHoldingLockpick = stack.is(ModItems.LOCKPICK.get());
 
+
                 if (!isHoldingLockpick) {
-                    if ((isKeyItemAndIsBoundToThis || isKeyRingItemAndIsBoundToThis)) {
+                    if(isCreativeBindBreaker) {
+                        safe.bind();
+                        player.sendSystemMessage(Component.translatable("item.cuffed.creative_bind_breaker.use", Component.translatable(getDescriptionId())));
+                        return InteractionResult.SUCCESS;
+                    } else if (isKeyItemAndIsBoundToThis || isKeyRingItemAndIsBoundToThis || isCreativeKey) {
                         boolean willEndUpLocked = !safe.isLocked();
                         safe.setLocked(willEndUpLocked, level, player, pos);
 

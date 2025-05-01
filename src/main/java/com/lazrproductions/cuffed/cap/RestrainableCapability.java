@@ -25,6 +25,7 @@ import com.lazrproductions.cuffed.restraints.base.AbstractLegRestraint;
 import com.lazrproductions.cuffed.restraints.base.AbstractRestraint;
 import com.lazrproductions.cuffed.restraints.base.IEnchantableRestraint;
 import com.lazrproductions.cuffed.restraints.base.RestraintType;
+import com.lazrproductions.lazrslib.common.math.MathUtilities;
 import com.mojang.blaze3d.platform.Window;
 
 import net.minecraft.client.gui.GuiGraphics;
@@ -38,6 +39,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.RelativeMovement;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -92,17 +94,24 @@ public class RestrainableCapability implements IRestrainableCapability {
 
         // --- HANDLE ESCORTING
 
-        if (playerEscortingMe != null) {
+        if (playerEscortingMe != null) {            
             playerEscortingMe.sendSystemMessage(
-                    Component.translatable("info.cuffed.escorting").append(player.getDisplayName()), true);
+                    Component.translatable("info.cuffed.escorting.giving").append(player.getDisplayName()), true);
+            player.sendSystemMessage(
+                    Component.translatable("info.cuffed.escorting.getting").append(playerEscortingMe.getDisplayName()), true);
+
+            Vec3 escortPivot = MathUtilities.GetPositionFromTowardsRotationInDegrees(playerEscortingMe.position(), playerEscortingMe.getYRot() + 90, 0, 0.45f);
+            Vec3 escortTarget = MathUtilities.GetPositionFromTowardsRotationInDegrees(escortPivot, playerEscortingMe.getYRot(), 0, 0.9f);
+            player.connection.teleport(escortTarget.x(), escortTarget.y(), escortTarget.z(), playerEscortingMe.getYRot(), player.getXRot(), RelativeMovement.ROTATION);
 
             if (!isRestrained()) {
                 CuffedAPI.Capabilities.getRestrainableCapability(playerEscortingMe).stopEscortingPlayer();
             } else if (playerEscortingMe == null || playerEscortingMe.isRemoved()) {
                 playerEscortingMe = null;
-            } else if (playerEscortingMe.distanceTo(player) > 3.5f) {
-                playerEscortingMe.sendSystemMessage(Component.translatable("info.cuffed.cancel_escorting")
+            } else if (playerEscortingMe.distanceTo(player) > 3.5f || playerEscortingMe.isCrouching()) {
+                playerEscortingMe.sendSystemMessage(Component.translatable("info.cuffed.escorting.giving.cancel")
                         .append(player.getDisplayName()), true);
+                player.sendSystemMessage(Component.translatable("info.cuffed.escorting.getting.cancel", playerEscortingMe.getDisplayName()), true);
                 CuffedAPI.Capabilities.getRestrainableCapability(playerEscortingMe).stopEscortingPlayer();
             } else if (playerEscortingMe != null && playerEscortingMe.isRemoved() || player.isRemoved())
                 CuffedAPI.Capabilities.getRestrainableCapability(playerEscortingMe).stopEscortingPlayer();
@@ -237,7 +246,7 @@ public class RestrainableCapability implements IRestrainableCapability {
                         player.getUUID().toString(), lockpickType, speedIncreasePerPick, progressPerPick);
                 return true;
             }
-        } else if (stack.isEmpty() && !other.isCrouching()) {
+        } else if (stack.isEmpty() && other.isCrouching()) {
             if (interactionHeight > 1.5f) {
                 if (headRestraint != null)
                     if (headRestraint.getKeyItem() == null)
@@ -260,7 +269,7 @@ public class RestrainableCapability implements IRestrainableCapability {
                             return true;
                         }
             }
-        } else if (stack.isEmpty() && other.isCrouching() && isRestrained()) {
+        } else if (stack.isEmpty() && !other.isCrouching() && isRestrained()) {
             CuffedAPI.Capabilities.getRestrainableCapability(other).startEscortingPlayer(other, player);
             return true;
         }
@@ -625,6 +634,7 @@ public class RestrainableCapability implements IRestrainableCapability {
     // #region Escort Management
 
     public void startEscortingPlayer(@Nonnull ServerPlayer self, @Nonnull ServerPlayer playerToEscort) {
+        playerToEscort.removeVehicle();
         CuffedAPI.Capabilities.getRestrainableCapability(playerToEscort).startGettingEscortedByPlayer(self);
         whoImEscorting = playerToEscort;
     }

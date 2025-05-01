@@ -24,6 +24,7 @@ import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stats;
@@ -39,9 +40,9 @@ import net.minecraft.world.entity.decoration.HangingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class PadlockEntity extends HangingEntity {
 
@@ -49,6 +50,8 @@ public class PadlockEntity extends HangingEntity {
             EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DATA_REINFORCED = SynchedEntityData.defineId(PadlockEntity.class,
             EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<String> DATA_ITEM_USED_TO_REINFORCE = SynchedEntityData.defineId(PadlockEntity.class,
+            EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Optional<UUID>> DATA_LOCK_ID = SynchedEntityData.defineId(PadlockEntity.class,
             EntityDataSerializers.OPTIONAL_UUID);
     private static final EntityDataAccessor<Boolean> DATA_HAS_BEEN_BOUND = SynchedEntityData.defineId(PadlockEntity.class,
@@ -77,6 +80,15 @@ public class PadlockEntity extends HangingEntity {
                 this.pos.getZ() + 0.5f + zO, new ItemStack(ModItems.PADLOCK.get()));
         itementity.setDefaultPickUpDelay();
         this.level().addFreshEntity(itementity);
+
+        if(this.isReinforced()) {
+            String i = getItemUsedToReinforce();
+            ItemStack stack = new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(i)));
+            ItemEntity e = new ItemEntity(this.level(), this.pos.getX() + 0.5f + xO, this.pos.getY() + 0.5f,
+                    this.pos.getZ() + 0.5f + zO, stack);
+            e.setDefaultPickUpDelay();
+            this.level().addFreshEntity(e);
+        }
     }
 
     @Override
@@ -85,6 +97,26 @@ public class PadlockEntity extends HangingEntity {
             return InteractionResult.SUCCESS;
         } else {
             ItemStack stack = interactor.getItemInHand(hand);
+            if (stack.is(ModItems.CREATIVE_RESTRAINT_CUTTER.get())) {
+                interactor.awardStat(Stats.ITEM_USED.get(ModItems.CREATIVE_KEY.get()));
+                // Toggle locked
+                if (!interactor.isCrouching()) {
+                    setLocked(!isLocked());
+                    if (isLocked())
+                        interactor.displayClientMessage(Component.literal("Padlock locked."), true);
+                    else
+                        interactor.displayClientMessage(Component.literal("Padlock unlocked."), true);
+
+                    this.playSound(SoundEvents.IRON_TRAPDOOR_OPEN, 1.0F, 1.0F);
+                    return InteractionResult.SUCCESS;
+                } else {
+                    // pickup lock
+                    KeyItem.removeBoundLock(stack);
+                    this.RemoveLock();
+                    return InteractionResult.SUCCESS;
+                }
+            }
+
             if (stack.is(ModItems.KEY.get())) {
                 if (KeyItem.isBoundToLock(stack, getLockId())) {
                     interactor.awardStat(Stats.ITEM_USED.get(ModItems.KEY.get()));
@@ -139,9 +171,10 @@ public class PadlockEntity extends HangingEntity {
                 }
             }
 
-            if (stack.is((Items.DIAMOND)) && !isReinforced()) {
-                interactor.awardStat(Stats.ITEM_USED.get(Items.DIAMOND));
+            if (stack.is(ModTags.Items.CAN_REINFORCE_PADLOCK) && !isReinforced()) {
+                interactor.awardStat(Stats.ITEM_USED.get(stack.getItem()));
                 setReinforced(true);
+                setItemUsedToReinforce(ForgeRegistries.ITEMS.getKey(stack.getItem()).toString());
                 stack.shrink(1);
                 this.playSound(SoundEvents.NETHERITE_BLOCK_PLACE, 1, 1);
                 return InteractionResult.CONSUME;
@@ -157,6 +190,14 @@ public class PadlockEntity extends HangingEntity {
                                 : CuffedMod.SERVER_CONFIG.LOCKPICKING_PROGRESS_PER_PICK_FOR_BREAKING_PADLOCKS.get());
 
                 return InteractionResult.SUCCESS;
+            }
+
+            if (stack.is(ModItems.CREATIVE_BIND_BREAKER.get())) {
+                if(getHasBeenBound()) {
+                    resetBindings();
+                    interactor.sendSystemMessage(Component.translatable("item.cuffed.creative_bind_breaker.use", getDisplayName().getString()));
+                    return InteractionResult.SUCCESS;
+                }
             }
 
             return InteractionResult.FAIL;
@@ -210,10 +251,12 @@ public class PadlockEntity extends HangingEntity {
         this.level().addFreshEntity(itementity);
 
         if (isReinforced()) {
-            ItemEntity diamondEntity = new ItemEntity(this.level(), this.pos.getX() + 0.5f + xO, this.pos.getY() + 0.5f,
-                    this.pos.getZ() + 0.5f + zO, new ItemStack(Items.DIAMOND));
-            diamondEntity.setDefaultPickUpDelay();
-            this.level().addFreshEntity(diamondEntity);
+            String i = getItemUsedToReinforce();
+            ItemStack stack = new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(i)));
+            ItemEntity e = new ItemEntity(this.level(), this.pos.getX() + 0.5f + xO, this.pos.getY() + 0.5f,
+                    this.pos.getZ() + 0.5f + zO, stack);
+            e.setDefaultPickUpDelay();
+            this.level().addFreshEntity(e);
         }
 
         this.playSound(SoundEvents.CHAIN_BREAK, 1.0F, 1.0F);
@@ -255,6 +298,7 @@ public class PadlockEntity extends HangingEntity {
         super.defineSynchedData();
         this.entityData.define(DATA_LOCKED, false);
         this.entityData.define(DATA_REINFORCED, false);
+        this.entityData.define(DATA_ITEM_USED_TO_REINFORCE, "empty");
         this.entityData.define(DATA_LOCK_ID, Optional.empty());
         this.entityData.define(DATA_HAS_BEEN_BOUND, false);
     }
@@ -266,6 +310,7 @@ public class PadlockEntity extends HangingEntity {
         tag.putBoolean("Reinforced", this.isReinforced());
         tag.putUUID("LockId", this.getLockId());
         tag.putBoolean("HasBeenBound", this.getHasBeenBound());
+        tag.putString("ItemUsedToReinforce", this.getItemUsedToReinforce());
     }
 
     @Override
@@ -277,6 +322,8 @@ public class PadlockEntity extends HangingEntity {
 
         this.entityData.set(DATA_REINFORCED, tag.getBoolean("Reinforced"));
         this.setReinforced(tag.getBoolean("Reinforced"));
+        
+        this.setItemUsedToReinforce(tag.getString("ItemUsedToReinforce"));
         
         this.entityData.set(DATA_LOCK_ID, Optional.of(tag.getUUID("LockId")));
 
@@ -319,6 +366,13 @@ public class PadlockEntity extends HangingEntity {
         return this.entityData.get(DATA_REINFORCED);
     }
 
+    public String getItemUsedToReinforce() {
+        return this.entityData.get(DATA_ITEM_USED_TO_REINFORCE);
+    }
+    public void setItemUsedToReinforce(String value) {
+        this.entityData.set(DATA_ITEM_USED_TO_REINFORCE, value);
+    }
+
     public UUID getLockId() {
         return entityData.get(DATA_LOCK_ID).get();
     }
@@ -328,6 +382,11 @@ public class PadlockEntity extends HangingEntity {
     }
     public void bind() {
         entityData.set(DATA_HAS_BEEN_BOUND, true);
+    }
+    public void resetBindings() {
+        setLocked(false);
+        entityData.set(DATA_HAS_BEEN_BOUND, false);
+        entityData.set(DATA_LOCK_ID, Optional.of(UUID.randomUUID()));
     }
 
     @Override
