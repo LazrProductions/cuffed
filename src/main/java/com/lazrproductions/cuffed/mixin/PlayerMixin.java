@@ -159,19 +159,21 @@ public class PlayerMixin extends LivingEntity implements IRestrainableEntity, ID
                     boolean flag = state.getBlock() instanceof DetentionBlock;
                     boolean flag1 = false;
 
-                    if(pilloryBreakOutProgress >= 100) {
-                        if(state.getBlock() instanceof PilloryBlock) {
-                            level().levelEvent(2001, pos, Block.getId(state));
-                            level().playSound(null, pos, SoundEvents.ITEM_BREAK, SoundSource.BLOCKS);
-                            undetain();
-                            pilloryBreakOutProgress = 0;
-                        }
-                    } else {
-                        if(state.getBlock() instanceof DetentionBlock detentionBlock)
-                            flag1 = detentionBlock.canDetainPlayer(level(), state, entityData.get(DATA_DETAINED_TO_BLOCK), (Player)(Object)this);
+                    if(CuffedMod.SERVER_CONFIG.ALLOW_BREAKING_OUT_OF_PILLORY.get()) {
+                        if(pilloryBreakOutProgress >= 100) {
+                            if(state.getBlock() instanceof PilloryBlock) {
+                                level().levelEvent(2001, pos, Block.getId(state));
+                                level().playSound(null, pos, SoundEvents.ITEM_BREAK, SoundSource.BLOCKS);
+                                undetain();
+                                pilloryBreakOutProgress = 0;
+                            }
+                        } else {
+                            if(state.getBlock() instanceof DetentionBlock detentionBlock)
+                                flag1 = detentionBlock.canDetainPlayer(level(), state, entityData.get(DATA_DETAINED_TO_BLOCK), (Player)(Object)this);
 
-                        if(!flag || !flag1)
-                            undetain();
+                            if(!flag || !flag1)
+                                undetain();
+                        }
                     }
                 } else {
                     undetain();

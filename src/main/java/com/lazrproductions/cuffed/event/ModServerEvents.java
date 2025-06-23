@@ -428,10 +428,14 @@ public class ModServerEvents {
     @SubscribeEvent
     public void onCommand(CommandEvent event) {
         ServerPlayer player = event.getParseResults().getContext().getSource().getPlayer();
-        RestrainableCapability cap = (RestrainableCapability)CuffedAPI.Capabilities.getRestrainableCapability(player);
-        if(player != null && cap != null && cap.restraintsDisabledMovement()) {
-            player.sendSystemMessage(Component.literal("You cannot do this right now.").withStyle(ChatFormatting.RED));
-            event.setCanceled(true);
+        if(player != null) {
+            RestrainableCapability cap = (RestrainableCapability)CuffedAPI.Capabilities.getRestrainableCapability(player);    
+            if(cap != null && cap.restraintsDisabledMovement() && !player.hasPermissions(2)) {
+                player.sendSystemMessage(Component.literal("You cannot do this right now.").withStyle(ChatFormatting.RED));
+                event.setCanceled(true);
+            }
         }
     }
+
+    
 }
