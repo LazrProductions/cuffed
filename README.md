@@ -19,4 +19,4 @@ A simple mod that adds handcuffs, keys, and more.
 
 <br>
 
-> Requires [Lazr's Lib](https://www.curseforge.com/minecraft/mc-mods/lazrslib)
+> Requires [Lazr's Lib](https://www.curseforge.com/minecraft/mc-mods/lazrs-lib)
