@@ -5,6 +5,8 @@
 
 # Cuffed
 
+> Download on [Curseforge](https://www.curseforge.com/minecraft/mc-mods/cuffed)/[Modrinth](https://modrinth.com/mod/cuffed)
+
 A simple mod that adds handcuffs, keys, and more.
 
 ## Features:
@@ -17,4 +19,4 @@ A simple mod that adds handcuffs, keys, and more.
 
 <br>
 
-> Requires [CreativeCore](https://www.curseforge.com/minecraft/mc-mods/creativecore)
+> Requires [Lazr's Lib](https://www.curseforge.com/minecraft/mc-mods/lazrs-lib)
