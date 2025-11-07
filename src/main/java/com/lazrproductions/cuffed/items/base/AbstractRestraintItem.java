@@ -20,7 +20,6 @@ import com.lazrproductions.cuffed.restraints.base.RestraintType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockSource;
 import net.minecraft.network.chat.Component;
@@ -38,6 +37,11 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.phys.AABB;
+
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+
+import net.minecraft.client.gui.screens.Screen;
 
 public class AbstractRestraintItem extends Item {
     public AbstractRestraintItem(Properties p) {
@@ -76,16 +80,13 @@ public class AbstractRestraintItem extends Item {
     public void appendHoverText(@Nonnull ItemStack stack, @Nullable Level level, @Nonnull List<Component> components,
             @Nonnull TooltipFlag tooltipFlag) {
 
-        components.add(Component.empty());
-        if(Screen.hasShiftDown())
-            components.add(Component.translatable("info.cuffed.restraint_type.extra").withStyle(ChatFormatting.WHITE));
-        else
-            components.add(Component.translatable("info.cuffed.restraint_type.showextra").withStyle(ChatFormatting.GRAY));
+
+        Client.ShowExtendedInfo(components);
+
             
         super.appendHoverText(stack, level, components, tooltipFlag);
     }
     
-
     
     public static boolean dispenseRestraint(BlockSource source, ItemStack stack) {
         BlockPos blockpos = source.getPos().relative(source.getBlockState().getValue(DispenserBlock.FACING));
@@ -238,6 +239,18 @@ public class AbstractRestraintItem extends Item {
                 return !cap.headRestrained();
             } else
                 return false;
+        }
+    }
+
+
+    public static class Client {
+        @OnlyIn(Dist.CLIENT)
+        public static void ShowExtendedInfo(@Nonnull List<Component> components) {
+            components.add(Component.empty());
+            if(Screen.hasShiftDown())
+                components.add(Component.translatable("info.cuffed.restraint_type.extra").withStyle(ChatFormatting.WHITE));
+            else
+                components.add(Component.translatable("info.cuffed.restraint_type.showextra").withStyle(ChatFormatting.GRAY));
         }
     }
 }
