@@ -51,7 +51,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class FuzzyHandcuffsRestraint extends AbstractArmRestraint implements IBreakableRestraint, IEnchantableRestraint {
 
-    static final ResourceLocation CUFFED_WIDGETS = new ResourceLocation(CuffedMod.MODID, "textures/gui/widgets.png");
+    static final ResourceLocation CUFFED_WIDGETS = ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "textures/gui/widgets.png");
 
     static final ScreenTexture CHAIN_ICON = new ScreenTexture(CUFFED_WIDGETS, 92, 24, 16, 16, 192, 192);
     
@@ -383,7 +383,7 @@ public class FuzzyHandcuffsRestraint extends AbstractArmRestraint implements IBr
         @SuppressWarnings("unchecked")
         static final Class<? extends HumanoidModel<? extends LivingEntity>> MODEL_CLASS = (Class<? extends HumanoidModel<? extends LivingEntity>>)(Class<?>)FuzzyHandcuffsModel.class;
         static final ModelLayerLocation MODEL_LAYER = ModModelLayers.FUZZY_HANDCUFFS_LAYER;
-        static final ResourceLocation MODEL_TEXTURE = new ResourceLocation(CuffedMod.MODID, "textures/entity/fuzzy_handcuffs.png");
+        static final ResourceLocation MODEL_TEXTURE = ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "textures/entity/fuzzy_handcuffs.png");
 
         @Override
         public Class<? extends HumanoidModel<? extends LivingEntity>> getRenderedModel() {

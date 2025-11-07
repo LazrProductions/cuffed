@@ -19,7 +19,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class ChainKnotEntityRenderer extends EntityRenderer<ChainKnotEntity> {
-    private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation(CuffedMod.MODID,
+    private static final ResourceLocation TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID,
             "textures/entity/chain_knot.png");
     private final ChainKnotEntityModel<ChainKnotEntity> model;
 

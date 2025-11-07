@@ -96,8 +96,9 @@ dependencies {
     implementation fg.deobf("curse.maven:lazrs-lib-${lazrslib_maven}")
 
     // Optional Dependencies
+
     compileOnly fg.deobf("curse.maven:better-combat-by-daedelus-639842:5065424") // Better Combat
-    compileOnly fg.deobf("curse.maven:epic-fight-mod-405076:5159623") // Epic Fight
+    compileOnly fg.deobf("curse.maven:epic-fight-mod-405076:7185742") // Epic Fight
     compileOnly fg.deobf("curse.maven:parcool-482378:4944983") // Parcool
     compileOnly fg.deobf("curse.maven:elenai-dodge-2-442962:4814313") // elenai dodge 2
     

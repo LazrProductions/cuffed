@@ -1,5 +1,7 @@
 package com.lazrproductions.cuffed.init;
 
+import javax.annotation.Nonnull;
+
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.items.KeyItem;
 import com.lazrproductions.cuffed.items.KeyMoldItem;

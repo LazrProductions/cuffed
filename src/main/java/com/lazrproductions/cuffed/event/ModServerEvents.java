@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import com.hollingsworth.arsnouveau.common.block.ModBlock;
 import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.api.CuffedAPI;
 import com.lazrproductions.cuffed.blocks.PilloryBlock;
@@ -27,6 +28,7 @@ import com.lazrproductions.cuffed.items.PossessionsBox;
 import com.lazrproductions.cuffed.restraints.base.AbstractArmRestraint;
 import com.lazrproductions.cuffed.restraints.base.AbstractLegRestraint;
 import com.lazrproductions.cuffed.restraints.base.IEnchantableRestraint;
+import com.lazrproductions.cuffed.restraints.base.RestraintType;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -49,6 +51,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -57,8 +60,11 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
+import net.minecraftforge.event.entity.EntityEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -145,12 +151,12 @@ public class ModServerEvents {
                 Player interacting = event.getEntity();
                 IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(interacting);
 
-                IDetainableEntity detainableEntity = (IDetainableEntity) interacting;
+                IDetainableEntity interactingAsDetainable = (IDetainableEntity) interacting;
 
                 BlockPos pos = event.getPos();
                 BlockState state = level.getBlockState(pos);
 
-                if (detainableEntity.getDetained() > -1) {
+                if (interactingAsDetainable.getDetained() > -1) {
                     event.setCancellationResult(InteractionResult.FAIL);
                     event.setCanceled(true);
                     return;
@@ -173,17 +179,36 @@ public class ModServerEvents {
                     for (int i = 0; i < entitiesAnchoredToInteractor.size(); i++)
                         ChainKnotEntity.bindEntityToNewOrExistingKnot(
                                 (LivingEntity) entitiesAnchoredToInteractor.get(i), level, event.getPos());
+
+                    event.setCancellationResult(InteractionResult.SUCCESS);
                     event.setCanceled(true);
                     return;
                 }
 
                 if (state.is(ModBlocks.PILLORY.get())) {
-                    if (level.getBlockState(pos.above()).is(ModBlocks.PILLORY.get()))
-                        state = level.getBlockState(pos.above());
+                    ServerPlayer whoIWasEscorting = cap.getWhoImEscorting();
+                    if (whoIWasEscorting != null) {
+                        if (level.getBlockState(pos.above()).is(ModBlocks.PILLORY.get())) {
+                            pos = pos.above();
+                            state = level.getBlockState(pos);
+                        }
 
-                    if (cap.getWhoImEscorting() != null) {
-                        cap.getWhoImEscorting().moveTo(PilloryBlock.getPositionBehind(state, pos));
                         cap.stopEscortingPlayer();
+                        var p = PilloryBlock.getPositionBehind(state, pos);
+                        whoIWasEscorting.teleportTo(p.x(), p.y(), p.z());
+
+                        event.setCancellationResult(InteractionResult.SUCCESS);
+                        event.setCanceled(true);
+                        return;
+                    }
+                }
+
+                if(state.is(ModBlocks.BUNK.get())) {
+                    if (cap.getWhoImEscorting() != null) {
+                        state.use(event.getLevel(), cap.getWhoImEscorting(), InteractionHand.MAIN_HAND, event.getHitVec());
+                        event.setCancellationResult(InteractionResult.SUCCESS);
+                        event.setCanceled(true);
+                        return;
                     }
                 }
 
@@ -205,11 +230,15 @@ public class ModServerEvents {
 
                         event.setCancellationResult(InteractionResult.SUCCESS);
                         event.setCanceled(true);
+                        return;
                     }
                 }
 
-                if(CuffedAPI.Lockpicking.isLockedAt(level, state, pos) && !(state.getBlock() instanceof ILockableBlock))
-                    event.setCanceled(true);
+                if(CuffedAPI.Lockpicking.isLockedAt(level, state, pos) && !(state.getBlock() instanceof ILockableBlock)) {
+                        event.setCancellationResult(InteractionResult.FAIL);
+                        event.setCanceled(true);
+                        return;
+                }
             }
         }
     }
@@ -244,9 +273,10 @@ public class ModServerEvents {
                         return;
                     }
 
-                    if (targetCap != null)
+                    if (targetCap != null) {
                         targetCap.onInteractedByOther(target, player, interactionPos.y - target.position().y,
-                                event.getItemStack(), event.getHand());
+                                event.getItemStack(), event.getHand(), false);
+                    }
                 }
 
                 if (event.getTarget().getType().is(ModTags.Entities.CHAINABLE_ENTITIES)) {
@@ -298,11 +328,11 @@ public class ModServerEvents {
                         return;
                     }
                 }
-                 
-
             }
         }
     }
+
+
 
     public void onPlayerDismount() {
 

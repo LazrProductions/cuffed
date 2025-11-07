@@ -53,7 +53,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class ShacklesLegsRestraint extends AbstractLegRestraint implements IBreakableRestraint, IEnchantableRestraint {
-    static final ResourceLocation WIDGETS = new ResourceLocation(CuffedMod.MODID, "textures/gui/widgets.png");
+    static final ResourceLocation WIDGETS = ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "textures/gui/widgets.png");
     
     static final ScreenTexture CHAIN_ICON = new ScreenTexture(WIDGETS, 44, 24, 16, 16, 192, 192);
     
@@ -446,7 +446,7 @@ public class ShacklesLegsRestraint extends AbstractLegRestraint implements IBrea
         @SuppressWarnings("unchecked")
         static final Class<? extends HumanoidModel<? extends LivingEntity>> MODEL_CLASS = (Class<? extends HumanoidModel<? extends LivingEntity>>)(Class<?>)LegShacklesModel.class;
         static final ModelLayerLocation MODEL_LAYER = ModModelLayers.LEG_SHACKELS_LAYER;
-        static final ResourceLocation MODEL_TEXTURE = new ResourceLocation(CuffedMod.MODID, "textures/entity/shackles.png");
+        static final ResourceLocation MODEL_TEXTURE = ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "textures/entity/shackles.png");
 
         @Override
         public Class<? extends HumanoidModel<? extends LivingEntity>> getRenderedModel() {

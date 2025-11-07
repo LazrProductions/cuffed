@@ -34,8 +34,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class BundleRestraint extends AbstractHeadRestraint {
 
-    static final ResourceLocation CUFFED_WIDGETS = new ResourceLocation(CuffedMod.MODID, "textures/gui/widgets.png");
-    static final ResourceLocation BUNDLE_TEXTURE = new ResourceLocation(CuffedMod.MODID, "textures/gui/bundle_overlay.png");
+    static final ResourceLocation CUFFED_WIDGETS = ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "textures/gui/widgets.png");
+    static final ResourceLocation BUNDLE_TEXTURE = ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "textures/gui/bundle_overlay.png");
 
     static final ScreenTexture CHAIN_ICON = new ScreenTexture(CUFFED_WIDGETS, 44, 24, 16, 16, 192, 192);
     static final ScreenTexture BUNDLE_OVERLAY = new ScreenTexture(BUNDLE_TEXTURE, 0, 0, 32, 18, 32, 18);
@@ -226,7 +226,7 @@ public class BundleRestraint extends AbstractHeadRestraint {
         @SuppressWarnings("unchecked")
         static final Class<? extends HumanoidModel<? extends LivingEntity>> MODEL_CLASS = (Class<? extends HumanoidModel<? extends LivingEntity>>)(Class<?>)BundleModel.class;
         static final ModelLayerLocation MODEL_LAYER = ModModelLayers.BUNDLE_LAYER;
-        static final ResourceLocation MODEL_TEXTURE = new ResourceLocation(CuffedMod.MODID, "textures/entity/bundle.png");
+        static final ResourceLocation MODEL_TEXTURE = ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "textures/entity/bundle.png");
 
         @Override
         public Class<? extends HumanoidModel<? extends LivingEntity>> getRenderedModel() {

@@ -169,9 +169,17 @@
     "info.lock.toggle_on": "Locked",    
     "info.lock.toggle_off": "Unlocked",    
     
+    "info.cuffed.empty_hand": "Empty hand",
+    
     "info.cuffed.restraint_type.arm": "Arm Restraint",
     "info.cuffed.restraint_type.leg": "Leg Restraint",
     "info.cuffed.restraint_type.head": "Head Restraint",
+
+    "info.cuffed.restraint_type.key": "Restraint Key",
+    "info.cuffed.restraint_type.my_key": "Restriant is removed with:",
+
+    "info.cuffed.restraint_type.showextra": "Hold shift for usage",
+    "info.cuffed.restraint_type.extra": "Use on a player to restrian them, will restrain the part of the player your looking at if it can be applied to that part.\n\nCrouch and left click to equip/unequip restriaints on yourself. Will also apply the restraint depending on where you look.\n\nRestraints must be removed by their key, the restraint says in the tooltip what key removes it.",
 
     "info.cuffed.restraints.handcuffs.name": "Handcuffs",
     "info.cuffed.restraints.handcuffs.action_bar": "You are handcuffed!",

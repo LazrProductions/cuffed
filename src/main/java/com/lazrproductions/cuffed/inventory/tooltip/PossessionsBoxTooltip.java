@@ -16,7 +16,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class PossessionsBoxTooltip implements ClientTooltipComponent, TooltipComponent {
-    public static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation(CuffedMod.MODID,
+    public static final ResourceLocation TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID,
             "textures/gui/container/possessions_box.png");
 
     private final NonNullList<ItemStack> items;

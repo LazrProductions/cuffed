@@ -22,24 +22,24 @@ import net.minecraftforge.client.event.EntityRenderersEvent;
 
 public class ModModelLayers {
     // Restraints
-    public static final ModelLayerLocation HANDCUFFS_LAYER = new ModelLayerLocation(new ResourceLocation(CuffedMod.MODID, "handcuffs_layer"), "main");
-    public static final ModelLayerLocation SHACKLES_LAYER = new ModelLayerLocation(new ResourceLocation(CuffedMod.MODID, "shackles_layer"), "main");
-    public static final ModelLayerLocation FUZZY_HANDCUFFS_LAYER = new ModelLayerLocation(new ResourceLocation(CuffedMod.MODID, "fuzzy_handcuffs_layer"), "main");
-    public static final ModelLayerLocation LEGCUFFS_LAYER = new ModelLayerLocation(new ResourceLocation(CuffedMod.MODID, "legcuffs_layer"), "main");
-    public static final ModelLayerLocation LEG_SHACKELS_LAYER = new ModelLayerLocation(new ResourceLocation(CuffedMod.MODID, "leg_shackles_layer"), "main");
-    public static final ModelLayerLocation DUCK_TAPE_HEAD_LAYER = new ModelLayerLocation(new ResourceLocation(CuffedMod.MODID, "duck_tape_head_layer"), "main");
-    public static final ModelLayerLocation DUCK_TAPE_ARM_LAYER = new ModelLayerLocation(new ResourceLocation(CuffedMod.MODID, "duck_tape_arm_layer"), "main");
-    public static final ModelLayerLocation DUCK_TAPE_LEG_LAYER = new ModelLayerLocation(new ResourceLocation(CuffedMod.MODID, "duck_tape_leg_layer"), "main");
-    public static final ModelLayerLocation BUNDLE_LAYER = new ModelLayerLocation(new ResourceLocation(CuffedMod.MODID, "bundle_layer"), "main");
+    public static final ModelLayerLocation HANDCUFFS_LAYER = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "handcuffs_layer"), "main");
+    public static final ModelLayerLocation SHACKLES_LAYER = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "shackles_layer"), "main");
+    public static final ModelLayerLocation FUZZY_HANDCUFFS_LAYER = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "fuzzy_handcuffs_layer"), "main");
+    public static final ModelLayerLocation LEGCUFFS_LAYER = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "legcuffs_layer"), "main");
+    public static final ModelLayerLocation LEG_SHACKELS_LAYER = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "leg_shackles_layer"), "main");
+    public static final ModelLayerLocation DUCK_TAPE_HEAD_LAYER = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "duck_tape_head_layer"), "main");
+    public static final ModelLayerLocation DUCK_TAPE_ARM_LAYER = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "duck_tape_arm_layer"), "main");
+    public static final ModelLayerLocation DUCK_TAPE_LEG_LAYER = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "duck_tape_leg_layer"), "main");
+    public static final ModelLayerLocation BUNDLE_LAYER = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "bundle_layer"), "main");
 
     // Entities
-	public static final ModelLayerLocation CHAIN_KNOT_LAYER = new ModelLayerLocation(new ResourceLocation(CuffedMod.MODID, "chain_knot"), "main");
-    public static final ModelLayerLocation PADLOCK_LAYER = new ModelLayerLocation(new ResourceLocation(CuffedMod.MODID, "padlock"), "main");
-    public static final ModelLayerLocation WEIGHTED_ANCHOR_LAYER = new ModelLayerLocation(new ResourceLocation(CuffedMod.MODID, "weighted_anchor"), "main");
-    public static final ModelLayerLocation CRUMBLING_BLOCK_LAYER = new ModelLayerLocation(new ResourceLocation(CuffedMod.MODID, "crumbling_block"), "main");
+	public static final ModelLayerLocation CHAIN_KNOT_LAYER = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "chain_knot"), "main");
+    public static final ModelLayerLocation PADLOCK_LAYER = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "padlock"), "main");
+    public static final ModelLayerLocation WEIGHTED_ANCHOR_LAYER = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "weighted_anchor"), "main");
+    public static final ModelLayerLocation CRUMBLING_BLOCK_LAYER = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "crumbling_block"), "main");
 
     // Block Entities
-	public static final ModelLayerLocation GUILLOTINE_LAYER = new ModelLayerLocation(new ResourceLocation(CuffedMod.MODID, "guillotine_block_entity"), "main");
+	public static final ModelLayerLocation GUILLOTINE_LAYER = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "guillotine_block_entity"), "main");
 
     public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(CHAIN_KNOT_LAYER, ChainKnotEntityModel::getModelData);

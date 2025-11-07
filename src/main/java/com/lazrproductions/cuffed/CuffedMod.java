@@ -75,7 +75,6 @@ import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -102,12 +101,12 @@ public class CuffedMod {
     public static boolean PlayerReviveInstalled = false;
     public static boolean VoiceChatInstalled = false;
 
-    public CuffedMod() {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public CuffedMod(FMLJavaModLoadingContext ctx) {
+        IEventBus modEventBus = ctx.getModEventBus();
 
         modEventBus.addListener(this::commonSetup);
 
-        SERVER_CONFIG.registerConfig(ModLoadingContext.get());
+        SERVER_CONFIG.registerConfig(ctx);
 
         ModEntityTypes.register(modEventBus);
         ModBlocks.register(modEventBus);
@@ -226,14 +225,14 @@ public class CuffedMod {
             LOGGER.info("Running client setup for Cuffed");
 
             ItemProperties.register(ModItems.KEY_RING.get(),
-                    new ResourceLocation(MODID, "keys"), (stack, level, living, id) -> {
+                    ResourceLocation.fromNamespaceAndPath(MODID, "keys"), (stack, level, living, id) -> {
                         var tag = stack.getTag();
                         if (tag != null && tag.contains(KeyRingItem.TAG_KEYS))
                             return tag.getInt(KeyRingItem.TAG_KEYS);
                         return 0;
                     });
             ItemProperties.register(ModItems.POSSESSIONSBOX.get(),
-                    new ResourceLocation(MODID, "filled"), (stack, level, living, id) -> {
+                    ResourceLocation.fromNamespaceAndPath(MODID, "filled"), (stack, level, living, id) -> {
                         CompoundTag compoundtag = stack.getOrCreateTag();
                         if (!compoundtag.contains(PossessionsBox.TAG_ITEMS)) {
                             return 0;
@@ -243,12 +242,12 @@ public class CuffedMod {
                         }
                     });
             ItemProperties.register(ModItems.TRAY.get(),
-                    new ResourceLocation(MODID, "filled"), (stack, level, living, id) -> {
+                    ResourceLocation.fromNamespaceAndPath(MODID, "filled"), (stack, level, living, id) -> {
                         return TrayItem.trayHasFoodItem(stack) || TrayItem.trayHasSpoon(stack)
                                 || TrayItem.trayHasFork(stack) || TrayItem.trayHasKnife(stack) ? 1 : 0;
                     });
             ItemProperties.register(ModItems.POSTER_ITEM.get(),
-                    new ResourceLocation(MODID, "poster"), (stack, level, living, id) -> {
+                    ResourceLocation.fromNamespaceAndPath(MODID, "poster"), (stack, level, living, id) -> {
                         return PosterType.getfromItem(stack).toInt();
                     });
 

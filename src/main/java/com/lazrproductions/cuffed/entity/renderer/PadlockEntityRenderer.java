@@ -20,9 +20,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class PadlockEntityRenderer extends EntityRenderer<PadlockEntity> {
-    private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation(CuffedMod.MODID,
+    private static final ResourceLocation TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID,
             "textures/entity/padlock.png");
-    private static final ResourceLocation TEXTURE_REINFORCED_LOCATION = new ResourceLocation(CuffedMod.MODID,
+    private static final ResourceLocation TEXTURE_REINFORCED_LOCATION = ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID,
             "textures/entity/reinforced_padlock.png");
     private final PadlockEntityModel<PadlockEntity> model;
 

@@ -15,9 +15,9 @@ public class EpicFightCompat {
             return;
         try {
             LocalPlayerPatch p = EpicFightCapabilities.getEntityPatch(player, LocalPlayerPatch.class);
-            if(p.isBattleMode()) {
+            if(p.isEpicFightMode()) {
                 wasEnabled = true;
-                p.toMiningMode(true);
+                p.toVanillaMode(true);
             }
         } catch(Exception e) {
             return;
@@ -31,7 +31,7 @@ public class EpicFightCompat {
         try {
             LocalPlayerPatch p = EpicFightCapabilities.getEntityPatch(player, LocalPlayerPatch.class);
             if(wasEnabled)
-                p.toBattleMode(wasEnabled);
+                p.toEpicFightMode(true);
         } catch(Exception e) {
             return;
         }

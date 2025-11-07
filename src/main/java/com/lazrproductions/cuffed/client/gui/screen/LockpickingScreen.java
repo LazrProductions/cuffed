@@ -108,7 +108,7 @@ public class LockpickingScreen extends GenericScreen{
         int originalSize = 32;
         int finalSize = originalSize * scale;
         ScreenUtilities.drawTexture(graphics, new BlitCoordinates(centerScreenX - (finalSize/2) + shakeOffset, centerScreenY - (16 * scale), finalSize, finalSize), 
-            new ScreenTexture(new ResourceLocation(CuffedMod.MODID, "textures/item/padlock.png"), 0, 0, 16, 16, 16, 16));
+            new ScreenTexture(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "textures/item/padlock.png"), 0, 0, 16, 16, 16, 16));
 
         
         // draw time left bar
@@ -137,14 +137,14 @@ public class LockpickingScreen extends GenericScreen{
             RenderSystem.enableBlend();
             ScreenUtilities.drawTexture(graphics, new BlitCoordinates(pickPosX, pickPosY, finalSize, finalSize), 
                 lerpedGhostAngle, 26 * scale, 8 * scale,
-                new ScreenTexture(new ResourceLocation(CuffedMod.MODID, "textures/item/lockpick.png"), 0, 0, 16, 16, 16, 16));
+                new ScreenTexture(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "textures/item/lockpick.png"), 0, 0, 16, 16, 16, 16));
        
             
             // render lockpick
             RenderSystem.setShaderColor(1f, 1f, 1f, (float)MathUtilities.invert01(animationTick / 5d));
             ScreenUtilities.drawTexture(graphics, new BlitCoordinates(pickPosX, pickPosY, finalSize, finalSize), 
                 angleToMouse, 26 * scale, 8 * scale,
-                new ScreenTexture(new ResourceLocation(CuffedMod.MODID, "textures/item/lockpick.png"), 0, 0, 16, 16, 16, 16));
+                new ScreenTexture(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "textures/item/lockpick.png"), 0, 0, 16, 16, 16, 16));
         }
 
 

@@ -22,7 +22,7 @@ import net.minecraftforge.registries.RegistryObject;
 public class ModRestraints {
     private static boolean isInitialized = false;
 
-    public static final DeferredRegister<AbstractRestraint> RESTRAINTS = DeferredRegister.create(new ResourceLocation(CuffedMod.MODID, "restraints"), CuffedMod.MODID);
+    public static final DeferredRegister<AbstractRestraint> RESTRAINTS = DeferredRegister.create(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "restraints"), CuffedMod.MODID);
 
     public static final RegistryObject<AbstractRestraint> BUNDLE = RESTRAINTS.register("bundle", BundleRestraint::new);
     public static final RegistryObject<AbstractRestraint> PILLORY = RESTRAINTS.register("pillory", PilloryRestraint::new);

@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.lazrproductions.cuffed.init.ModItems;
 import com.lazrproductions.cuffed.items.base.AbstractRestraintItem;
 
 import net.minecraft.ChatFormatting;
@@ -25,6 +26,16 @@ public class DuckTapeItem extends AbstractRestraintItem {
         components.add(Component.translatable("info.cuffed.restraint_type.head").withStyle(ChatFormatting.GRAY));
         components.add(Component.translatable("info.cuffed.restraint_type.arm").withStyle(ChatFormatting.GRAY));
         components.add(Component.translatable("info.cuffed.restraint_type.leg").withStyle(ChatFormatting.GRAY));
+        
+        components.add(Component.empty());
+        components.add(
+            Component.translatable("info.cuffed.restraint_type.my_key")
+            .withStyle(ChatFormatting.GRAY)
+            .append(" ")
+            .append(
+                Component.translatable("info.cuffed.empty_hand")
+                .withStyle(ChatFormatting.WHITE)));
+        
 
         super.appendHoverText(stack, level, components, tooltipFlag);
     }

@@ -153,8 +153,9 @@ public abstract class AbstractRestraint {
             }     
 
             if(e.getEnchantmentLevel(ModEnchantments.SILENCE.get()) >= 1) {
-                if(CuffedMod.ArsNouveauInstalled) ArsNouveauCompat.DrainMana(player, 2);
-                if(CuffedMod.IronsSpellsnSpellbooksInstalled) IronsSpellsnSpellbooksCompat.DrainMana(player, 2);
+                double drainPercentage = 0.005D; // 0.5% per tick, so drains 10% per second TODO: make this a config option
+                if(CuffedMod.ArsNouveauInstalled) ArsNouveauCompat.DrainMana(player, drainPercentage);
+                if(CuffedMod.IronsSpellsnSpellbooksInstalled) IronsSpellsnSpellbooksCompat.DrainMana(player, drainPercentage);
             }
         }
     }

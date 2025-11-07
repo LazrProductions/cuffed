@@ -17,4 +17,13 @@ public class ArsNouveauCompat {
         if(manaCap!=null)
             manaCap.removeMana(amount);
     }
+
+    @SuppressWarnings("null")
+    public static void DrainMana(@Nonnull ServerPlayer player, double amountPercentage) {
+        IManaCap manaCap = CapabilityRegistry.getMana(player).orElse(null);
+        int max = manaCap.getMaxMana();
+        double amount = max * amountPercentage;
+        if(manaCap!=null)
+            manaCap.removeMana(amount);
+    }
 }

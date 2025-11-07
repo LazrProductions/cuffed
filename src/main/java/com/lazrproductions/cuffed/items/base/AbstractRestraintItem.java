@@ -17,8 +17,13 @@ import com.lazrproductions.cuffed.restraints.base.AbstractLegRestraint;
 import com.lazrproductions.cuffed.restraints.base.AbstractRestraint;
 import com.lazrproductions.cuffed.restraints.base.RestraintType;
 
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockSource;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
@@ -27,8 +32,10 @@ import net.minecraft.world.item.BundleItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.phys.AABB;
 
@@ -65,6 +72,18 @@ public class AbstractRestraintItem extends Item {
     }
 
 
+    @Override
+    public void appendHoverText(@Nonnull ItemStack stack, @Nullable Level level, @Nonnull List<Component> components,
+            @Nonnull TooltipFlag tooltipFlag) {
+
+        components.add(Component.empty());
+        if(Screen.hasShiftDown())
+            components.add(Component.translatable("info.cuffed.restraint_type.extra").withStyle(ChatFormatting.WHITE));
+        else
+            components.add(Component.translatable("info.cuffed.restraint_type.showextra").withStyle(ChatFormatting.GRAY));
+            
+        super.appendHoverText(stack, level, components, tooltipFlag);
+    }
     
 
     

@@ -19,7 +19,7 @@ import net.minecraft.world.item.ItemStack;
 
 public abstract class AbstractArmRestraint extends AbstractRestraint {
 
-    static final ResourceLocation WIDGETS = new ResourceLocation(CuffedMod.MODID, "textures/gui/widgets.png");
+    static final ResourceLocation WIDGETS = ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "textures/gui/widgets.png");
 
     static final ScreenTexture ARMS_ICON = new ScreenTexture(WIDGETS, 76, 24, 16, 16, 192, 192);
 

@@ -78,6 +78,7 @@ public class ModCreativeTabs {
                         output.accept(PosterBlockItem.newItemFromType(PosterType.SKELETON));
                         output.accept(PosterBlockItem.newItemFromType(PosterType.IMPUNITY));
                         output.accept(PosterBlockItem.newItemFromType(PosterType.ZOOOM));
+                        output.accept(PosterBlockItem.newItemFromType(PosterType.A_SHADOW_LOCKED_AWAY));
                         output.accept(PosterBlockItem.newItemFromType(PosterType.PRISONER));
                         output.accept(PosterBlockItem.newItemFromType(PosterType.LANTERN));
 

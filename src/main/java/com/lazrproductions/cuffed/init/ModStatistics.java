@@ -75,7 +75,7 @@ public class ModStatistics {
 	private static RegistryObject<ResourceLocation> registerCustomStat(String name, StatFormatter formatter)
 	{
 		return REGISTER.register(name, () -> {
-			ResourceLocation regName = new ResourceLocation(CuffedMod.MODID, name);
+			ResourceLocation regName = ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, name);
 			RUN_IN_SETUP.add(() -> Stats.CUSTOM.get(regName, formatter));
 			return regName;
 		});

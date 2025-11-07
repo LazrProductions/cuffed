@@ -29,6 +29,7 @@ import com.lazrproductions.lazrslib.common.math.MathUtilities;
 import com.mojang.blaze3d.platform.Window;
 
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.commands.arguments.EntityAnchorArgument.Anchor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -39,6 +40,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.RelativeMovement;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -102,6 +104,7 @@ public class RestrainableCapability implements IRestrainableCapability {
 
             Vec3 escortPivot = MathUtilities.GetPositionFromTowardsRotationInDegrees(playerEscortingMe.position(), playerEscortingMe.getYRot() + 90, 0, 0.45f);
             Vec3 escortTarget = MathUtilities.GetPositionFromTowardsRotationInDegrees(escortPivot, playerEscortingMe.getYRot(), 0, 0.9f);
+            
             player.connection.teleport(escortTarget.x(), escortTarget.y(), escortTarget.z(), playerEscortingMe.getYRot(), player.getXRot(), RelativeMovement.ROTATION);
 
             if (!isRestrained()) {
@@ -167,7 +170,7 @@ public class RestrainableCapability implements IRestrainableCapability {
     }
 
     public boolean onInteractedByOther(ServerPlayer player, ServerPlayer other, double interactionHeight, ItemStack stack,
-            InteractionHand hand) {
+            InteractionHand hand, boolean avoidEscort) {
         if (RestraintAPI.isRestraintItem(stack)) {
             if (interactionHeight > 1.5f) {
                 AbstractRestraint r = RestraintAPI.getRestraintFromStack(stack, RestraintType.Head, player, other);
@@ -269,7 +272,7 @@ public class RestrainableCapability implements IRestrainableCapability {
                             return true;
                         }
             }
-        } else if (stack.isEmpty() && !other.isCrouching() && isRestrained()) {
+        } else if (stack.isEmpty() && !other.isCrouching() && isRestrained() && !avoidEscort) {
             CuffedAPI.Capabilities.getRestrainableCapability(other).startEscortingPlayer(other, player);
             return true;
         }
@@ -390,19 +393,19 @@ public class RestrainableCapability implements IRestrainableCapability {
     public ResourceLocation getArmRestraintId() {
         if (armRestraint != null)
             return armRestraint.getId();
-        return new ResourceLocation("air");
+        return ResourceLocation.fromNamespaceAndPath("minecraft","air");
     }
 
     public ResourceLocation getLegRestraintId() {
         if (legRestraint != null)
             return legRestraint.getId();
-        return new ResourceLocation("air");
+        return ResourceLocation.fromNamespaceAndPath("minecraft","air");
     }
 
     public ResourceLocation getHeadRestraintId() {
         if (headRestraint != null)
             return headRestraint.getId();
-        return new ResourceLocation("air");
+        return ResourceLocation.fromNamespaceAndPath("minecraft","air");
     }
 
     public ResourceLocation getRestraintId(RestraintType type) {
@@ -753,23 +756,32 @@ public class RestrainableCapability implements IRestrainableCapability {
         if (headRestraint != null) {
             headRestraint.onDeathServer(player);
 
+            boolean shouldUnequip = true;
             if (headRestraint instanceof IEnchantableRestraint e)
-                if (!e.hasEnchantment(Enchantments.BINDING_CURSE))
-                    TryUnequipRestraint(player, null, RestraintType.Head);
+                if(e.hasEnchantment(Enchantments.BINDING_CURSE))
+                    shouldUnequip = false;
+            if(shouldUnequip)
+                TryUnequipRestraint(player, null, RestraintType.Head);
         }
         if (armRestraint != null) {
             armRestraint.onDeathServer(player);
 
+            boolean shouldUnequip = true;
             if (armRestraint instanceof IEnchantableRestraint e)
-                if (!e.hasEnchantment(Enchantments.BINDING_CURSE))
-                    TryUnequipRestraint(player, null, RestraintType.Arm);
+                if(e.hasEnchantment(Enchantments.BINDING_CURSE))
+                    shouldUnequip = false;
+            if(shouldUnequip)
+                TryUnequipRestraint(player, null, RestraintType.Arm);
         }
         if (legRestraint != null) {
             legRestraint.onDeathServer(player);
-
+            
+            boolean shouldUnequip = true;
             if (legRestraint instanceof IEnchantableRestraint e)
-                if (!e.hasEnchantment(Enchantments.BINDING_CURSE))
-                    TryUnequipRestraint(player, null, RestraintType.Leg);
+                if(e.hasEnchantment(Enchantments.BINDING_CURSE))
+                    shouldUnequip = false;
+            if(shouldUnequip)
+                TryUnequipRestraint(player, null, RestraintType.Leg);
         }
 
     }

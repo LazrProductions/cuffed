@@ -18,13 +18,13 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class CrumblingBlockRenderer extends EntityRenderer<CrumblingBlockEntity> {
-    public static ResourceLocation TEXTURE_LOCATION_1 = new ResourceLocation(CuffedMod.MODID,
+    public static ResourceLocation TEXTURE_LOCATION_1 = ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID,
             "textures/entity/crumbling_block_1.png");
-    public static ResourceLocation TEXTURE_LOCATION_2 = new ResourceLocation(CuffedMod.MODID,
+    public static ResourceLocation TEXTURE_LOCATION_2 = ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID,
             "textures/entity/crumbling_block_2.png");
-    public static ResourceLocation TEXTURE_LOCATION_3 = new ResourceLocation(CuffedMod.MODID,
+    public static ResourceLocation TEXTURE_LOCATION_3 = ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID,
             "textures/entity/crumbling_block_3.png");
-    public static ResourceLocation TEXTURE_LOCATION_4 = new ResourceLocation(CuffedMod.MODID,
+    public static ResourceLocation TEXTURE_LOCATION_4 = ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID,
             "textures/entity/crumbling_block_4.png");
 
     public CrumblingBlockModel<?> model;

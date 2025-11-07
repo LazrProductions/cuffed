@@ -19,7 +19,7 @@ import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.resources.ResourceLocation;
 
 public class CrumblingBlockModel<T extends CrumblingBlockEntity> extends EntityModel<T> {
-	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation(CuffedMod.MODID, "crumbling_block"), "main");
+	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "crumbling_block"), "main");
 	private final ModelPart base;
 
 	public CrumblingBlockModel(ModelPart root) {

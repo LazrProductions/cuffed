@@ -21,7 +21,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class WeightedAnchorEntityRenderer extends EntityRenderer<WeightedAnchorEntity> {
-    private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation(CuffedMod.MODID, "textures/entity/weighted_anchor.png");
+    private static final ResourceLocation TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "textures/entity/weighted_anchor.png");
     private final WeightedAnchorModel<WeightedAnchorEntity> model;
 
     public WeightedAnchorEntityRenderer(EntityRendererProvider.Context context) {

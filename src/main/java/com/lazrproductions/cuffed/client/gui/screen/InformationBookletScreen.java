@@ -40,7 +40,7 @@ import net.minecraft.util.Mth;
 @OnlyIn(Dist.CLIENT)
 public class InformationBookletScreen extends GenericScreen {
 
-    public static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation(CuffedMod.MODID,
+    public static final ResourceLocation TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID,
             "textures/gui/information_booklet.png");
 
     private static final int FIXED_PAGE_HEIGHT = 202;

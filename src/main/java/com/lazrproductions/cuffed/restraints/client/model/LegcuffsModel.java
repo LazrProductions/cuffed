@@ -21,7 +21,7 @@ import net.minecraft.world.entity.LivingEntity;
 @SuppressWarnings("unused")
 public class LegcuffsModel<T extends LivingEntity> extends HumanoidModel<T> {
 	// This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
-	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("modid", "custommodel"), "main");
+	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath("modid", "custommodel"), "main");
 	
 	private final ModelPart _root;
 

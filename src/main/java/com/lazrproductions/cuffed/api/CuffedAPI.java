@@ -40,6 +40,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
@@ -50,7 +51,7 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 public class CuffedAPI {
     public static class Networking {
 
-        public static final LazrNetwork NETWORK = new LazrNetwork(new ResourceLocation(CuffedMod.MODID, "main"), 1);
+        public static final LazrNetwork NETWORK = new LazrNetwork(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "main"), 1);
 
 
         public static void sendRestraintSyncPacket(@Nonnull ServerPlayer client) {
@@ -260,45 +261,46 @@ public class CuffedAPI {
         }
     
         public static boolean isLockedAt(@Nonnull Level level, @Nonnull BlockState state, @Nonnull BlockPos pos) {
-            boolean isLockedBlock = false;
             if (state.is(ModTags.Blocks.LOCKABLE_BLOCKS)) {
                 PadlockEntity padlock = PadlockEntity.getLockAt(level, pos);
                 if (padlock != null && padlock.isLocked())
-                    isLockedBlock = true;
+                    return true;
 
                 if (state.getBlock() instanceof ILockableBlock)
                     if (ILockableBlock.isLocked(state))
-                        isLockedBlock = true;
+                    return true;
                 
                 if (state.getBlock() instanceof DoorBlock door) {
                     PadlockEntity eB = PadlockEntity.getLockAt(level, pos.below());
                     PadlockEntity eA = PadlockEntity.getLockAt(level, pos.above());
                     if (level.getBlockState(pos.below()).is(door) && eB != null && eB.isLocked())
-                        isLockedBlock = true;
+                        return true;
                     else if (level.getBlockState(pos.above()).is(door) && eA != null && eA.isLocked())
-                        isLockedBlock = true;
+                        return true;
                 }
 
                 if (state.getBlock() instanceof PilloryBlock pillory) {
                     PadlockEntity eB = PadlockEntity.getLockAt(level, pos.below());
                     PadlockEntity eA = PadlockEntity.getLockAt(level, pos.above());
                     if (level.getBlockState(pos.below()).is(pillory) && eB != null && eB.isLocked())
-                        isLockedBlock = true;
+                        return true;
                     else if (level.getBlockState(pos.above()).is(pillory) && eA != null && eA.isLocked())
-                        isLockedBlock = true;
+                        return true;
                 }
                 
-                if (state.getBlock() instanceof ChestBlock) {
+                if (state.getBlock() instanceof ChestBlock chest) {
+                    if(state.getValue(chest.TYPE) == ChestType.SINGLE) return false;
+                    
                     Direction dir = ChestBlock.getConnectedDirection(state);
                     BlockPos otherPos = pos.relative(dir);
                     PadlockEntity otherPadlock = PadlockEntity.getLockAt(level, otherPos);
                     if (level.getBlockState(otherPos).is(net.minecraft.world.level.block.Blocks.CHEST)
                             && otherPadlock != null && otherPadlock.isLocked())
-                        isLockedBlock = true;
+                        return true;
                 } 
             }
 
-            return isLockedBlock;
+            return false;
         }
     
         public static final HashMap<BlockPos, UUID> registeredLocks = new HashMap<>();
@@ -315,7 +317,7 @@ public class CuffedAPI {
     }
 
     public static class Capabilities {
-        public static final ResourceLocation RESTRAINABLE_CAPABILITY_NAME = new ResourceLocation(CuffedMod.MODID,
+        public static final ResourceLocation RESTRAINABLE_CAPABILITY_NAME = ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID,
                 "restrainable");
         public static final Capability<RestrainableCapability> RESTRAINABLE_CAPABILITY = CapabilityManager
                 .get(new CapabilityToken<RestrainableCapability>() {

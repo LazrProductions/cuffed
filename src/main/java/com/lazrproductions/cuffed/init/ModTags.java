@@ -16,21 +16,21 @@ public class ModTags {
         public static final TagKey<Block> REINFORCED_BLOCKS = tag("reinforced_blocks");
 
         public static TagKey<Block> tag(String name) {
-            return BlockTags.create(new ResourceLocation(CuffedMod.MODID, name));
+            return BlockTags.create(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, name));
         }
     }
     public static class Entities {
         public static final TagKey<EntityType<?>> CHAINABLE_ENTITIES = tag("chainable_entities");
         
         public static TagKey<EntityType<?>> tag(String name) {
-            return TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(CuffedMod.MODID, name));
+            return TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, name));
         }
     }
     public static class Items {
         public static final TagKey<Item> CAN_REINFORCE_PADLOCK = tag("can_reinforce_padlock");
         
         public static TagKey<Item> tag(String name) {
-            return TagKey.create(Registries.ITEM, new ResourceLocation(CuffedMod.MODID, name));
+            return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, name));
         }
     }
 }

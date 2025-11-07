@@ -15,7 +15,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 
 public class GuillotineBlockEntityRenderer implements BlockEntityRenderer<GuillotineBlockEntity> {
-        private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation(CuffedMod.MODID,
+        private static final ResourceLocation TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID,
             "textures/block/guillotine.png");
 
     GuillotineBlockEntityModel<GuillotineBlockEntity> model;

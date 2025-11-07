@@ -206,7 +206,7 @@ public class RestraintAPI {
      */
     public static AbstractRestraint getRestraintFromTag(CompoundTag tag) {
         if (tag.contains("Id")) {
-            AbstractRestraint r = getNewRestraintByKey(new ResourceLocation(tag.getString("Id")));
+            AbstractRestraint r = getNewRestraintByKey(ResourceLocation.bySeparator(tag.getString("Id"),':'));
             if (r != null) {
                 r.deserializeNBT(tag);
                 return r;

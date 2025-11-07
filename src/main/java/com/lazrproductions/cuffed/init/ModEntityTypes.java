@@ -26,7 +26,7 @@ public class ModEntityTypes {
                                         .updateInterval(Integer.MAX_VALUE)
                                         .setShouldReceiveVelocityUpdates(false)
                                         .sized(6 / 16f, 0.5f).canSpawnFarFromPlayer().fireImmune()
-                                        .build(new ResourceLocation(CuffedMod.MODID, "chain_knot").toString()));
+                                        .build(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "chain_knot").toString()));
 
         public static RegistryObject<EntityType<PadlockEntity>> PADLOCK = ENTITY_TYPES.register("padlock",
                         () -> EntityType.Builder.<PadlockEntity>of(PadlockEntity::new, MobCategory.MISC)
@@ -34,14 +34,14 @@ public class ModEntityTypes {
                                         .updateInterval(Integer.MAX_VALUE)
                                         .setShouldReceiveVelocityUpdates(false)
                                         .sized(6 / 16f, 0.1f).canSpawnFarFromPlayer().fireImmune()
-                                        .build(new ResourceLocation(CuffedMod.MODID, "padlock").toString()));
+                                        .build(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "padlock").toString()));
 
         public static RegistryObject<EntityType<WeightedAnchorEntity>> WEIGHTED_ANCHOR = ENTITY_TYPES.register(
                         "weighted_anchor",
                         () -> EntityType.Builder.<WeightedAnchorEntity>of(WeightedAnchorEntity::new, MobCategory.MISC)
                                         .sized(8 / 16f, 0.5f).canSpawnFarFromPlayer().fireImmune()
                                         .clientTrackingRange(10)
-                                        .build(new ResourceLocation(CuffedMod.MODID, "weighted_anchor").toString()));
+                                        .build(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "weighted_anchor").toString()));
 
         public static RegistryObject<EntityType<CrumblingBlockEntity>> CRUMBLING_BLOCK = ENTITY_TYPES.register(
                         "crumbling_block",

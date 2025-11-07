@@ -83,7 +83,7 @@ public class PadlockEntity extends HangingEntity {
 
         if(this.isReinforced()) {
             String i = getItemUsedToReinforce();
-            ItemStack stack = new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(i)));
+            ItemStack stack = new ItemStack(ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("minecraft",i)));
             ItemEntity e = new ItemEntity(this.level(), this.pos.getX() + 0.5f + xO, this.pos.getY() + 0.5f,
                     this.pos.getZ() + 0.5f + zO, stack);
             e.setDefaultPickUpDelay();
@@ -252,7 +252,7 @@ public class PadlockEntity extends HangingEntity {
 
         if (isReinforced()) {
             String i = getItemUsedToReinforce();
-            ItemStack stack = new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(i)));
+            ItemStack stack = new ItemStack(ForgeRegistries.ITEMS.getValue(ResourceLocation.bySeparator(i,':')));
             ItemEntity e = new ItemEntity(this.level(), this.pos.getX() + 0.5f + xO, this.pos.getY() + 0.5f,
                     this.pos.getZ() + 0.5f + zO, stack);
             e.setDefaultPickUpDelay();

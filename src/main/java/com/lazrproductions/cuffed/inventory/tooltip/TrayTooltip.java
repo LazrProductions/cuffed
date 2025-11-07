@@ -20,13 +20,13 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class TrayTooltip implements ClientTooltipComponent, TooltipComponent {
-    public static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation(CuffedMod.MODID,
+    public static final ResourceLocation TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID,
             "textures/gui/container/tray.png");
     
-    public static final ScreenTexture BACKGROUND_TEXTURE = new ScreenTexture(new ResourceLocation(CuffedMod.MODID, "textures/gui/container/tray.png"), 0, 0, 39, 20, 128, 128);
-    public static final ScreenTexture FORK_TEXTURE = new ScreenTexture(new ResourceLocation(CuffedMod.MODID, "textures/gui/container/tray.png"), 0, 20, 5, 15, 128, 128);
-    public static final ScreenTexture SPOON_TEXTURE = new ScreenTexture(new ResourceLocation(CuffedMod.MODID, "textures/gui/container/tray.png"), 5, 20, 5, 15, 128, 128);
-    public static final ScreenTexture KNIFE_TEXTURE = new ScreenTexture(new ResourceLocation(CuffedMod.MODID, "textures/gui/container/tray.png"), 10, 20, 5, 15, 128, 128);
+    public static final ScreenTexture BACKGROUND_TEXTURE = new ScreenTexture(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "textures/gui/container/tray.png"), 0, 0, 39, 20, 128, 128);
+    public static final ScreenTexture FORK_TEXTURE = new ScreenTexture(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "textures/gui/container/tray.png"), 0, 20, 5, 15, 128, 128);
+    public static final ScreenTexture SPOON_TEXTURE = new ScreenTexture(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "textures/gui/container/tray.png"), 5, 20, 5, 15, 128, 128);
+    public static final ScreenTexture KNIFE_TEXTURE = new ScreenTexture(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "textures/gui/container/tray.png"), 10, 20, 5, 15, 128, 128);
 
     private final NonNullList<ItemStack> items;
 

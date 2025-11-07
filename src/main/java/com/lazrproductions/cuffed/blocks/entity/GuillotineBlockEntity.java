@@ -16,6 +16,7 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.commands.KillCommand;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -56,12 +57,16 @@ public class GuillotineBlockEntity extends BlockEntity {
             if(CuffedMod.PlayerReviveInstalled) {
                 PlayerReviveCompat.Kill(player);
             } else
-                player.hurt(ModDamageTypes.GetModSource(player, ModDamageTypes.HANG, null), 999);
+            player.kill();
+                player.hurt(ModDamageTypes.GetModSource(player, ModDamageTypes.HANG, null), Float.MAX_VALUE);
 
-            ItemStack stack = new ItemStack(Items.PLAYER_HEAD, 1);
-            stack.getOrCreateTag().putString("SkullOwner", player.getGameProfile().getName());
-            ItemEntity entity = new ItemEntity(l, player.position().x(), player.position().y(), player.position().z(), stack);
-            l.addFreshEntity(entity);
+
+            if(CuffedMod.SERVER_CONFIG.GUILLOTINE_DROPS_HEAD.get()) {
+                ItemStack stack = new ItemStack(Items.PLAYER_HEAD, 1);
+                stack.getOrCreateTag().putString("SkullOwner", player.getGameProfile().getName());
+                ItemEntity entity = new ItemEntity(l, player.position().x(), player.position().y(), player.position().z(), stack);
+                l.addFreshEntity(entity);
+            }
 
             this.isBloody = true;
         }

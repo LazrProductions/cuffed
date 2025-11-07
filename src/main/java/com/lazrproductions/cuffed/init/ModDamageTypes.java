@@ -17,7 +17,7 @@ public class ModDamageTypes {
     public static final ResourceKey<DamageType> HANG = register("hang");
 
     public static ResourceKey<DamageType> register (String key){
-        return ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(CuffedMod.MODID, key));
+        return ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, key));
     }
 
     public static DamageSource GetModSource(Entity entity, ResourceKey<DamageType> type, @Nullable Entity other) {

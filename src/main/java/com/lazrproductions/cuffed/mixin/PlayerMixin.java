@@ -27,6 +27,7 @@ import com.lazrproductions.cuffed.entity.base.IPrivacyOperand;
 import com.lazrproductions.cuffed.entity.base.IRestrainableEntity;
 import com.lazrproductions.cuffed.init.ModEffects;
 import com.lazrproductions.cuffed.restraints.base.IEnchantableRestraint;
+import com.lazrproductions.cuffed.restraints.base.RestraintType;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -36,8 +37,11 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
@@ -47,6 +51,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
 @Mixin(Player.class)
 public class PlayerMixin extends LivingEntity implements IRestrainableEntity, IDetainableEntity, INicknamable, IPrivacyOperand {
@@ -120,6 +125,7 @@ public class PlayerMixin extends LivingEntity implements IRestrainableEntity, ID
     
     float pilloryBreakOutProgress = 0;
     boolean wasCrouching;
+    boolean hasProcessedSwing = false;
     @Inject(at = @At("TAIL"), method = "tick")
     public void tick(CallbackInfo callback) {
         if (!this.level().isClientSide()) {
@@ -179,7 +185,39 @@ public class PlayerMixin extends LivingEntity implements IRestrainableEntity, ID
                     undetain();
                 }
             }    
+        
+            if(swinging) {
+                if(!hasProcessedSwing) {
+                    hasProcessedSwing = true;
+
+                    ServerPlayer me = (ServerPlayer)(Object)this;
+
+                    attemptToRemoveRestraint(me, cap);
+                }
+            } else 
+                hasProcessedSwing = false;
         }
+    }
+
+    public boolean attemptToRemoveRestraint(ServerPlayer player, RestrainableCapability cap) {
+
+        boolean armsRestrained = cap.armsRestrained();
+
+        if(!armsRestrained) {
+            Vec3 lookAngle = player.getLookAngle();
+            if(lookAngle.y >= 60f/180f * Mth.DEG_TO_RAD) {                
+                cap.onInteractedByOther((ServerPlayer)player, (ServerPlayer)player, 2d, getItemInHand(InteractionHand.MAIN_HAND), InteractionHand.MAIN_HAND, true);
+                return true;
+            } else if(lookAngle.y <= -60f/180f ) {                
+                cap.onInteractedByOther((ServerPlayer)player, (ServerPlayer)player, 0d, getItemInHand(InteractionHand.MAIN_HAND), InteractionHand.MAIN_HAND, true);
+                return true;
+            } else {                
+                cap.onInteractedByOther((ServerPlayer)player, (ServerPlayer)player, 1d, getItemInHand(InteractionHand.MAIN_HAND), InteractionHand.MAIN_HAND, true);
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Inject(at = @At("HEAD"), method = "wantsToStopRiding", cancellable = true)
@@ -271,15 +309,15 @@ public class PlayerMixin extends LivingEntity implements IRestrainableEntity, ID
     }
     @Override
     public ResourceLocation getArmRestraintId() {
-        return new ResourceLocation(entityData.get(DATA_ARM_RESTRAINT_ID));
+        return ResourceLocation.bySeparator(entityData.get(DATA_ARM_RESTRAINT_ID),':');
     }
     @Override
     public ResourceLocation getLegRestraintId() {
-        return new ResourceLocation(entityData.get(DATA_LEG_RESTRAINT_ID));
+        return ResourceLocation.bySeparator(entityData.get(DATA_LEG_RESTRAINT_ID),':');
     }
     @Override
     public ResourceLocation getHeadRestraintId() {
-        return new ResourceLocation(entityData.get(DATA_HEAD_RESTRAINT_ID));
+        return ResourceLocation.bySeparator(entityData.get(DATA_HEAD_RESTRAINT_ID),':');
     }
     @Override
     public void setRestraintCode(int v) {

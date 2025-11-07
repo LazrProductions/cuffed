@@ -9,28 +9,28 @@ import net.minecraftforge.registries.RegisterEvent;
 
 public class ModSounds {
     public static final SoundEvent HANDCUFFED = SoundEvent
-        .createVariableRangeEvent(new ResourceLocation(CuffedMod.MODID, "restraint.apply_handcuffs"));
+        .createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "restraint.apply_handcuffs"));
     public static final SoundEvent SHACKLES_EQUIP = SoundEvent
-        .createVariableRangeEvent(new ResourceLocation(CuffedMod.MODID, "restraint.apply_shackles"));
+        .createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "restraint.apply_shackles"));
     public static final SoundEvent PILLORY_USE = SoundEvent
-            .createVariableRangeEvent(new ResourceLocation(CuffedMod.MODID, "block.pillory.use"));
+            .createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "block.pillory.use"));
     public static final SoundEvent GUILLOTINE_USE = SoundEvent
-            .createVariableRangeEvent(new ResourceLocation(CuffedMod.MODID, "block.guillotine.use"));
+            .createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "block.guillotine.use"));
     
     public static final SoundEvent SAFE_OPEN = SoundEvent
-            .createVariableRangeEvent(new ResourceLocation(CuffedMod.MODID, "block.safe.open"));
+            .createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "block.safe.open"));
     public static final SoundEvent SAFE_CLOSE = SoundEvent
-            .createVariableRangeEvent(new ResourceLocation(CuffedMod.MODID, "block.safe.close"));
+            .createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "block.safe.close"));
 
     public static void register(RegisterEvent event) {
         event.register(Keys.SOUND_EVENTS, x -> {
-            x.register(new ResourceLocation(CuffedMod.MODID, "restraint.apply_handcuffs"), HANDCUFFED);
-            x.register(new ResourceLocation(CuffedMod.MODID, "restraint.apply_shackles"), SHACKLES_EQUIP);
-            x.register(new ResourceLocation(CuffedMod.MODID, "block.pillory.use"), PILLORY_USE);
-            x.register(new ResourceLocation(CuffedMod.MODID, "block.guillotine.use"), GUILLOTINE_USE);
+            x.register(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "restraint.apply_handcuffs"), HANDCUFFED);
+            x.register(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "restraint.apply_shackles"), SHACKLES_EQUIP);
+            x.register(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "block.pillory.use"), PILLORY_USE);
+            x.register(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "block.guillotine.use"), GUILLOTINE_USE);
             
-            x.register(new ResourceLocation(CuffedMod.MODID, "block.safe.open"), SAFE_OPEN);
-            x.register(new ResourceLocation(CuffedMod.MODID, "block.safe.close"), SAFE_CLOSE);
+            x.register(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "block.safe.open"), SAFE_OPEN);
+            x.register(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "block.safe.close"), SAFE_CLOSE);
         });
     }
 }

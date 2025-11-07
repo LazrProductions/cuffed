@@ -36,7 +36,7 @@ import net.minecraft.world.item.ItemStack;
 
 @SuppressWarnings("deprecation")
 public class FriskingScreen extends AbstractContainerScreen<FriskingMenu> {
-   private static final ResourceLocation FRISKING_BACKGROUND = new ResourceLocation(CuffedMod.MODID,
+   private static final ResourceLocation FRISKING_BACKGROUND = ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID,
          "textures/gui/container/frisking.png");
 
    private static final Integer TICKS_TO_TAKE = 40;

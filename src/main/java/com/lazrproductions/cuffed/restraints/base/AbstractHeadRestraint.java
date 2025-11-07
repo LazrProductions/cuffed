@@ -18,7 +18,7 @@ import net.minecraft.world.item.ItemStack;
 
 public abstract class AbstractHeadRestraint extends AbstractRestraint {
 
-    static final ResourceLocation WIDGETS = new ResourceLocation(CuffedMod.MODID, "textures/gui/widgets.png");
+    static final ResourceLocation WIDGETS = ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "textures/gui/widgets.png");
 
     static final ScreenTexture ARMS_ICON = new ScreenTexture(WIDGETS, 60, 40, 16, 16, 192, 192);
 
@@ -33,14 +33,7 @@ public abstract class AbstractHeadRestraint extends AbstractRestraint {
 
     public ArrayList<Integer> getBlockedKeyCodes() {
         ArrayList<Integer> b = new ArrayList<Integer>();
-        Minecraft inst = Minecraft.getInstance();
-        
-        if(inst == null || inst.options == null)
-            return b;
-        
-        b.add(inst.options.keyAttack.getKey().getValue());
-        b.add(inst.options.keyUse.getKey().getValue());
-        return b;
+        return b; // head restraints dont block key codes silly!
     }
 
 
