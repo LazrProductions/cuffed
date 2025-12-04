@@ -113,6 +113,9 @@ public class HandcuffsArmsRestraint extends AbstractArmRestraint implements IBre
     public boolean AllowJumping() {
         return true;
     }
+    public boolean AllowSprinting() {
+        return true;
+    }
 
     public boolean canBeBrokenOutOf() {
         return CuffedMod.SERVER_CONFIG.HANDCUFFS_ON_ARMS_CAN_BE_BROKEN_OUT_OF.get();

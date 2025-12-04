@@ -21,6 +21,7 @@ import com.lazrproductions.cuffed.entity.base.IAnchorableEntity;
 import com.lazrproductions.cuffed.entity.base.IDetainableEntity;
 import com.lazrproductions.cuffed.entity.base.INicknamable;
 import com.lazrproductions.cuffed.init.ModBlocks;
+import com.lazrproductions.cuffed.init.ModEffects;
 import com.lazrproductions.cuffed.init.ModEnchantments;
 import com.lazrproductions.cuffed.init.ModItems;
 import com.lazrproductions.cuffed.init.ModTags;
@@ -43,6 +44,8 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -243,7 +246,7 @@ public class ModServerEvents {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public void playerInteractEntity(PlayerInteractEvent.EntityInteract event) {
         if (event.getSide() == LogicalSide.CLIENT)
             return;
@@ -330,12 +333,6 @@ public class ModServerEvents {
                 }
             }
         }
-    }
-
-
-
-    public void onPlayerDismount() {
-
     }
 
     @SubscribeEvent

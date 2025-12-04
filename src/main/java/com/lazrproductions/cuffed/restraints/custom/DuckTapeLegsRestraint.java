@@ -91,10 +91,13 @@ public class DuckTapeLegsRestraint extends AbstractLegRestraint implements IBrea
         return true;
     }
     public boolean AllowMovement() {
-        return true;
+        return false;
     }
     public boolean AllowJumping() {
-        return true;
+        return false;
+    }
+    public boolean AllowSprinting() {
+        return false;
     }
 
     public boolean getLockpickable() {

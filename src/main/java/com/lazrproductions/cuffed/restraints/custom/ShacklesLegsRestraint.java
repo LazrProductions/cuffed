@@ -115,6 +115,9 @@ public class ShacklesLegsRestraint extends AbstractLegRestraint implements IBrea
     public boolean AllowJumping() {
         return false;
     }
+    public boolean AllowSprinting() {
+        return false;
+    }
 
     public boolean canBeBrokenOutOf() {
         return CuffedMod.SERVER_CONFIG.SHACKLES_ON_LEGS_CAN_BE_BROKEN_OUT_OF.get();

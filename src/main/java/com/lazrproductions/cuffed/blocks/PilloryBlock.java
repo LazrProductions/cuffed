@@ -11,6 +11,7 @@ import com.lazrproductions.cuffed.api.CuffedAPI;
 import com.lazrproductions.cuffed.blocks.base.DetentionBlock;
 import com.lazrproductions.cuffed.cap.base.IRestrainableCapability;
 import com.lazrproductions.cuffed.entity.base.IDetainableEntity;
+import com.lazrproductions.cuffed.entity.base.IRestrainableEntity;
 import com.lazrproductions.cuffed.init.ModSounds;
 
 import net.minecraft.core.BlockPos;
@@ -197,15 +198,17 @@ public class PilloryBlock extends DetentionBlock {
         }
 
         if (!player.isCrouching() && !level.isClientSide) {
-            Random r = new Random();
-            level.playSound(null, pos, ModSounds.PILLORY_USE, SoundSource.BLOCKS, 1,
-                    (state.getValue(CLOSED) ? 1.0F : 0.8F) + (r.nextFloat() * 0.1F));
 
             boolean wasOpen = !getClosed(state);
 
             boolean shouldBeOpen = attemptToToggleDetained(level, wasOpen, state, pos);
 
-            level.setBlock(pos, state.setValue(CLOSED, !shouldBeOpen), UPDATE_ALL_IMMEDIATE);
+            if(shouldBeOpen != wasOpen) {
+                Random r = new Random();
+                level.playSound(null, pos, ModSounds.PILLORY_USE, SoundSource.BLOCKS, 1,
+                        (state.getValue(CLOSED) ? 1.0F : 0.8F) + (r.nextFloat() * 0.1F));
+                level.setBlock(pos, state.setValue(CLOSED, !shouldBeOpen), UPDATE_ALL_IMMEDIATE);
+            }
 
             return InteractionResult.SUCCESS;
         } else if (!player.isCrouching() && state.getValue(HALF) == DoubleBlockHalf.UPPER && level.isClientSide)
@@ -270,18 +273,18 @@ public class PilloryBlock extends DetentionBlock {
                             return true; // should become openned
                         }
                     } else {
-                        if (detainableEntity.getDetained() == -1) {
+                        if (detainableEntity.getDetained() == -1 && canDetainPlayer(level, state, pos, p)) {
                             detainableEntity.detainToBlock(level,
                                     new Vector3f((float) behind.x(), (float) behind.y(), (float) behind.z()), pos, 0,
                                     getFacingRotation(state, pos));
                             return false; // should become closed
-                        }
+                        } else
+                            return true; // leave open if we cant detain
                     }
                 }
-            } else
-                return !wasOpen; // if no player is in the pillory, just toggle the state.
+            }
         }
-        return true;
+        return !wasOpen;
     }
 
     public static Player getDetainedEntity(@Nonnull Level level, @Nonnull BlockState state, @Nonnull BlockPos pos) {

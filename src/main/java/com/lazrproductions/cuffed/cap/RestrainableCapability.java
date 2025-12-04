@@ -796,7 +796,7 @@ public class RestrainableCapability implements IRestrainableCapability {
     }
 
     public float onLandServer(ServerPlayer player, float distance, float damageMultiplier) {
-        float mult = 1;
+        float mult = damageMultiplier;
         if (headRestraint != null)
             mult *= headRestraint.onLandServer(player, distance, damageMultiplier);
         if (armRestraint != null)

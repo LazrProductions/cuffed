@@ -49,7 +49,6 @@ public class ChainUtils {
 			return;
 		poseStack.pushPose(); 
 
-
 		Vec3 startPos = entityTo.getPosition(partialTicks).add(new Vec3(0,1.4,0));
 		
 		double d0 = (double)(Mth.lerp(partialTicks, entityFrom.yRotO, entityFrom.yRotO) * ((float)Math.PI / 180F)) + (Math.PI / 2D);

@@ -98,6 +98,9 @@ public class BundleRestraint extends AbstractHeadRestraint {
     public boolean AllowJumping() {
         return true;
     }
+    public boolean AllowSprinting() {
+        return true;
+    }
 
     public boolean canBeBrokenOutOf() {
         return false;

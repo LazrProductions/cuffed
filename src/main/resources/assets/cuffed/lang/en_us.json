@@ -198,6 +198,7 @@
     
     "info.cuffed.restraints.pillory.name": "Pillory",
     "info.cuffed.restraints.pillory.action_bar": "Your head is stuck in a pillory!",
+    "info.cuffed.restraints.pillory.error": "You cannot be detained with your arms restrained!",
 
     "info.cuffed.restraints.duck_tape_head.name": "Duck Tape",
     "info.cuffed.restraints.duck_tape_head.action_bar": "Your mouth is taped by Duck Tape!",
@@ -264,8 +265,8 @@
     "command.cuffed.apply.head.failure.wrong_type": "%1$s is not a head restraint!",
     "command.cuffed.apply.failure": "Failed to apply %1$s to %2$s",
 
-    "command.cuffed.remove.success": "Removed the restraints from %1$s's %2$ss",
-    "command.cuffed.remove.failure": "%1$s does not have restraints on their %2$ss",
+    "command.cuffed.remove.success": "Removed the restraints from %1$s's %2$s",
+    "command.cuffed.remove.failure": "%1$s does not have restraints on their %2$s",
 
     "command.cuffed.nickname.set": "Set %1$s's nickname to %2$s.",
     "command.cuffed.nickname.reset": "Reset %1$s's nickname.",

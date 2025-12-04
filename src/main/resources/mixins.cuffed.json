@@ -19,7 +19,8 @@
         "EffectRenderingInventoryScreenMixin",
         "KeyboardHandlerMixin",
         "MouseHandlerMixin",
-        "ItemInHandRendererMixin"
+        "ItemInHandRendererMixin",
+        "LocalPlayerMixin"
     ],
     "minVersion": "0.8"
 }

@@ -23,6 +23,7 @@ import com.lazrproductions.cuffed.compat.IronsSpellsnSpellbooksCompat;
 import com.lazrproductions.cuffed.compat.ParcoolCompat;
 import com.lazrproductions.cuffed.compat.PlayerReviveCompat;
 import com.lazrproductions.cuffed.compat.SimpleVoiceChatCompat;
+import com.lazrproductions.cuffed.compat.TacZCompat;
 import com.lazrproductions.cuffed.config.CuffedServerConfig;
 import com.lazrproductions.cuffed.entity.renderer.ChainKnotEntityRenderer;
 import com.lazrproductions.cuffed.entity.renderer.CrumblingBlockRenderer;
@@ -158,6 +159,10 @@ public class CuffedMod {
         if (ModList.get().isLoaded("voicechat")) {
             VoiceChatInstalled = true;
             SimpleVoiceChatCompat.load();
+        }
+        if (ModList.get().isLoaded("tacz")) {
+            VoiceChatInstalled = true;
+            TacZCompat.load(modEventBus);
         }
     }
 

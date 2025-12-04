@@ -117,6 +117,9 @@ public class ShacklesArmsRestraint extends AbstractArmRestraint implements IBrea
     public boolean AllowJumping() {
         return true;
     }
+    public boolean AllowSprinting() {
+        return true;
+    }
 
     public boolean canBeBrokenOutOf() {
         return CuffedMod.SERVER_CONFIG.SHACKLES_ON_ARMS_CAN_BE_BROKEN_OUT_OF.get();

@@ -76,6 +76,7 @@ public abstract class AbstractRestraint {
     public abstract boolean AllowBreakingBlocks();
     public abstract boolean AllowMovement();
     public abstract boolean AllowJumping();
+    public abstract boolean AllowSprinting();
 
     /** Get the sound played when this restraint is equipped */
     public abstract SoundEvent getEquipSound();

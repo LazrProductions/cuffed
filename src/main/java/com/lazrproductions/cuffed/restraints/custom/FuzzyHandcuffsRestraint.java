@@ -114,6 +114,9 @@ public class FuzzyHandcuffsRestraint extends AbstractArmRestraint implements IBr
     public boolean AllowJumping() {
         return true;
     }
+    public boolean AllowSprinting() {
+        return true;
+    }
 
     public boolean getLockpickable() {
         return CuffedMod.SERVER_CONFIG.FUZZY_HANDCUFFS_ON_ARMS_LOCKPICKABLE.get();

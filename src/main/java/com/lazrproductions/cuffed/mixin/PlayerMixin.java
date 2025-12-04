@@ -27,8 +27,8 @@ import com.lazrproductions.cuffed.entity.base.IPrivacyOperand;
 import com.lazrproductions.cuffed.entity.base.IRestrainableEntity;
 import com.lazrproductions.cuffed.init.ModEffects;
 import com.lazrproductions.cuffed.restraints.base.IEnchantableRestraint;
-import com.lazrproductions.cuffed.restraints.base.RestraintType;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -177,8 +177,9 @@ public class PlayerMixin extends LivingEntity implements IRestrainableEntity, ID
                             if(state.getBlock() instanceof DetentionBlock detentionBlock)
                                 flag1 = detentionBlock.canDetainPlayer(level(), state, entityData.get(DATA_DETAINED_TO_BLOCK), (Player)(Object)this);
 
-                            if(!flag || !flag1)
+                            if(!flag || !flag1) {
                                 undetain();
+                            }
                         }
                     }
                 } else {
@@ -186,16 +187,18 @@ public class PlayerMixin extends LivingEntity implements IRestrainableEntity, ID
                 }
             }    
         
-            if(swinging) {
-                if(!hasProcessedSwing) {
-                    hasProcessedSwing = true;
+            if(CuffedMod.SERVER_CONFIG.ALLOW_SELF_RESTRAINING.get()) {
+                if(swinging) {
+                    if(!hasProcessedSwing) {
+                        hasProcessedSwing = true;
 
-                    ServerPlayer me = (ServerPlayer)(Object)this;
+                        ServerPlayer me = (ServerPlayer)(Object)this;
 
-                    attemptToRemoveRestraint(me, cap);
-                }
-            } else 
-                hasProcessedSwing = false;
+                        attemptToRemoveRestraint(me, cap);
+                    }
+                } else 
+                    hasProcessedSwing = false;
+    }
         }
     }
 
