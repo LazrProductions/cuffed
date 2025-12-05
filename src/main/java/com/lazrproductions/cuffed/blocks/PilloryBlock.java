@@ -273,7 +273,7 @@ public class PilloryBlock extends DetentionBlock {
                             return true; // should become openned
                         }
                     } else {
-                        if (detainableEntity.getDetained() == -1 && canDetainPlayer(level, state, pos, p)) {
+                        if (detainableEntity.getDetained() == -1 && canDetainPlayer(level, state, pos, p, true)) {
                             detainableEntity.detainToBlock(level,
                                     new Vector3f((float) behind.x(), (float) behind.y(), (float) behind.z()), pos, 0,
                                     getFacingRotation(state, pos));
@@ -306,10 +306,10 @@ public class PilloryBlock extends DetentionBlock {
     }
 
     public boolean canDetainPlayer(@Nonnull Level level, @Nonnull BlockState state, @Nonnull BlockPos pos,
-            @Nonnull Player player) {
+            @Nonnull Player player, boolean ignoreState) {
         IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(player);
         if (cap.armsRestrained())
             return false;
-        return getClosed(state);
+        return getClosed(state) || ignoreState;
     }
 }

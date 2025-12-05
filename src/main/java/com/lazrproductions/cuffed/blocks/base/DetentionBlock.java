@@ -13,5 +13,5 @@ public abstract class DetentionBlock extends Block {
         super(properties);
     }
 
-    public abstract boolean canDetainPlayer(@Nonnull Level level, @Nonnull BlockState state, @Nonnull BlockPos pos, @Nonnull Player player);
+    public abstract boolean canDetainPlayer(@Nonnull Level level, @Nonnull BlockState state, @Nonnull BlockPos pos, @Nonnull Player player, boolean ignoreState);
 }

@@ -175,7 +175,7 @@ public class PlayerMixin extends LivingEntity implements IRestrainableEntity, ID
                             }
                         } else {
                             if(state.getBlock() instanceof DetentionBlock detentionBlock)
-                                flag1 = detentionBlock.canDetainPlayer(level(), state, entityData.get(DATA_DETAINED_TO_BLOCK), (Player)(Object)this);
+                                flag1 = detentionBlock.canDetainPlayer(level(), state, entityData.get(DATA_DETAINED_TO_BLOCK), (Player)(Object)this, false);
 
                             if(!flag || !flag1) {
                                 undetain();
