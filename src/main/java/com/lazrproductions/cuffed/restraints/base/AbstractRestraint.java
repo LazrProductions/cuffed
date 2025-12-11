@@ -297,6 +297,9 @@ public abstract class AbstractRestraint {
     public void receiveUtilityPacketServer(ServerPlayer player, int utiltiyCode, int integerArg, boolean booleanArg, double doubleArg, String stringArg) {
         if(utiltiyCode == 102) {
             if(this instanceof IBreakableRestraint breakable) {
+                if (integerArg != -1) {
+                    return;
+                }
                 breakable.incrementDurability(player, integerArg);
             }
         }

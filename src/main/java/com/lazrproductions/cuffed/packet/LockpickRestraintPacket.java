@@ -4,12 +4,18 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 import com.lazrproductions.cuffed.api.CuffedAPI;
+import com.lazrproductions.cuffed.cap.base.IRestrainableCapability;
+import com.lazrproductions.cuffed.init.ModItems;
+import com.lazrproductions.cuffed.restraints.base.AbstractRestraint;
 import com.lazrproductions.cuffed.restraints.base.RestraintType;
 import com.lazrproductions.lazrslib.common.network.packet.ParameterizedLazrPacket;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 public class LockpickRestraintPacket extends ParameterizedLazrPacket {
     int speedIncreasePerPick;
@@ -75,10 +81,43 @@ public class LockpickRestraintPacket extends ParameterizedLazrPacket {
     }
 
     static class Serverside {
+        private static final double MAX_LOCKPICK_DISTANCE = 4.0;
+
         public static void handleServerside(Supplier<NetworkEvent.Context> ctx, int speedIncreasePerPick, int progressPerPick, int stopCode, String restrainedUUID, int restraintType, String lockpickerUUID) {
-            if(stopCode>-1)
-                CuffedAPI.Lockpicking.finishLockpickingRestraint(stopCode == 0, RestraintType.fromInteger(restraintType), 
-                    UUID.fromString(restrainedUUID), UUID.fromString(lockpickerUUID));
+            if(stopCode > -1) {
+                ServerPlayer sender = ctx.get().getSender();
+                if (sender == null) return;
+
+                if (!sender.getItemInHand(InteractionHand.MAIN_HAND).is(ModItems.LOCKPICK.get())) {
+                    return;
+                }
+
+                UUID targetUUID;
+                try {
+                    targetUUID = UUID.fromString(restrainedUUID);
+                } catch (IllegalArgumentException e) {
+                    return;
+                }
+
+                ServerPlayer restrainedPlayer = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(targetUUID);
+                if (restrainedPlayer == null) {
+                    return;
+                }
+
+                double distance = sender.position().distanceTo(restrainedPlayer.position());
+                if (distance > MAX_LOCKPICK_DISTANCE) {
+                    return;
+                }
+
+                RestraintType type = RestraintType.fromInteger(restraintType);
+                IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(restrainedPlayer);
+                AbstractRestraint restraint = cap.getRestraint(type);
+                if (restraint == null || !restraint.getLockpickable()) {
+                    return;
+                }
+
+                CuffedAPI.Lockpicking.finishLockpickingRestraint(stopCode == 0, type, targetUUID, sender.getUUID());
+            }
         }
     }
 }

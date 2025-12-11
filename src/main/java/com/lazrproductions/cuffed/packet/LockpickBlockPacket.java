@@ -1,14 +1,17 @@
 package com.lazrproductions.cuffed.packet;
 
-import java.util.UUID;
 import java.util.function.Supplier;
 
 import com.lazrproductions.cuffed.api.CuffedAPI;
+import com.lazrproductions.cuffed.blocks.CellDoor;
+import com.lazrproductions.cuffed.init.ModItems;
 import com.lazrproductions.lazrslib.common.network.packet.ParameterizedLazrPacket;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraftforge.network.NetworkEvent;
 
 public class LockpickBlockPacket extends ParameterizedLazrPacket {
@@ -76,9 +79,30 @@ public class LockpickBlockPacket extends ParameterizedLazrPacket {
     }
 
     static class Serverside {
+        private static final double MAX_LOCKPICK_DISTANCE = 6.0;
+
         public static void handleServerside(Supplier<NetworkEvent.Context> ctx, int speedIncreasePerPick, int progressPerPick, int stopCode, int x, int y, int z, String lockpickerUUID) {
-            if(stopCode>-1)
-                CuffedAPI.Lockpicking.finishLockpickingCellDoor(stopCode == 0, new BlockPos(x,y,z), UUID.fromString(lockpickerUUID));
+            if(stopCode > -1) {
+                ServerPlayer sender = ctx.get().getSender();
+                if (sender == null) return;
+
+                BlockPos targetPos = new BlockPos(x, y, z);
+
+                double distance = sender.position().distanceTo(targetPos.getCenter());
+                if (distance > MAX_LOCKPICK_DISTANCE) {
+                    return;
+                }
+
+                if (!sender.getItemInHand(InteractionHand.MAIN_HAND).is(ModItems.LOCKPICK.get())) {
+                    return;
+                }
+
+                if (!(sender.level().getBlockState(targetPos).getBlock() instanceof CellDoor)) {
+                    return;
+                }
+
+                CuffedAPI.Lockpicking.finishLockpickingCellDoor(stopCode == 0, targetPos, sender.getUUID());
+            }
         }
     }
 }
