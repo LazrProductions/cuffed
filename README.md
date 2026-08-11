@@ -10,7 +10,7 @@
 [![ko-fi](https://img.shields.io/badge/Support%20Me-Ko--fi-%23FF5E5B?style=flat-square)](https://ko-fi.com/lazrproductions)
 [![Versions](http://cf.way2muchnoise.eu/versions/For%20MC_899770_all.svg)](https://www.curseforge.com/minecraft/mc-mods/cuffed)
 [![Curseforge Downloads](https://img.shields.io/curseforge/dt/899770?logo=curseforge)](https://www.curseforge.com/minecraft/mc-mods/cuffed)
-[![Modrinth Downloads](https://img.shields.io/modrinth/dt/KrZm8J8s?style=flat-square&logo=modrinth)](https://www.curseforge.com/minecraft/mc-mods/cuffed)
+[![Modrinth Downloads](https://img.shields.io/modrinth/dt/KrZm8J8s?style=flat-square&logo=modrinth)](https://modrinth.com/mod/cuffed)
 
 <b>A simple mod that adds handcuffs, keys, and more.</b>
 
