@@ -1,80 +1,77 @@
 package com.lazrproductions.cuffed.packet;
 
 import java.util.UUID;
-import java.util.function.Supplier;
-
+import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.api.CuffedAPI;
-import com.lazrproductions.lazrslib.common.network.packet.ParameterizedLazrPacket;
-
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public class LockpickLockPacket extends ParameterizedLazrPacket {
-    int speedIncreasePerPick;
-    int progressPerPick;
+public class LockpickLockPacket implements CustomPacketPayload {
+    public static final Type<LockpickLockPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "lockpick_lock"));
 
-    int stopCode;
-    int lockId;
-    
-    String lockpickerUUID;
+    public static final StreamCodec<FriendlyByteBuf, LockpickLockPacket> STREAM_CODEC = StreamCodec.of(
+        (buf, val) -> {
+            buf.writeInt(val.speedIncreasePerPick);
+            buf.writeInt(val.progressPerPick);
+            buf.writeInt(val.stopCode);
+            buf.writeInt(val.lockId);
+            buf.writeUtf(val.lockpickerUUID);
+        },
+        buf -> new LockpickLockPacket(
+            buf.readInt(),
+            buf.readInt(),
+            buf.readInt(),
+            buf.readInt(),
+            buf.readUtf()
+        )
+    );
 
+    public final int speedIncreasePerPick;
+    public final int progressPerPick;
+    public final int stopCode;
+    public final int lockId;
+    public final String lockpickerUUID;
 
     public LockpickLockPacket(int lockId, int speedIncreasePerTick, int progressPerPick, String lockpickerUUID) {
-        super(speedIncreasePerTick, progressPerPick, -1, lockId, lockpickerUUID);
-        
-        this.stopCode = -1;
-        this.lockId = lockId;
         this.speedIncreasePerPick = speedIncreasePerTick;
         this.progressPerPick = progressPerPick;
-        this.lockpickerUUID = lockpickerUUID;
-        
+        this.stopCode = -1;
+        this.lockId = lockId;
+        this.lockpickerUUID = lockpickerUUID != null ? lockpickerUUID : "null";
     }
+
     public LockpickLockPacket(boolean wasFailed, int lockId, String lockpickerUUID) {
-        super(0, 0, wasFailed ? 0 : 2, lockId, lockpickerUUID);
+        this.speedIncreasePerPick = 0;
+        this.progressPerPick = 0;
         this.stopCode = wasFailed ? 0 : 2;
         this.lockId = lockId;
-        this.lockpickerUUID = lockpickerUUID;
-    }
-    public LockpickLockPacket(FriendlyByteBuf buf) {
-        super(buf);
+        this.lockpickerUUID = lockpickerUUID != null ? lockpickerUUID : "null";
     }
 
-
-
-    @Override
-    public void loadValues(Object[] arg0) {
-        speedIncreasePerPick = (int)arg0[0];
-        progressPerPick = (int)arg0[1];
-
-        stopCode = (int)arg0[2];
-        lockId = (int)arg0[3];
-
-        lockpickerUUID = (String)arg0[4];
+    public LockpickLockPacket(int speedIncreasePerPick, int progressPerPick, int stopCode, int lockId, String lockpickerUUID) {
+        this.speedIncreasePerPick = speedIncreasePerPick;
+        this.progressPerPick = progressPerPick;
+        this.stopCode = stopCode;
+        this.lockId = lockId;
+        this.lockpickerUUID = lockpickerUUID != null ? lockpickerUUID : "null";
     }
 
     @Override
-    public void handleClientside(Supplier<NetworkEvent.Context> ctx) {
-        Clientside.handleClientside(ctx, speedIncreasePerPick, progressPerPick, stopCode, lockId, lockpickerUUID);
-    }
-    @Override
-    public void handleServerside(Supplier<NetworkEvent.Context> ctx) {
-        Serverside.handleServerside(ctx, speedIncreasePerPick, progressPerPick, stopCode, lockId, lockpickerUUID);
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    static class Clientside {
-        public static void handleClientside(Supplier<NetworkEvent.Context> ctx, int speedIncreasePerPick, int progressPerPick, int stopCode, int lockId, String lockpickerUUID) {
-            if(stopCode<=-1) {
-                Minecraft instance = Minecraft.getInstance();
-                CuffedAPI.Lockpicking.beginLockpickingLock(instance, lockId, speedIncreasePerPick, progressPerPick);
-            }
-        }
-    }
-
-    static class Serverside {
-        public static void handleServerside(Supplier<NetworkEvent.Context> ctx, int speedIncreasePerPick, int progressPerPick, int stopCode, int lockId, String lockpickerUUID) {
-            if(stopCode>-1)
+    public void handleServer(IPayloadContext context) {
+        context.enqueueWork(() -> {
+            Player player = context.player();
+            if (player instanceof ServerPlayer && stopCode > -1) {
                 CuffedAPI.Lockpicking.finishLockpickingLock(stopCode == 0, lockId, UUID.fromString(lockpickerUUID));
-        }
+            }
+        });
     }
 }

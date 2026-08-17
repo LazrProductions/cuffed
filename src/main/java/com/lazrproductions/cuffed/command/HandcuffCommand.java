@@ -24,7 +24,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.server.command.EnumArgument;
+import net.neoforged.neoforge.server.command.EnumArgument;
 
 public class HandcuffCommand {
     public HandcuffCommand(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext ctx) {
@@ -47,7 +47,7 @@ public class HandcuffCommand {
                                     .executes(this::executeRemoveAnchor)))
                         .then(Commands.literal("nickname")
                                 .then(Commands.literal("set")
-                                        .then(Commands.argument("new nickname", ComponentArgument.textComponent())
+                                        .then(Commands.argument("new nickname", ComponentArgument.textComponent(ctx))
                                             .executes(this::executeSetNickname)))
                                 .then(Commands.literal("reset")
                                     .executes(this::executeResetNickname)))));

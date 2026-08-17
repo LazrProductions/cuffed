@@ -1,16 +1,25 @@
 package com.lazrproductions.cuffed.restraints.base;
 
-import net.minecraft.nbt.ListTag;
+import net.minecraft.core.Holder;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 
 public interface IEnchantableRestraint {
-    public ListTag getEnchantments();
-    public void setEnchantments(ListTag tag);
+    public ItemEnchantments getEnchantments();
+    public void setEnchantments(ItemEnchantments enchantments);
 
     /** Get whether or not this restraint has the give enchantment */
-    public boolean hasEnchantment(Enchantment enchantment);
+    default boolean hasEnchantment(Holder<Enchantment> enchantment) {
+        return getEnchantmentLevel(enchantment) > 0;
+    }
     /** Get the amplifier of the given enchantment. */
-    public int getEnchantmentLevel(Enchantment enchantment);
+    default int getEnchantmentLevel(Holder<Enchantment> enchantment) {
+        return getEnchantments().getLevel(enchantment);
+    }
     /** Apply an enchantment to this restraint. */
-    public void enchant(Enchantment enchantment, int value);
+    default void enchant(Holder<Enchantment> enchantment, int value) {
+        ItemEnchantments.Mutable builder = new ItemEnchantments.Mutable(getEnchantments());
+        builder.set(enchantment, value);
+        setEnchantments(builder.toImmutable());
+    }
 }

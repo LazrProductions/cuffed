@@ -46,8 +46,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public class HandcuffsArmsRestraint extends AbstractArmRestraint implements IBreakableRestraint, IEnchantableRestraint {
     static final ResourceLocation WIDGETS = ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "textures/gui/widgets.png");
@@ -55,7 +56,7 @@ public class HandcuffsArmsRestraint extends AbstractArmRestraint implements IBre
     static final ScreenTexture CHAIN_ICON = new ScreenTexture(WIDGETS, 44, 24, 16, 16, 192, 192);
 
     public HandcuffsArmsRestraint() {
-        enchantments = new ListTag();
+        enchantments = ItemEnchantments.EMPTY;
     }
     public HandcuffsArmsRestraint(ItemStack stack, ServerPlayer player, ServerPlayer captor) {
         super(stack, player, captor);
@@ -98,7 +99,7 @@ public class HandcuffsArmsRestraint extends AbstractArmRestraint implements IBre
         return ModSounds.HANDCUFFED;
     }
     public SoundEvent getUnequipSound() {
-        return SoundEvents.ARMOR_EQUIP_CHAIN;
+        return SoundEvents.ARMOR_EQUIP_CHAIN.value();
     }
 
     public boolean AllowBreakingBlocks() {
@@ -271,8 +272,9 @@ public class HandcuffsArmsRestraint extends AbstractArmRestraint implements IBre
                     Random r = new Random();
                     double chance = 0.5f;
                     double cooldownMultiplier = 1;
-                    if(this instanceof IEnchantableRestraint && hasEnchantment(Enchantments.UNBREAKING)) {
-                        double d = getEnchantmentLevel(Enchantments.UNBREAKING) / 3d;
+                    net.minecraft.core.Holder<net.minecraft.world.item.enchantment.Enchantment> unbreaking = player.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getOrThrow(net.minecraft.world.item.enchantment.Enchantments.UNBREAKING);
+                    if(this instanceof IEnchantableRestraint && hasEnchantment(unbreaking)) {
+                        double d = getEnchantmentLevel(unbreaking) / 3d;
                         chance = ((MathUtilities.invert01(d / 3d) * 0.7d) + 0.3d)  * 0.5f;
                         cooldownMultiplier = 1 + d;
                     }
@@ -319,7 +321,7 @@ public class HandcuffsArmsRestraint extends AbstractArmRestraint implements IBre
         ModStatistics.awardRestraintBroken(player, this);
 
         if (dropItemOnBroken()) {
-            ItemStack stack = this.saveToItemStack();
+            ItemStack stack = this.saveToItemStack(player.level().registryAccess());
             stack.setDamageValue(stack.getMaxDamage() - 1); // instead of 0 durability
             ItemEntity e = new ItemEntity(player.level(), player.getX(), player.getY() + 0.6D, player.getZ(), stack);
             e.setDefaultPickUpDelay();
@@ -341,40 +343,13 @@ public class HandcuffsArmsRestraint extends AbstractArmRestraint implements IBre
 
     // #region Enchantable Restraint Management
 
-    ListTag enchantments;
+    private ItemEnchantments enchantments = ItemEnchantments.EMPTY;
 
-    public ListTag getEnchantments() {
+    public ItemEnchantments getEnchantments() {
         return enchantments;
     }
-    public void setEnchantments(ListTag tag) {
+    public void setEnchantments(ItemEnchantments tag) {
         enchantments = tag;
-    }
-
-    public boolean hasEnchantment(Enchantment enchantment) {
-        ResourceLocation resourcelocation = EnchantmentHelper.getEnchantmentId(enchantment);
-        for (int i = 0; i < enchantments.size(); ++i) {
-            CompoundTag compoundtag = enchantments.getCompound(i);
-            ResourceLocation resourcelocation1 = EnchantmentHelper.getEnchantmentId(compoundtag);
-            if (resourcelocation1 != null && resourcelocation1.equals(resourcelocation)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    public int getEnchantmentLevel(Enchantment enchantment) {
-        ResourceLocation resourcelocation = EnchantmentHelper.getEnchantmentId(enchantment);
-        for (int i = 0; i < enchantments.size(); ++i) {
-            CompoundTag compoundtag = enchantments.getCompound(i);
-            ResourceLocation resourcelocation1 = EnchantmentHelper.getEnchantmentId(compoundtag);
-            if (resourcelocation1 != null && resourcelocation1.equals(resourcelocation)) {
-                return EnchantmentHelper.getEnchantmentLevel(compoundtag);
-            }
-        }
-        return 0;
-    }
-    public void enchant(Enchantment enchantment, int value) {
-        ResourceLocation l = EnchantmentHelper.getEnchantmentId(enchantment);
-        enchantments.add(EnchantmentHelper.storeEnchantment(l, value));        
     }
     // #endregion
 

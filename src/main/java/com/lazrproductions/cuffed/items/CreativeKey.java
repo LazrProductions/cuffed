@@ -22,7 +22,7 @@ public class CreativeKey extends Item {
     }
 
     @Override
-    public void appendHoverText(@Nonnull ItemStack stack, @Nullable Level level, @Nonnull List<Component> lore,
+    public void appendHoverText(@Nonnull ItemStack stack, @Nonnull Item.TooltipContext level, @Nonnull List<Component> lore,
             @Nonnull TooltipFlag flag) {
         lore.add(Component.translatable(getDescriptionId()+".lore").withStyle(ChatFormatting.GRAY));
     }

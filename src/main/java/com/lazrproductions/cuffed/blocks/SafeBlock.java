@@ -50,6 +50,13 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 @SuppressWarnings("deprecation")
 public class SafeBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+    public static final com.mojang.serialization.MapCodec<SafeBlock> CODEC = simpleCodec(SafeBlock::new);
+
+    @Override
+    protected com.mojang.serialization.MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
+
     public static final VoxelShape SHAPE_EW = Block.box(16 * 0.0625F, 16 * 0F, 16 * 0.125F,
             16 * 0.9375F, 16 * 1F, 16 * 0.875F);
     public static final VoxelShape SHAPE_NS = Block.box(16 * 0.125F, 16 * 0F, 16 * 0.0625F,
@@ -76,16 +83,21 @@ public class SafeBlock extends BaseEntityBlock implements SimpleWaterloggedBlock
         return SHAPE_NS;
     }
 
-    public InteractionResult use(@Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos,
-            @Nonnull Player player,
-            @Nonnull InteractionHand hand, @Nonnull BlockHitResult hitResult) {
+    @Override
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        InteractionResult res = interact(stack, state, level, pos, player, hand, hitResult);
+        return res.consumesAction() ? net.minecraft.world.ItemInteractionResult.sidedSuccess(level.isClientSide()) : net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        return interact(ItemStack.EMPTY, state, level, pos, player, InteractionHand.MAIN_HAND, hitResult);
+    }
+
+    private InteractionResult interact(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (level.isClientSide) {
             return InteractionResult.SUCCESS;
         } else {
-            
-            ItemStack stack = player.getInventory().getSelected();
-
-            
             BlockEntity blockentity = level.getBlockEntity(pos);
             if (blockentity instanceof SafeBlockEntity safe) {
 
@@ -165,7 +177,7 @@ public class SafeBlock extends BaseEntityBlock implements SimpleWaterloggedBlock
     public void setPlacedBy(@Nonnull Level level, @Nonnull BlockPos pos, @Nonnull BlockState state,
             @Nullable LivingEntity entity,
             @Nonnull ItemStack fromStack) {
-        if (fromStack.hasCustomHoverName()) {
+        if (fromStack.has(net.minecraft.core.component.DataComponents.CUSTOM_NAME)) {
             BlockEntity blockentity = level.getBlockEntity(pos);
             if (blockentity instanceof SafeBlockEntity) {
                 ((SafeBlockEntity) blockentity).setCustomName(fromStack.getHoverName());

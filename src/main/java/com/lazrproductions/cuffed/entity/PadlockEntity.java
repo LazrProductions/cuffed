@@ -42,7 +42,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.registries.ForgeRegistries;
+
 
 public class PadlockEntity extends HangingEntity {
 
@@ -83,7 +83,7 @@ public class PadlockEntity extends HangingEntity {
 
         if(this.isReinforced()) {
             String i = getItemUsedToReinforce();
-            ItemStack stack = new ItemStack(ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("minecraft",i)));
+            ItemStack stack = new ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("minecraft",i)));
             ItemEntity e = new ItemEntity(this.level(), this.pos.getX() + 0.5f + xO, this.pos.getY() + 0.5f,
                     this.pos.getZ() + 0.5f + zO, stack);
             e.setDefaultPickUpDelay();
@@ -174,7 +174,7 @@ public class PadlockEntity extends HangingEntity {
             if (stack.is(ModTags.Items.CAN_REINFORCE_PADLOCK) && !isReinforced()) {
                 interactor.awardStat(Stats.ITEM_USED.get(stack.getItem()));
                 setReinforced(true);
-                setItemUsedToReinforce(ForgeRegistries.ITEMS.getKey(stack.getItem()).toString());
+                setItemUsedToReinforce(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).toString());
                 stack.shrink(1);
                 this.playSound(SoundEvents.NETHERITE_BLOCK_PLACE, 1, 1);
                 return InteractionResult.CONSUME;
@@ -252,7 +252,7 @@ public class PadlockEntity extends HangingEntity {
 
         if (isReinforced()) {
             String i = getItemUsedToReinforce();
-            ItemStack stack = new ItemStack(ForgeRegistries.ITEMS.getValue(ResourceLocation.bySeparator(i,':')));
+            ItemStack stack = new ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.get(ResourceLocation.bySeparator(i,':')));
             ItemEntity e = new ItemEntity(this.level(), this.pos.getX() + 0.5f + xO, this.pos.getY() + 0.5f,
                     this.pos.getZ() + 0.5f + zO, stack);
             e.setDefaultPickUpDelay();
@@ -274,33 +274,17 @@ public class PadlockEntity extends HangingEntity {
     }
 
     @Override
-    public int getWidth() {
-        return 16;
-    }
-
-    @Override
-    public int getHeight() {
-        return 16;
-    }
-
-    @Override
-    protected float getEyeHeight(@Nonnull Pose p_31839_, @Nonnull EntityDimensions p_31840_) {
-        return 0.0625F;
-    }
-
-    @Override
     public boolean shouldRenderAtSqrDistance(double distance) {
         return distance < 1024.0D;
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_LOCKED, false);
-        this.entityData.define(DATA_REINFORCED, false);
-        this.entityData.define(DATA_ITEM_USED_TO_REINFORCE, "empty");
-        this.entityData.define(DATA_LOCK_ID, Optional.empty());
-        this.entityData.define(DATA_HAS_BEEN_BOUND, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(DATA_LOCKED, false);
+        builder.define(DATA_REINFORCED, false);
+        builder.define(DATA_ITEM_USED_TO_REINFORCE, "empty");
+        builder.define(DATA_LOCK_ID, Optional.empty());
+        builder.define(DATA_HAS_BEEN_BOUND, false);
     }
 
     @Override
@@ -338,11 +322,6 @@ public class PadlockEntity extends HangingEntity {
     @Override
     public void playPlacementSound() {
         this.playSound(SoundEvents.NETHERITE_BLOCK_PLACE, 1.0F, 1.0F);
-    }
-
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new ClientboundAddEntityPacket(this, 0, this.getPos());
     }
 
     @Override
@@ -390,11 +369,14 @@ public class PadlockEntity extends HangingEntity {
     }
 
     @Override
-    protected void recalculateBoundingBox() {
-        this.setPosRaw((double) this.pos.getX() + 0.5D, (double) this.pos.getY() + 0.3D,
-                (double) this.pos.getZ() + 0.5D);
-
-        this.setBoundingBox(new AABB(this.getX() - 0.52D, this.getY() - 0.12D, this.getZ() - 0.52D,
-                this.getX() + 0.52D, this.getY() + 0.13D, this.getZ() + 0.52D));
+    protected AABB calculateBoundingBox(BlockPos pos, Direction direction) {
+        return new AABB(
+            (double)pos.getX() + 0.5D - 0.52D,
+            (double)pos.getY() + 0.3D - 0.12D,
+            (double)pos.getZ() + 0.5D - 0.52D,
+            (double)pos.getX() + 0.5D + 0.52D,
+            (double)pos.getY() + 0.3D + 0.13D,
+            (double)pos.getZ() + 0.5D + 0.52D
+        );
     }
 }

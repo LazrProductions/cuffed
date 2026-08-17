@@ -3,9 +3,11 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.scores.Objective;
+import net.minecraft.world.scores.ScoreAccess;
 
 public class KnightsOfBritanniaCompat {
-        public static void load() {
+    public static void load() {
     }
 
     public static void DrainMana(@Nonnull ServerPlayer player, int amount) {
@@ -17,26 +19,21 @@ public class KnightsOfBritanniaCompat {
         if(scoreboard == null)
             return;
 
-        String scoreboardName = player.getScoreboardName();
-        if(scoreboardName == null)
-            return;
-
-        var currentManaObjective = scoreboard.getOrCreateObjective("kob.mana");
+        Objective currentManaObjective = scoreboard.getObjective("kob.mana");
         if(currentManaObjective == null)
             return;
 
-        var myManaScore = scoreboard.getOrCreatePlayerScore(scoreboardName, currentManaObjective);
+        ScoreAccess myManaScore = scoreboard.getOrCreatePlayerScore(player, currentManaObjective);
         
-        int currentMana = myManaScore.getScore();
+        int currentMana = myManaScore.get();
 
         if(currentMana <= 0)
             return;
 
-        myManaScore.add(-(int)amount);
+        myManaScore.set(currentMana - (int)amount);
     }
 
     public static void DrainMana(@Nonnull ServerPlayer player, double amountPercentage) {
-        
         MinecraftServer server = player.getServer();
         if(server == null)
             return;
@@ -45,26 +42,22 @@ public class KnightsOfBritanniaCompat {
         if(scoreboard == null)
             return;
 
-        String scoreboardName = player.getScoreboardName();
-        if(scoreboardName == null)
-            return;
-
-        var currentManaObjective = scoreboard.getOrCreateObjective("kob.mana");
+        Objective currentManaObjective = scoreboard.getObjective("kob.mana");
         if(currentManaObjective == null)
             return;
-        var maxManaObjective = scoreboard.getOrCreateObjective("kob.mana.max");
+        Objective maxManaObjective = scoreboard.getObjective("kob.mana.max");
         if(maxManaObjective == null)
             return;
 
-        var myManaScore = scoreboard.getOrCreatePlayerScore(scoreboardName, currentManaObjective);
-        var maxManaScore = scoreboard.getOrCreatePlayerScore(scoreboardName, maxManaObjective);
+        ScoreAccess myManaScore = scoreboard.getOrCreatePlayerScore(player, currentManaObjective);
+        ScoreAccess maxManaScore = scoreboard.getOrCreatePlayerScore(player, maxManaObjective);
         
-        int currentMana = myManaScore.getScore();
+        int currentMana = myManaScore.get();
 
         if(currentMana <= 0)
             return;
 
-        float amount = (float)maxManaScore.getScore() * (float)amountPercentage;
-        myManaScore.add(-(int)amount);
+        float amount = (float)maxManaScore.get() * (float)amountPercentage;
+        myManaScore.set(currentMana - (int)amount);
     }
 }

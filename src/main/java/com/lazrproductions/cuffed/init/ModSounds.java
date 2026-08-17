@@ -4,8 +4,8 @@ import com.lazrproductions.cuffed.CuffedMod;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraftforge.registries.ForgeRegistries.Keys;
-import net.minecraftforge.registries.RegisterEvent;
+import net.minecraft.core.registries.Registries;
+import net.neoforged.neoforge.registries.RegisterEvent;
 
 public class ModSounds {
     public static final SoundEvent HANDCUFFED = SoundEvent
@@ -23,7 +23,7 @@ public class ModSounds {
             .createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "block.safe.close"));
 
     public static void register(RegisterEvent event) {
-        event.register(Keys.SOUND_EVENTS, x -> {
+        event.register(Registries.SOUND_EVENT, x -> {
             x.register(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "restraint.apply_handcuffs"), HANDCUFFED);
             x.register(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "restraint.apply_shackles"), SHACKLES_EQUIP);
             x.register(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "block.pillory.use"), PILLORY_USE);

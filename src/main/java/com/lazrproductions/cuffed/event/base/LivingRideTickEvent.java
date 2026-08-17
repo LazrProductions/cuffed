@@ -2,11 +2,8 @@ package com.lazrproductions.cuffed.event.base;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.eventbus.api.Cancelable;
-
-@Cancelable
-public class LivingRideTickEvent extends LivingEvent
+import net.neoforged.neoforge.event.entity.living.LivingEvent;
+public class LivingRideTickEvent extends LivingEvent implements net.neoforged.bus.api.ICancellableEvent
 {
     Entity vehicle;
     public LivingRideTickEvent(LivingEntity entity, Entity vehicle)

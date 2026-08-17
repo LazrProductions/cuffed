@@ -6,35 +6,33 @@ import com.lazrproductions.cuffed.init.ModItems;
 import com.lazrproductions.cuffed.init.ModRecipes;
 import com.lazrproductions.cuffed.items.BakedKeyMoldItem;
 import com.lazrproductions.cuffed.items.KeyMoldItem;
+import com.lazrproductions.cuffed.utils.ItemTagUtils;
 
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.Container;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CookingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.level.Level;
 
 public class KeyMoldBakeRecipe extends SmeltingRecipe {
 
-
-    public KeyMoldBakeRecipe(ResourceLocation id, String group, Ingredient ingredient, ItemStack result, float experience, int cookingTime) {
-        super(id, group, CookingBookCategory.MISC, ingredient, result, experience, cookingTime);
+    public KeyMoldBakeRecipe(String group, CookingBookCategory category, Ingredient ingredient, ItemStack result, float experience, int cookingTime) {
+        super(group, category, ingredient, result, experience, cookingTime);
     }
 
     @Override
-    public boolean matches(@Nonnull Container inv, @Nonnull Level worldIn) {
-        return inv.getItem(0).is(ModItems.KEY_MOLD.get()) && inv.getItem(0).getOrCreateTag().contains(KeyMoldItem.TAG_COPIED_KEY);
+    public boolean matches(@Nonnull SingleRecipeInput inv, @Nonnull Level worldIn) {
+        ItemStack item = inv.getItem(0);
+        return item.is(ModItems.KEY_MOLD.get()) && ItemTagUtils.getOrCreateTag(item).contains(KeyMoldItem.TAG_COPIED_KEY);
     }
 
     @Override
-    public ItemStack assemble(@Nonnull Container inv, @Nonnull RegistryAccess access) {
+    public ItemStack assemble(@Nonnull SingleRecipeInput inv, @Nonnull HolderLookup.Provider access) {
         return BakedKeyMoldItem.createFromRawMold(inv.getItem(0));
     }
-
-
 
     @Override
     public RecipeSerializer<?> getSerializer() {

@@ -39,7 +39,7 @@ public class WeightedAnchorModel<T extends WeightedAnchorEntity> extends EntityM
 	}
 
 	@Override
-	public void renderToBuffer(@Nonnull PoseStack poseStack, @Nonnull VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-		ball.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+	public void renderToBuffer(@Nonnull PoseStack poseStack, @Nonnull VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
+		ball.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
 	}
 }

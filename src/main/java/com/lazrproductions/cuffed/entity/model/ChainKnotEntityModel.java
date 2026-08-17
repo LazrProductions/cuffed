@@ -49,10 +49,10 @@ public class ChainKnotEntityModel<T extends Entity> extends EntityModel<T> {
 	public void setOnFence(boolean v) { onFence = v; }
 
 	@Override
-	public void renderToBuffer(@Nonnull PoseStack poseStack, @Nonnull VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+	public void renderToBuffer(@Nonnull PoseStack poseStack, @Nonnull VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
 		if(onFence)
-			fence.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+			fence.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
 		else
-			hook.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+			hook.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
 	}
 }

@@ -93,7 +93,7 @@ public class KeyItem extends Item {
     }
 
     public static boolean tryToSetBoundId(Player player, ItemStack stack, UUID id, String lockName) {
-        if (!stack.getOrCreateTag().contains(TAG_ID)) {
+        if (!isBoundToALock(stack)) {
             setBoundId(stack, id);
             if (!player.level().getGameRules().getBoolean(GameRules.RULE_REDUCEDDEBUGINFO))
                 player.displayClientMessage(Component.translatable("item.cuffed.key.info.bound").append(Component.literal(""+id)), false);
@@ -106,32 +106,34 @@ public class KeyItem extends Item {
     }
 
     public static void setBoundId(ItemStack stack, UUID id) {
-        stack.getOrCreateTag().putUUID(TAG_ID, id);
+        com.lazrproductions.cuffed.utils.ItemTagUtils.updateTag(stack, tag -> tag.putUUID(TAG_ID, id));
     }
 
     public static void removeBoundLock(ItemStack stack) {
-        if (stack.getOrCreateTag().contains(TAG_ID))
-            stack.removeTagKey(TAG_ID);
+        com.lazrproductions.cuffed.utils.ItemTagUtils.updateTag(stack, tag -> {
+            if (tag.contains(TAG_ID))
+                tag.remove(TAG_ID);
+        });
     }
 
     @Nullable
     public static UUID getBoundLock(ItemStack stack) {
-        CompoundTag tag = stack.getOrCreateTag();
-        if (!tag.contains(TAG_ID))
+        CompoundTag tag = com.lazrproductions.cuffed.utils.ItemTagUtils.getTag(stack);
+        if (tag == null || !tag.contains(TAG_ID))
             return null;
         return tag.getUUID(TAG_ID);
     }
 
     public static boolean isBoundToLock(@Nonnull ItemStack stack, @Nonnull UUID id) {
-        CompoundTag tag = stack.getOrCreateTag();
-        if (!tag.contains(TAG_ID))
+        CompoundTag tag = com.lazrproductions.cuffed.utils.ItemTagUtils.getTag(stack);
+        if (tag == null || !tag.contains(TAG_ID))
             return false;
         return tag.getUUID(TAG_ID).equals(id);
     }
 
     public static boolean isBoundToALock(@Nonnull ItemStack stack) {
-        CompoundTag tag = stack.getOrCreateTag();
-        return tag.contains(TAG_ID);
+        CompoundTag tag = com.lazrproductions.cuffed.utils.ItemTagUtils.getTag(stack);
+        return tag != null && tag.contains(TAG_ID);
     }
 
     @Override
@@ -141,12 +143,12 @@ public class KeyItem extends Item {
     }
 
     @Override
-    public void appendHoverText(@Nonnull ItemStack stack, @Nullable Level pLevel,
+    public void appendHoverText(@Nonnull ItemStack stack, @Nonnull Item.TooltipContext pLevel,
             @Nonnull List<Component> pTooltipComponents,
             @Nonnull TooltipFlag pIsAdvanced) {
         super.appendHoverText(stack, pLevel, pTooltipComponents, pIsAdvanced);
 
-        if (stack.getOrCreateTag().contains(TAG_ID))
+        if (isBoundToALock(stack))
             pTooltipComponents.add(Component.translatable("item.cuffed.key.description.bound").withStyle(ChatFormatting.DARK_GRAY));
     }
 }

@@ -17,8 +17,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public class InformationBookletItem extends Item {
     public InformationBookletItem(Properties p) {
@@ -37,7 +37,7 @@ public class InformationBookletItem extends Item {
     }
 
     @Override
-    public void appendHoverText(@Nonnull ItemStack stack, @Nullable Level level, @Nonnull List<Component> components,
+    public void appendHoverText(@Nonnull ItemStack stack, @Nonnull Item.TooltipContext level, @Nonnull List<Component> components,
             @Nonnull TooltipFlag flag) {
         components.add(Component.translatable("item.cuffed.information_booklet.desc").withStyle(ChatFormatting.GRAY));
         super.appendHoverText(stack, level, components, flag);

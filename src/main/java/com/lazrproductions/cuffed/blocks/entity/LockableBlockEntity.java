@@ -37,16 +37,18 @@ public class LockableBlockEntity extends BlockEntity {
         hasBeenBound = false;
     }
 
-    protected void saveAdditional(@Nonnull CompoundTag tag) {
-        super.saveAdditional(tag);
+    @Override
+    protected void saveAdditional(@Nonnull CompoundTag tag, @Nonnull net.minecraft.core.HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
         tag.putUUID("LockId", lockId);
         tag.putBoolean("Locked", locked);
         tag.putString("LockName", lockName);
         tag.putBoolean("HasBeenBound", hasBeenBound);
     }
 
-    public void load(@Nonnull CompoundTag tag) {
-        super.load(tag);
+    @Override
+    protected void loadAdditional(@Nonnull CompoundTag tag, @Nonnull net.minecraft.core.HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
         lockId = tag.getUUID("LockId");
         locked = tag.getBoolean("Locked");
         lockName = tag.getString("LockName");

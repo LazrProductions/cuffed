@@ -24,7 +24,7 @@ import com.lazrproductions.cuffed.packet.RestraintSyncPacket;
 import com.lazrproductions.cuffed.packet.RestraintUtilityPacket;
 import com.lazrproductions.cuffed.restraints.base.AbstractRestraint;
 import com.lazrproductions.cuffed.restraints.base.RestraintType;
-import com.lazrproductions.lazrslib.common.network.LazrNetwork;
+
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -41,24 +41,23 @@ import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import java.util.function.Supplier;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 public class CuffedAPI {
     public static class Networking {
 
-        public static final LazrNetwork NETWORK = new LazrNetwork(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "main"), 1);
-
-
         public static void sendRestraintSyncPacket(@Nonnull ServerPlayer client) {
             IRestrainableCapability cap = Capabilities.getRestrainableCapability(client);
             RestraintSyncPacket packet = new RestraintSyncPacket(client.getId(), client.getUUID().toString(),
-                    cap.serializeNBT());
-            NETWORK.sendTo(packet, client); // sends the sync packet to the client we want.
+                    cap.serializeNBT(client.registryAccess()));
+            PacketDistributor.sendToPlayer(client, packet);
         }
         
 
@@ -66,10 +65,10 @@ public class CuffedAPI {
                 RestraintType type, @Nullable AbstractRestraint newRestraint,
                 @Nullable AbstractRestraint oldRestraint) {
             RestraintEquippedPacket packet = new RestraintEquippedPacket(client.getId(), client.getUUID().toString(),
-                    type, oldRestraint != null ? oldRestraint.serializeNBT() : null,
-                    newRestraint != null ? newRestraint.serializeNBT() : null,
+                    type, oldRestraint != null ? oldRestraint.serializeNBT(client.registryAccess()) : null,
+                    newRestraint != null ? newRestraint.serializeNBT(client.registryAccess()) : null,
                     captor != null ? captor.getUUID().toString() : "null");
-            NETWORK.sendTo(packet, client); // sends the sync packet to the client we want.
+            PacketDistributor.sendToPlayer(client, packet);
         }
 
 
@@ -77,52 +76,46 @@ public class CuffedAPI {
                 int utiltiyCode, int integerArg, boolean booleanArg, double doubleArg, String stringArg) {
             RestraintUtilityPacket packet = new RestraintUtilityPacket(restraintType.toInteger(),
                     utiltiyCode, integerArg, booleanArg, doubleArg, stringArg);
-            NETWORK.sendTo(packet, client);
+            PacketDistributor.sendToPlayer(client, packet);
         }
         public static void sendRestraintUtilityPacketToServer(RestraintType restraintType, int utiltiyCode,
                 int integerArg, boolean booleanArg, double doubleArg, String stringArg) {
             RestraintUtilityPacket packet = new RestraintUtilityPacket(restraintType.toInteger(),
                     utiltiyCode, integerArg, booleanArg, doubleArg, stringArg);
-            NETWORK.sendToServer(packet);
+            PacketDistributor.sendToServer(packet);
         }
 
         
         public static void sendLockpickFinishPickingLockPacketToServer(boolean wasFailed, int lockId, UUID playerUUID) {
             LockpickLockPacket packet = new LockpickLockPacket(wasFailed, lockId, playerUUID.toString());
-            Networking.NETWORK.sendToServer(packet);
+            PacketDistributor.sendToServer(packet);
         }
         public static void sendLockpickFinishPickingRestraintPacketToServer(boolean wasFailed, String restrainedUUID, int restraintType, UUID playerUUID) {
             LockpickRestraintPacket packet = new LockpickRestraintPacket(wasFailed, restrainedUUID, restraintType, playerUUID.toString());
-            Networking.NETWORK.sendToServer(packet);
+            PacketDistributor.sendToServer(packet);
         }
         public static void sendLockpickFinishPickingCellDoorPacketToServer(boolean wasFailed, BlockPos pos, UUID playerUUID) {
             LockpickBlockPacket packet = new LockpickBlockPacket(wasFailed, pos, playerUUID.toString());
-            Networking.NETWORK.sendToServer(packet);
+            PacketDistributor.sendToServer(packet);
         }
 
 
         public static void sendLockpickBeginPickingLockPacketToClient(@Nonnull ServerPlayer player, int lockId, int speedIncreasePerPhase, int progressPerPick) {
             LockpickLockPacket packet = new LockpickLockPacket(lockId, speedIncreasePerPhase, progressPerPick, player.getUUID().toString());
-            Networking.NETWORK.sendTo(packet, player);
+            PacketDistributor.sendToPlayer(player, packet);
         }
         public static void sendLockpickBeginPickingRestraintPacketToClient(@Nonnull ServerPlayer player, String restrainedUUID, int restraintType, int speedIncreasePerPhase, int progressPerPick) {
             LockpickRestraintPacket packet = new LockpickRestraintPacket(restrainedUUID, restraintType, speedIncreasePerPhase, progressPerPick, player.getUUID().toString());
-            Networking.NETWORK.sendTo(packet, player);
+            PacketDistributor.sendToPlayer(player, packet);
         }
         public static void sendLockpickBeginPickingCellDoorPacketToClient(@Nonnull ServerPlayer player, BlockPos pos, int speedIncreasePerPhase, int progressPerPick) {
             LockpickBlockPacket packet = new LockpickBlockPacket(pos, speedIncreasePerPhase, progressPerPick, player.getUUID().toString());
-            Networking.NETWORK.sendTo(packet, player);
+            PacketDistributor.sendToPlayer(player, packet);
         }
 
 
         public static void registerPackets() {
-            NETWORK.registerPacket(LockpickLockPacket.class, LockpickLockPacket::new);
-            NETWORK.registerPacket(LockpickRestraintPacket.class, LockpickRestraintPacket::new);
-            NETWORK.registerPacket(LockpickBlockPacket.class, LockpickBlockPacket::new);
-
-            NETWORK.registerPacket(RestraintSyncPacket.class, RestraintSyncPacket::new);
-            NETWORK.registerPacket(RestraintEquippedPacket.class, RestraintEquippedPacket::new);
-            NETWORK.registerPacket(RestraintUtilityPacket.class, RestraintUtilityPacket::new);
+            // Handled via RegisterPayloadHandlersEvent on mod event bus
         }
     }
 
@@ -136,9 +129,7 @@ public class CuffedAPI {
                         ItemStack itemstack = player.getItemInHand(InteractionHand.MAIN_HAND);
                         player.getCooldowns().addCooldown(ModItems.LOCKPICK.get(), 20);
                         if (wasFailed) {
-                            itemstack.hurtAndBreak(1, player, (p) -> {
-                                p.broadcastBreakEvent(InteractionHand.MAIN_HAND);
-                            });
+                            itemstack.hurtAndBreak(1, player, net.minecraft.world.entity.EquipmentSlot.MAINHAND);
 
                             player.awardStat(ModStatistics.LOCKPICKS_BROKEN.get());
                         } else {
@@ -147,9 +138,7 @@ public class CuffedAPI {
                                     1, 1,
                                     true);
 
-                            itemstack.hurtAndBreak(1, player, (p) -> {
-                                p.broadcastBreakEvent(InteractionHand.MAIN_HAND);
-                            });
+                            itemstack.hurtAndBreak(1, player, net.minecraft.world.entity.EquipmentSlot.MAINHAND);
                             if (level.getEntity(lockId) instanceof PadlockEntity e) {
                                 player.awardStat(ModStatistics.SUCCESSFUL_LOCKPICKS.get());
                                 e.RemoveLock();
@@ -168,9 +157,7 @@ public class CuffedAPI {
                         ItemStack itemstack = lockpicker.getItemInHand(InteractionHand.MAIN_HAND);
                         lockpicker.getCooldowns().addCooldown(ModItems.LOCKPICK.get(), 20);
                         if (wasFailed) {
-                            itemstack.hurtAndBreak(1, lockpicker, (p) -> {
-                                p.broadcastBreakEvent(InteractionHand.MAIN_HAND);
-                            });
+                            itemstack.hurtAndBreak(1, lockpicker, net.minecraft.world.entity.EquipmentSlot.MAINHAND);
 
                             lockpicker.awardStat(ModStatistics.LOCKPICKS_BROKEN.get());
                         } else {
@@ -179,9 +166,7 @@ public class CuffedAPI {
                                     1, 1,
                                     true);
 
-                            itemstack.hurtAndBreak(1, lockpicker, (p) -> {
-                                p.broadcastBreakEvent(InteractionHand.MAIN_HAND);
-                            });
+                            itemstack.hurtAndBreak(1, lockpicker, net.minecraft.world.entity.EquipmentSlot.MAINHAND);
 
                             lockpicker.awardStat(ModStatistics.SUCCESSFUL_LOCKPICKS.get());
                             RestrainableCapability cap = (RestrainableCapability)Capabilities.getRestrainableCapability(restrained);
@@ -200,9 +185,7 @@ public class CuffedAPI {
                         ItemStack itemstack = lockpicker.getItemInHand(InteractionHand.MAIN_HAND);
                         lockpicker.getCooldowns().addCooldown(ModItems.LOCKPICK.get(), 20);
                         if (wasFailed) {
-                            itemstack.hurtAndBreak(1, lockpicker, (p) -> {
-                                p.broadcastBreakEvent(InteractionHand.MAIN_HAND);
-                            });
+                            itemstack.hurtAndBreak(1, lockpicker, net.minecraft.world.entity.EquipmentSlot.MAINHAND);
 
                             lockpicker.awardStat(ModStatistics.LOCKPICKS_BROKEN.get());
                         } else {
@@ -213,9 +196,7 @@ public class CuffedAPI {
 
                             lockpicker.awardStat(ModStatistics.SUCCESSFUL_LOCKPICKS.get());
 
-                            itemstack.hurtAndBreak(1, lockpicker, (p) -> {
-                                p.broadcastBreakEvent(InteractionHand.MAIN_HAND);
-                            });
+                            itemstack.hurtAndBreak(1, lockpicker, net.minecraft.world.entity.EquipmentSlot.MAINHAND);
                             
                             level.destroyBlock(pos, true);
                         }
@@ -317,14 +298,14 @@ public class CuffedAPI {
     }
 
     public static class Capabilities {
-        public static final ResourceLocation RESTRAINABLE_CAPABILITY_NAME = ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID,
-                "restrainable");
-        public static final Capability<RestrainableCapability> RESTRAINABLE_CAPABILITY = CapabilityManager
-                .get(new CapabilityToken<RestrainableCapability>() {
-                });
+        public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, CuffedMod.MODID);
+        public static final Supplier<AttachmentType<RestrainableCapability>> RESTRAINABLE_ATTACHMENT = ATTACHMENT_TYPES.register(
+                "restrainable",
+                () -> AttachmentType.serializable(RestrainableCapability::new).copyOnDeath().build()
+        );
 
         public static IRestrainableCapability getRestrainableCapability(Player player) {
-            return player.getCapability(Capabilities.RESTRAINABLE_CAPABILITY).orElseGet(RestrainableCapability::new);
+            return player.getData(RESTRAINABLE_ATTACHMENT.get());
         }
     }
 

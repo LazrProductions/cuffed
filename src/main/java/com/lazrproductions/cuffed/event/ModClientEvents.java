@@ -22,34 +22,31 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.client.event.ClientChatEvent;
-import net.minecraftforge.client.event.ComputeFovModifierEvent;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.InputEvent.InteractionKeyMappingTriggered;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.client.event.RenderPlayerEvent;
-import net.minecraftforge.client.event.ScreenEvent.Opening;
-import net.minecraftforge.event.TickEvent.ClientTickEvent;
-import net.minecraftforge.event.TickEvent.Phase;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingFallEvent;
-import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.ClientChatEvent;
+import net.neoforged.neoforge.client.event.ComputeFovModifierEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.client.event.InputEvent.InteractionKeyMappingTriggered;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.event.RenderPlayerEvent;
+import net.neoforged.neoforge.client.event.ScreenEvent.Opening;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
+import net.neoforged.neoforge.event.entity.living.LivingEvent.LivingJumpEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.bus.api.SubscribeEvent;
 
 public class ModClientEvents {
 
     @SubscribeEvent
-    public void clientTick(ClientTickEvent event) {
-        if (event.phase == Phase.END) {
-            Minecraft inst = Minecraft.getInstance();
-            if (inst.screen instanceof GenericScreen sc)
-                sc.tick();
+    public void clientTick(ClientTickEvent.Post event) {
+        Minecraft inst = Minecraft.getInstance();
+        if (inst.screen instanceof GenericScreen sc)
+            sc.tick();
 
-            if (inst.player != null) {
-                IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(inst.player);
-                cap.tickClient(inst.player);
-            }
+        if (inst.player != null) {
+            IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(inst.player);
+            cap.tickClient(inst.player);
         }
     }
 
@@ -107,12 +104,12 @@ public class ModClientEvents {
     }
 
     @SubscribeEvent
-    public void renderGUI(RenderGuiOverlayEvent.Post event) {
+    public void renderGUI(RenderGuiLayerEvent.Post event) {
         Minecraft inst = Minecraft.getInstance();
         LocalPlayer p = inst.player;
         if (p != null) {
             IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(p);
-            cap.renderOverlay(p, event.getGuiGraphics(), event.getPartialTick(), event.getWindow());
+            cap.renderOverlay(p, event.getGuiGraphics(), event.getPartialTick().getGameTimeDeltaPartialTick(false), inst.getWindow());
         }
     }
 
@@ -223,7 +220,7 @@ public class ModClientEvents {
     }
 
     @SubscribeEvent
-    public void onRenderPlayer(RenderPlayerEvent event) {
+    public void onRenderPlayer(RenderPlayerEvent.Pre event) {
         // Player player = event.getEntity();
         // CuffedCapability cap = CuffedAPI.Capabilities.getCuffedCapability(player);
 

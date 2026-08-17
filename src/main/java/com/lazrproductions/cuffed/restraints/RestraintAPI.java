@@ -15,52 +15,15 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.IForgeRegistry;
-
 public class RestraintAPI {
     /**
      * Where all restraint registries found by Cuffed are kept and accessed.
      */
     public static final class Registries {
-        static final ArrayList<IForgeRegistry<AbstractRestraint>> RESTRAINT_REGISTRIES = new ArrayList<IForgeRegistry<AbstractRestraint>>();
 
-        /**
-         * !! NOT TO BE USED BY MOD AUTHORS !!
-         * <p>
-         * Add a registry to the list of all restraint registries.
-         * 
-         * <p>
-         * Used by Cuffed to keep track of all restraints added by Cuffed and other
-         * mods.
-         */
-        @SuppressWarnings("unchecked")
-        public static void register(IForgeRegistry<?> registry) {
-            IForgeRegistry<AbstractRestraint> r = (IForgeRegistry<AbstractRestraint>) registry;
-
-            for (ResourceLocation key : r.getKeys()) {
-                if (containsKey(key)) {
-                    RestraintRegistryContainsKeyException ex = new RestraintRegistryContainsKeyException(key);
-                    CuffedMod.LOGGER.error("The Restraint Registry already contains the key " + key, ex);
-                    throw ex;
-                }
-
-                AbstractRestraint restraint = r.getValue(key);
-                if(containsValue(restraint)) {
-                    RestraintRegistryContainsRestraintException ex = new RestraintRegistryContainsRestraintException(key);
-                    CuffedMod.LOGGER.error("The Restraint Registry already contains the restraint " + key, ex);
-                    throw ex;
-                }
-
-                AbstractRestraint otherWithSameItem = get(restraint.getItem(), restraint.getType());
-                if(otherWithSameItem != null && otherWithSameItem.getType() == restraint.getType()) {
-                    ConflictingRestraintItemAndTypeException ex = new ConflictingRestraintItemAndTypeException(key, otherWithSameItem.getType());
-                    CuffedMod.LOGGER.error("The Restraint Registry already contains a restraint for " + key + " with the same restraint type of " + otherWithSameItem.getType(), ex);
-                    throw ex;
-                }
-            }
-
-
-            RESTRAINT_REGISTRIES.add(r);
+        @Deprecated
+        public static void register(Object registry) {
+            // No-op in 1.21.1: other mods should register their restraints to ModRestraints.RESTRAINTS DeferredRegister.
         }
 
         /**
@@ -69,10 +32,7 @@ public class RestraintAPI {
          * @param key The key to check for
          */
         public static boolean containsKey(ResourceLocation key) {
-            for (IForgeRegistry<?> i : RESTRAINT_REGISTRIES)
-                if (i.containsKey(key))
-                    return true;
-            return false;
+            return com.lazrproductions.cuffed.init.ModRestraints.REGISTRY != null && com.lazrproductions.cuffed.init.ModRestraints.REGISTRY.containsKey(key);
         }
 
         /**
@@ -81,10 +41,7 @@ public class RestraintAPI {
          * @param restraint The restraint to check for
          */
         public static boolean containsValue(AbstractRestraint restraint) {
-            for (IForgeRegistry<AbstractRestraint> i : RESTRAINT_REGISTRIES)
-                if (i.containsValue(restraint))
-                    return true;
-            return false;
+            return com.lazrproductions.cuffed.init.ModRestraints.REGISTRY != null && com.lazrproductions.cuffed.init.ModRestraints.REGISTRY.getKey(restraint) != null;
         }
 
         /**
@@ -93,10 +50,7 @@ public class RestraintAPI {
          * @param key The key of the restraint to get
          */
         public static AbstractRestraint get(ResourceLocation key) {
-            for (IForgeRegistry<AbstractRestraint> i : RESTRAINT_REGISTRIES)
-                if (i.containsKey(key))
-                    return i.getValue(key);
-            return null;
+            return com.lazrproductions.cuffed.init.ModRestraints.REGISTRY != null ? com.lazrproductions.cuffed.init.ModRestraints.REGISTRY.get(key) : null;
         }
 
         /**
@@ -120,9 +74,11 @@ public class RestraintAPI {
          */
         public static List<AbstractRestraint> getAllRestraints() {
             ArrayList<AbstractRestraint> res = new ArrayList<>();
-            for (IForgeRegistry<AbstractRestraint> reg : RESTRAINT_REGISTRIES)
-                for (AbstractRestraint ent : reg.getValues())
+            if (com.lazrproductions.cuffed.init.ModRestraints.REGISTRY != null) {
+                for (AbstractRestraint ent : com.lazrproductions.cuffed.init.ModRestraints.REGISTRY) {
                     res.add(ent);
+                }
+            }
             return res;
         }
 
@@ -131,21 +87,25 @@ public class RestraintAPI {
          */
         public static List<Item> getAllRestraintItems() {
             ArrayList<Item> res = new ArrayList<>();
-            for (IForgeRegistry<AbstractRestraint> reg : RESTRAINT_REGISTRIES)
-                for (AbstractRestraint ent : reg.getValues())
+            if (com.lazrproductions.cuffed.init.ModRestraints.REGISTRY != null) {
+                for (AbstractRestraint ent : com.lazrproductions.cuffed.init.ModRestraints.REGISTRY) {
                     res.add(ent.getItem());
+                }
+            }
             return res;
         }
 
         /**
-         * Get all of the restraints found by Cuffed and retrun them and their restraint
+         * Get all of the restraints found by Cuffed and return them and their restraint
          * item as pairs.
          */
         public static List<Pair<Item, AbstractRestraint>> getAllRestraintItemsAndTheirRestraints() {
             ArrayList<Pair<Item, AbstractRestraint>> pairs = new ArrayList<>();
-            for (IForgeRegistry<AbstractRestraint> reg : RESTRAINT_REGISTRIES)
-                for (AbstractRestraint ent : reg.getValues())
-                    pairs.add(new Pair<Item, AbstractRestraint>(ent.getItem(), ent));
+            if (com.lazrproductions.cuffed.init.ModRestraints.REGISTRY != null) {
+                for (AbstractRestraint ent : com.lazrproductions.cuffed.init.ModRestraints.REGISTRY) {
+                    pairs.add(new Pair<>(ent.getItem(), ent));
+                }
+            }
             return pairs;
         }
 
@@ -153,17 +113,14 @@ public class RestraintAPI {
          * How many registries the Cuffed has found to be Restraint registries.
          */
         public static int size() {
-            return RESTRAINT_REGISTRIES.size();
+            return com.lazrproductions.cuffed.init.ModRestraints.REGISTRY != null ? 1 : 0;
         }
         
         /**
          * Get the total amount of restraints registered in all registries.
          */
         public static int total() {
-            int total = 0;
-            for (IForgeRegistry<AbstractRestraint> i : RESTRAINT_REGISTRIES)
-                total += i.getValues().size();
-            return total;
+            return com.lazrproductions.cuffed.init.ModRestraints.REGISTRY != null ? com.lazrproductions.cuffed.init.ModRestraints.REGISTRY.size() : 0;
         }
 
         public static class RestraintRegistryContainsKeyException extends RuntimeException {
@@ -204,11 +161,11 @@ public class RestraintAPI {
      * @param tag The serialized data of the restraint to get.
      * @return A new restraint serialized from the given data.
      */
-    public static AbstractRestraint getRestraintFromTag(CompoundTag tag) {
+    public static AbstractRestraint getRestraintFromTag(net.minecraft.core.HolderLookup.Provider provider, CompoundTag tag) {
         if (tag.contains("Id")) {
             AbstractRestraint r = getNewRestraintByKey(ResourceLocation.bySeparator(tag.getString("Id"),':'));
             if (r != null) {
-                r.deserializeNBT(tag);
+                r.deserializeNBT(provider, tag);
                 return r;
             }
         }

@@ -87,23 +87,23 @@ public class PlayerMixin extends LivingEntity implements IRestrainableEntity, ID
     private static final String DETAINED_POSITION_Z_TAG = "Z";
     
     @Inject(at = @At("TAIL"), method = "defineSynchedData")
-    protected void defineSynchedData(CallbackInfo callback) {
-        entityData.define(DATA_HAS_NICKNAME, false);
-        entityData.define(DATA_NICKNAME, Component.empty());
+    protected void defineSynchedData(SynchedEntityData.Builder builder, CallbackInfo callback) {
+        builder.define(DATA_HAS_NICKNAME, false);
+        builder.define(DATA_NICKNAME, Component.empty());
 
-        entityData.define(DATA_RESTRAINT_CODE, 0); // used for synching restraint proprties to clients.
-        entityData.define(DATA_ARM_RESTRAINT_ID, ""); // used for displaying arm restraint models
-        entityData.define(DATA_LEG_RESTRAINT_ID, ""); // used for displaying leg restraint models
-        entityData.define(DATA_HEAD_RESTRAINT_ID, ""); // used for displaying head restraint models
+        builder.define(DATA_RESTRAINT_CODE, 0); // used for synching restraint proprties to clients.
+        builder.define(DATA_ARM_RESTRAINT_ID, ""); // used for displaying arm restraint models
+        builder.define(DATA_LEG_RESTRAINT_ID, ""); // used for displaying leg restraint models
+        builder.define(DATA_HEAD_RESTRAINT_ID, ""); // used for displaying head restraint models
 
-        entityData.define(DATA_ARM_ENCHANTED, false);
-        entityData.define(DATA_LEG_ENCHANTED, false);
-        entityData.define(DATA_HEAD_ENCHANTED, false);
+        builder.define(DATA_ARM_ENCHANTED, false);
+        builder.define(DATA_LEG_ENCHANTED, false);
+        builder.define(DATA_HEAD_ENCHANTED, false);
 
-        entityData.define(DATA_DETAINED, -1);
-        entityData.define(DATA_DETAINED_ROTATION, 0f);
-        entityData.define(DATA_DETAINED_TO_BLOCK, BlockPos.ZERO);
-        entityData.define(DATA_DETAINED_POSITION, new Vector3f());
+        builder.define(DATA_DETAINED, -1);
+        builder.define(DATA_DETAINED_ROTATION, 0f);
+        builder.define(DATA_DETAINED_TO_BLOCK, BlockPos.ZERO);
+        builder.define(DATA_DETAINED_POSITION, new Vector3f());
     }
 
     @Inject(at = @At("HEAD"), method = "getName", cancellable = true)
@@ -132,6 +132,8 @@ public class PlayerMixin extends LivingEntity implements IRestrainableEntity, ID
             RestrainableCapability cap = (RestrainableCapability)CuffedAPI.Capabilities.getRestrainableCapability((Player)(Object)this);
             
             if(cap!=null) {
+                cap.tickServer((ServerPlayer)(Object)this);
+
                 setArmRestraintId(cap.getArmRestraintId());
                 setLegRestraintId(cap.getLegRestraintId());
                 setHeadRestraintId(cap.getHeadRestraintId());
@@ -141,10 +143,11 @@ public class PlayerMixin extends LivingEntity implements IRestrainableEntity, ID
                 setHeadEnchanted(cap.getHeadRestraint() instanceof IEnchantableRestraint e && e.getEnchantments() != null && e.getEnchantments().size() > 0);
             }
 
-            if(!this.hasEffect(ModEffects.RESTRAINED_EFFECT.get()))
+            net.minecraft.world.effect.MobEffectInstance eff = this.getEffect(ModEffects.RESTRAINED_EFFECT);
+            if(eff == null)
                 setRestraintCode(0);
-            else if(this.getEffect(ModEffects.RESTRAINED_EFFECT.get()) instanceof RestrainedEffectInstance i)
-                setRestraintCode(i.getAmplifier());
+            else
+                setRestraintCode(eff.getAmplifier());
         
             if(getDetained() > -1) {
                 this.setYBodyRot(getDetainedRotation());
@@ -261,7 +264,7 @@ public class PlayerMixin extends LivingEntity implements IRestrainableEntity, ID
         }
 
         if(CuffedMod.SERVER_CONFIG.NICKNAME_PERSISTS_ON_LOGOUT.get() && tag.contains(NICKNAME_TAG))
-            setNickname(Component.Serializer.fromJson(tag.getString(NICKNAME_TAG)));
+            setNickname(Component.Serializer.fromJson(tag.getString(NICKNAME_TAG), this.registryAccess()));
         else
             setNickname(null);
 
@@ -288,14 +291,14 @@ public class PlayerMixin extends LivingEntity implements IRestrainableEntity, ID
         }
     }
     public String serializeNickname() {
-        return Component.Serializer.toJson(getNickname());
+        return Component.Serializer.toJson(getNickname(), this.registryAccess());
     }
     public void deserializeNickname(CompoundTag tag) {
         if(tag.contains(NICKNAME_TAG))
-            setNickname(Component.Serializer.fromJson(tag.getString(NICKNAME_TAG)));
+            setNickname(Component.Serializer.fromJson(tag.getString(NICKNAME_TAG), this.registryAccess()));
     }
     public void deserializeNickname(String nickTag) {
-        setNickname(Component.Serializer.fromJson(nickTag));
+        setNickname(Component.Serializer.fromJson(nickTag, this.registryAccess()));
     }
 
     //#endregion
@@ -304,6 +307,12 @@ public class PlayerMixin extends LivingEntity implements IRestrainableEntity, ID
 
     @Override
     public boolean isRestrained() {
+        if (!this.level().isClientSide()) {
+            RestrainableCapability cap = (RestrainableCapability)CuffedAPI.Capabilities.getRestrainableCapability((Player)(Object)this);
+            if (cap != null) {
+                return cap.isRestrained();
+            }
+        }
         return entityData.get(DATA_RESTRAINT_CODE) > 0;
     }
     @Override

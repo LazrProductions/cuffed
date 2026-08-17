@@ -156,10 +156,10 @@ public class TrayBlockEntity extends BlockEntity {
     }
 
     public void eat(Level level, Player player, ItemStack stack, float nutritionRatio) {
-        if (stack.isEdible()) {
-            FoodProperties foodproperties = stack.getFoodProperties(player);
-            player.getFoodData().eat(Mth.floor((float) foodproperties.getNutrition() * nutritionRatio),
-                    (float) foodproperties.getSaturationModifier());
+        net.minecraft.world.food.FoodProperties foodproperties = stack.get(net.minecraft.core.component.DataComponents.FOOD);
+        if (foodproperties != null) {
+            player.getFoodData().eat(Mth.floor((float) foodproperties.nutrition() * nutritionRatio),
+                    foodproperties.saturation());
 
             player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
             level.playSound((Player) null, getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(),
@@ -168,9 +168,9 @@ public class TrayBlockEntity extends BlockEntity {
                 CriteriaTriggers.CONSUME_ITEM.trigger((ServerPlayer) player, stack);
             }
 
-            for(Pair<MobEffectInstance, Float> pair : stack.getFoodProperties(player).getEffects()) {
-                if (!level.isClientSide && pair.getFirst() != null && level.random.nextFloat() < pair.getSecond()) {
-                    player.addEffect(new MobEffectInstance(pair.getFirst()));
+            for(net.minecraft.world.food.FoodProperties.PossibleEffect possibleEffect : foodproperties.effects()) {
+                if (!level.isClientSide && possibleEffect.effect() != null && level.random.nextFloat() < possibleEffect.probability()) {
+                    player.addEffect(new net.minecraft.world.effect.MobEffectInstance(possibleEffect.effect()));
                 }
             }
             
@@ -258,15 +258,15 @@ public class TrayBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void saveAdditional(@Nonnull CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(@Nonnull CompoundTag tag, @Nonnull net.minecraft.core.HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
 
         tag.put(TrayItem.TAG_ITEMS, TrayItem.saveItemToTagList(items));
     }
 
     @Override
-    public void load(@Nonnull CompoundTag tag) {
-        super.load(tag);
+    protected void loadAdditional(@Nonnull CompoundTag tag, @Nonnull net.minecraft.core.HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
         if(tag.contains(TrayItem.TAG_ITEMS))
             items = TrayItem.getContents(tag.getList(TrayItem.TAG_ITEMS, 10));
@@ -303,13 +303,13 @@ public class TrayBlockEntity extends BlockEntity {
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
+    public CompoundTag getUpdateTag(@Nonnull net.minecraft.core.HolderLookup.Provider provider) {
+        return saveWithoutMetadata(provider);
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        super.onDataPacket(net, pkt);
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, @Nonnull net.minecraft.core.HolderLookup.Provider provider) {
+        super.onDataPacket(net, pkt, provider);
     }
 
 
@@ -317,7 +317,7 @@ public class TrayBlockEntity extends BlockEntity {
 
     protected boolean hasFood() {
         for (ItemStack itemStack : items) {
-            if (itemStack.getFoodProperties(null) != null)
+            if (itemStack.get(net.minecraft.core.component.DataComponents.FOOD) != null)
                 return true;
         }
         return false;
@@ -346,7 +346,7 @@ public class TrayBlockEntity extends BlockEntity {
 
     protected ItemStack getFood() {
         for (ItemStack itemStack : items) {
-            if (itemStack.getFoodProperties(null) != null)
+            if (itemStack.get(net.minecraft.core.component.DataComponents.FOOD) != null)
                 return itemStack;
         }
         return ItemStack.EMPTY;

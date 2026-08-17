@@ -269,35 +269,35 @@ public class ChainUtils {
 		float height = startHeight * 2;
 		float eHeight = endHeight * 2;
 
-		vertexConsumer.vertex(pose,
+		vertexConsumer.addVertex(pose,
 			vertX - xWidth1,
 			vertY + height,
-			vertZ + zWidth1).color(r, g, b, 0).uv2(lightmap).endVertex();
+			vertZ + zWidth1).setColor(r, g, b, 0.0f).setLight(lightmap);
 		if ((index % 2) == (alternate ? 1 : 0)) {
-			vertexConsumer.vertex(pose,
+			vertexConsumer.addVertex(pose,
 				vertX - xWidth1,
 				vertY + height,
-				vertZ + zWidth1).color(r, g, b, 0).uv2(lightmap).endVertex();
+				vertZ + zWidth1).setColor(r, g, b, 0.0f).setLight(lightmap);
 
-			vertexConsumer.vertex(pose,
+			vertexConsumer.addVertex(pose,
 					vertX + xWidth1,
 					vertY + eHeight - height,
-					vertZ - zWidth1).color(r, g, b, 0).uv2(lightmap).endVertex();
+					vertZ - zWidth1).setColor(r, g, b, 0.0f).setLight(lightmap);
 
-			vertexConsumer.vertex(pose,
+			vertexConsumer.addVertex(pose,
 				vertX1 - xWidth1,
 				vertY1 + height,
-				vertZ1 + zWidth1).color(r, g, b, 0).uv2(lightmap).endVertex();
-			vertexConsumer.vertex(pose,
+				vertZ1 + zWidth1).setColor(r, g, b, 0.0f).setLight(lightmap);
+			vertexConsumer.addVertex(pose,
 				vertX1 + xWidth1,
 				vertY1 + eHeight - height,
-				vertZ1 - zWidth1).color(r, g, b, 0).uv2(lightmap).endVertex();
+				vertZ1 - zWidth1).setColor(r, g, b, 0.0f).setLight(lightmap);
 		} else  {
 			//Skip a link (make this "face" invisible )
-			vertexConsumer.vertex(pose,
+			vertexConsumer.addVertex(pose,
 				vertX - xWidth1,
 				vertY + height,
-				vertZ + zWidth1).color(r, g, b, 0).uv2(lightmap).endVertex();
+				vertZ + zWidth1).setColor(r, g, b, 0.0f).setLight(lightmap);
 			
 		}
 	}

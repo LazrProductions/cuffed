@@ -13,7 +13,7 @@ import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.server.command.EnumArgument;
+import net.neoforged.neoforge.server.command.EnumArgument;
 
 public class CuffedDebugCommand {
         public CuffedDebugCommand(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext ctx) {
@@ -121,7 +121,7 @@ public class CuffedDebugCommand {
                                 if (stack != null && !stack.isEmpty()) {
                                         var r = RestraintAPI.getRestraintFromStack(stack, type, sender, sender);
                                         if(r != null) {
-                                                sender.sendSystemMessage(Component.literal("Found the following restraint for the given item and type:\n"+r.serializeNBT()));
+                                                sender.sendSystemMessage(Component.literal("Found the following restraint for the given item and type:\n"+r.serializeNBT(sender.level().registryAccess())));
                                         } else {
                                                 sender.sendSystemMessage(Component.literal("Could not find a restraint for that item and type!"));
                                         }

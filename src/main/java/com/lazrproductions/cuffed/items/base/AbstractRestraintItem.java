@@ -21,7 +21,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.BlockSource;
+import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -38,31 +38,14 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.phys.AABB;
 
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import net.minecraft.client.gui.screens.Screen;
 
 public class AbstractRestraintItem extends Item {
     public AbstractRestraintItem(Properties p) {
         super(p);
-    }
-
-    @Override
-    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-        if (enchantment == Enchantments.UNBREAKING)
-            return true;
-        if (enchantment == Enchantments.BINDING_CURSE)
-            return true;
-        if (enchantment == ModEnchantments.IMBUE.get())
-            return true;
-        if (enchantment == ModEnchantments.FAMINE.get())
-            return true;
-        if (enchantment == ModEnchantments.SHROUD.get())
-            return true;
-        if (enchantment == ModEnchantments.EXHAUST.get())
-            return true;
-        return super.canApplyAtEnchantingTable(stack, enchantment);
     }
 
     @Override
@@ -77,7 +60,7 @@ public class AbstractRestraintItem extends Item {
 
 
     @Override
-    public void appendHoverText(@Nonnull ItemStack stack, @Nullable Level level, @Nonnull List<Component> components,
+    public void appendHoverText(@Nonnull ItemStack stack, @Nonnull Item.TooltipContext level, @Nonnull List<Component> components,
             @Nonnull TooltipFlag tooltipFlag) {
 
 
@@ -89,7 +72,7 @@ public class AbstractRestraintItem extends Item {
     
     
     public static boolean dispenseRestraint(BlockSource source, ItemStack stack) {
-        BlockPos blockpos = source.getPos().relative(source.getBlockState().getValue(DispenserBlock.FACING));
+        BlockPos blockpos = source.pos().relative(source.state().getValue(DispenserBlock.FACING));
         
         
         Predicate<Entity> restraintSelector = new PlayerCanEquipArmRestraintEntitySelector(stack);
@@ -114,7 +97,7 @@ public class AbstractRestraintItem extends Item {
         }
 
 
-        List<Player> list = source.getLevel().getEntitiesOfClass(Player.class, new AABB(blockpos),
+        List<Player> list = source.level().getEntitiesOfClass(Player.class, new AABB(blockpos),
                 EntitySelector.NO_SPECTATORS.and(restraintSelector));
         if (list.isEmpty()) {
             return false;

@@ -50,7 +50,7 @@ public class FriskingScreen extends AbstractContainerScreen<FriskingMenu> {
    }
 
    public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-      this.renderBackground(graphics);
+      this.renderBackground(graphics, mouseX, mouseY, partialTick);
       super.render(graphics, mouseX, mouseY, partialTick);
 
       if(mouseHeld) {
@@ -143,7 +143,7 @@ public class FriskingScreen extends AbstractContainerScreen<FriskingMenu> {
       graphics.pose().pushPose();
       graphics.pose().translate((double) x, (double) y, 50.0D);
       graphics.pose()
-            .mulPoseMatrix((new Matrix4f()).scaling((float) z, (float) z, (float) (-z)));
+            .mulPose((new Matrix4f()).scaling((float) z, (float) z, (float) (-z)));
       graphics.pose().mulPose(rotationA);
       Lighting.setupForEntityInInventory();
       EntityRenderDispatcher entityrenderdispatcher = Minecraft.getInstance().getEntityRenderDispatcher();

@@ -1,72 +1,61 @@
 package com.lazrproductions.cuffed.recipes;
 
-import java.util.ArrayList;
-
 import javax.annotation.Nonnull;
 
 import com.lazrproductions.cuffed.init.ModItems;
 import com.lazrproductions.cuffed.init.ModRecipes;
 import com.lazrproductions.cuffed.items.PosterBlockItem;
 
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 
 public class PosterChangeRecipe extends CustomRecipe {
-    public PosterChangeRecipe(ResourceLocation idIn, CraftingBookCategory category) {
-        super(idIn, category);
+    public PosterChangeRecipe(CraftingBookCategory category) {
+        super(category);
     }
 
     @Override
-    public boolean matches(@Nonnull CraftingContainer inv, @Nonnull Level level) {
-        return isGridValid(inv);
+    public boolean matches(@Nonnull CraftingInput input, @Nonnull Level level) {
+        return isGridValid(input);
     }
 
-    @SuppressWarnings("null")
     @Override
-    public ItemStack assemble(@Nonnull CraftingContainer inv, @Nonnull RegistryAccess access) {
-
-        if (matches(inv, null)) {
-            ItemStack posterStack = getPosterFromGrid(inv);
+    public ItemStack assemble(@Nonnull CraftingInput input, @Nonnull HolderLookup.Provider provider) {
+        if (matches(input, null)) {
+            ItemStack posterStack = getPosterFromGrid(input);
             return PosterBlockItem.newItemFromType(PosterBlockItem.getPosterType(posterStack).next());
         }
 
         return ItemStack.EMPTY;
     }
 
-    public ArrayList<ItemStack> getAllValidItemsInGrid(@Nonnull CraftingContainer inv) {
-        ArrayList<ItemStack> validInGrid = new ArrayList<ItemStack>(0);
-
-        for (int i = 0; i < inv.getContainerSize(); i++) {
-            ItemStack checkingStack = inv.getItem(i);
-            if (!checkingStack.isEmpty())
-                if (checkingStack.is(ModItems.POSTER_ITEM.get()))
-                    validInGrid.add(checkingStack);
+    public ItemStack getPosterFromGrid(@Nonnull CraftingInput input) {
+        for (int i = 0; i < input.size(); i++) {
+            ItemStack checkingStack = input.getItem(i);
+            if (!checkingStack.isEmpty() && checkingStack.is(ModItems.POSTER_ITEM.get())) {
+                return checkingStack;
+            }
         }
-
-        return validInGrid;
+        return ItemStack.EMPTY;
     }
 
-    public ItemStack getPosterFromGrid(@Nonnull CraftingContainer inv) {
-        ArrayList<ItemStack> moldsInGrid = getAllValidItemsInGrid(inv);
-        return moldsInGrid.get(0);
-    }
-
-    public boolean isGridValid(@Nonnull CraftingContainer inv) {
+    public boolean isGridValid(@Nonnull CraftingInput input) {
         int numOfPosters = 0;
 
-        for (int i = 0; i < inv.getContainerSize(); i++) {
-            ItemStack checkingStack = inv.getItem(i);
-            if (!checkingStack.isEmpty())
-                if (checkingStack.is(ModItems.POSTER_ITEM.get()))
+        for (int i = 0; i < input.size(); i++) {
+            ItemStack checkingStack = input.getItem(i);
+            if (!checkingStack.isEmpty()) {
+                if (checkingStack.is(ModItems.POSTER_ITEM.get())) {
                     numOfPosters++;
-                else
+                } else {
                     return false;
+                }
+            }
         }
 
         // there must be only 1 poster

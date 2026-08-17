@@ -84,8 +84,8 @@ public abstract class LivingEntityMixin extends Entity implements IAnchorableEnt
     }
 
     @Inject(method = "defineSynchedData", at = @At("TAIL"))
-    private void onDefineSynchedData(CallbackInfo info) {
-        entityData.define(DATA_ANCHOR_ID, -1);
+    private void onDefineSynchedData(SynchedEntityData.Builder builder, CallbackInfo info) {
+        builder.define(DATA_ANCHOR_ID, -1);
     }
 
     boolean wasAnchored;

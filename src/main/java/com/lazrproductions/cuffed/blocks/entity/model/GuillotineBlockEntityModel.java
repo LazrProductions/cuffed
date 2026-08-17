@@ -68,7 +68,7 @@ public class GuillotineBlockEntityModel<T extends GuillotineBlockEntity> {
 	}
 
 	public void renderToBuffer(@Nonnull PoseStack poseStack, @Nonnull VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-		guillotine.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-
+		int color = ((int)(alpha * 255) << 24) | ((int)(red * 255) << 16) | ((int)(green * 255) << 8) | (int)(blue * 255);
+		guillotine.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
 	}
 }

@@ -48,9 +48,9 @@ public class PadlockEntityModel<T extends Entity> extends EntityModel<T> {
 
     @Override
     public void renderToBuffer(@Nonnull PoseStack poseStack, @Nonnull VertexConsumer vertexConsumer, int packedLight, int packedOverlay,
-            float red, float green, float blue, float alpha) {
+            int color) {
 
-            north.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+            north.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
 
     }
 }

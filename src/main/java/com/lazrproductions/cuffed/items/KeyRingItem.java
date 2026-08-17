@@ -97,33 +97,36 @@ public class KeyRingItem extends Item {
     }
 
     public static void addBoundId(ItemStack stack, UUID id) {
-        CompoundTag compoundtag = stack.getOrCreateTag();
-        ListTag listtag;
-        if (compoundtag.contains(TAG_BOUND_LOCKS, 9))
-            listtag = compoundtag.getList(TAG_BOUND_LOCKS, 10);
-        else
-            listtag = new ListTag();
+        com.lazrproductions.cuffed.utils.ItemTagUtils.updateTag(stack, compoundtag -> {
+            ListTag listtag;
+            if (compoundtag.contains(TAG_BOUND_LOCKS, 9))
+                listtag = compoundtag.getList(TAG_BOUND_LOCKS, 10);
+            else
+                listtag = new ListTag();
 
-        CompoundTag compoundtag1 = new CompoundTag();
-        compoundtag1.putUUID(KeyItem.TAG_ID, id);
-        listtag.add(compoundtag1);
-        compoundtag.put(TAG_BOUND_LOCKS, listtag);
+            CompoundTag compoundtag1 = new CompoundTag();
+            compoundtag1.putUUID(KeyItem.TAG_ID, id);
+            listtag.add(compoundtag1);
+            compoundtag.put(TAG_BOUND_LOCKS, listtag);
+        });
     }
 
     public static void addKey(ItemStack stack, ItemStack key) {
-        CompoundTag compoundtag = stack.getOrCreateTag();
-        ListTag listtag;
-        if (compoundtag.contains(TAG_BOUND_LOCKS, 9))
-            listtag = compoundtag.getList(TAG_BOUND_LOCKS, 10);
-        else
-            listtag = new ListTag();
+        com.lazrproductions.cuffed.utils.ItemTagUtils.updateTag(stack, compoundtag -> {
+            ListTag listtag;
+            if (compoundtag.contains(TAG_BOUND_LOCKS, 9))
+                listtag = compoundtag.getList(TAG_BOUND_LOCKS, 10);
+            else
+                listtag = new ListTag();
 
-        CompoundTag compoundtag1 = new CompoundTag();
-        compoundtag1.putUUID(KeyItem.TAG_ID, key.getOrCreateTag().getUUID(KeyItem.TAG_ID));
-        if(key.getOrCreateTag().contains("display"))
-            compoundtag1.putString(KeyMoldItem.TAG_NAME, key.getOrCreateTag().getCompound("display").getString("Name"));
-        listtag.add(compoundtag1);
-        compoundtag.put(TAG_BOUND_LOCKS, listtag);
+            CompoundTag compoundtag1 = new CompoundTag();
+            CompoundTag keyTag = com.lazrproductions.cuffed.utils.ItemTagUtils.getOrCreateTag(key);
+            compoundtag1.putUUID(KeyItem.TAG_ID, keyTag.getUUID(KeyItem.TAG_ID));
+            if(keyTag.contains("display"))
+                compoundtag1.putString(KeyMoldItem.TAG_NAME, keyTag.getCompound("display").getString("Name"));
+            listtag.add(compoundtag1);
+            compoundtag.put(TAG_BOUND_LOCKS, listtag);
+        });
     }
 
     public static boolean tryToAddBoundId(Player player, ItemStack stack, UUID id, String lockName) {
@@ -144,22 +147,23 @@ public class KeyRingItem extends Item {
     }
 
     public static void removeBoundId(ItemStack stack, UUID id) {
-        CompoundTag compoundtag = stack.getOrCreateTag();
-        ListTag listtag;
-        if (compoundtag.contains(TAG_BOUND_LOCKS, 9)) {
-            listtag = compoundtag.getList(TAG_BOUND_LOCKS, 10);
-        } else {
-            listtag = new ListTag();
-        }
+        com.lazrproductions.cuffed.utils.ItemTagUtils.updateTag(stack, compoundtag -> {
+            ListTag listtag;
+            if (compoundtag.contains(TAG_BOUND_LOCKS, 9)) {
+                listtag = compoundtag.getList(TAG_BOUND_LOCKS, 10);
+            } else {
+                listtag = new ListTag();
+            }
 
-        int index = getBoundIdIndex(stack, id);
-        if (index >= 0)
-            listtag.remove(index);
-        compoundtag.put(TAG_BOUND_LOCKS, listtag);
+            int index = getBoundIdIndex(stack, id);
+            if (index >= 0)
+                listtag.remove(index);
+            compoundtag.put(TAG_BOUND_LOCKS, listtag);
+        });
     }
 
     public static boolean hasBoundId(ItemStack stack, UUID id) {
-        CompoundTag compoundTag = stack.getOrCreateTag();
+        CompoundTag compoundTag = com.lazrproductions.cuffed.utils.ItemTagUtils.getTag(stack);
         if (compoundTag == null)
             return false;
 
@@ -173,21 +177,21 @@ public class KeyRingItem extends Item {
     }
 
     public static int getBoundIdIndex(ItemStack stack, UUID id) {
-        CompoundTag compoundTag = stack.getTag();
+        CompoundTag compoundTag = com.lazrproductions.cuffed.utils.ItemTagUtils.getTag(stack);
         if (compoundTag == null)
             return -1;
 
         if (compoundTag.contains(TAG_BOUND_LOCKS, 9)) {
             ListTag boundPos = compoundTag.getList(TAG_BOUND_LOCKS, 10);
             for (int i = 0; i < boundPos.size(); i++)
-                if (boundPos.getCompound(i).getUUID(KeyItem.TAG_ID) == id)
+                if (boundPos.getCompound(i).getUUID(KeyItem.TAG_ID).equals(id))
                     return i;
         }
         return -1;
     }
 
     public static boolean canBindLock(ItemStack stack) {
-        CompoundTag compoundTag = stack.getTag();
+        CompoundTag compoundTag = com.lazrproductions.cuffed.utils.ItemTagUtils.getTag(stack);
         if (compoundTag == null)
             return true;
 
@@ -198,9 +202,8 @@ public class KeyRingItem extends Item {
 
             bindings = boundPos.size();
 
-            var tag = stack.getTag();
-            if (tag != null && tag.contains(TAG_KEYS))
-                keys = tag.getInt(TAG_KEYS);
+            if (compoundTag.contains(TAG_KEYS))
+                keys = compoundTag.getInt(TAG_KEYS);
         } else {
             return true;
         }
@@ -211,13 +214,13 @@ public class KeyRingItem extends Item {
     }
 
     @Override
-    public void appendHoverText(@Nonnull ItemStack stack, @Nullable Level pLevel,
+    public void appendHoverText(@Nonnull ItemStack stack, @Nonnull Item.TooltipContext pLevel,
             @Nonnull List<Component> pTooltipComponents,
             @Nonnull TooltipFlag pIsAdvanced) {
         super.appendHoverText(stack, pLevel, pTooltipComponents, pIsAdvanced);
 
         int amount = 0;
-        var tag = stack.getTag();
+        CompoundTag tag = com.lazrproductions.cuffed.utils.ItemTagUtils.getTag(stack);
         if (tag != null && tag.contains(TAG_KEYS))
             amount = tag.getInt(TAG_KEYS);
 
@@ -225,17 +228,16 @@ public class KeyRingItem extends Item {
                 .withStyle(ChatFormatting.GRAY));
 
         int bindings = 0;
-        CompoundTag compoundTag = stack.getTag();
-        if (compoundTag != null) {
-            if (compoundTag.contains(TAG_BOUND_LOCKS, 9)) {
-                ListTag boundPos = compoundTag.getList(TAG_BOUND_LOCKS, 10);
+        if (tag != null) {
+            if (tag.contains(TAG_BOUND_LOCKS, 9)) {
+                ListTag boundPos = tag.getList(TAG_BOUND_LOCKS, 10);
                 bindings = boundPos.size();
             }
         }
         if (bindings == amount)
             pTooltipComponents.add(Component.translatable("item.cuffed.key_ring.description.amount", bindings)
                     .withStyle(ChatFormatting.GRAY));
-        else
+          else
             pTooltipComponents.add(Component.translatable("item.cuffed.key_ring.description.amount", bindings)
                     .withStyle(ChatFormatting.DARK_GRAY));
     }
@@ -243,15 +245,16 @@ public class KeyRingItem extends Item {
     @Override
     public ItemStack getDefaultInstance() {
         ItemStack itemstack = new ItemStack(this);
-        itemstack.getOrCreateTag().putInt(TAG_KEYS, 2);
+        com.lazrproductions.cuffed.utils.ItemTagUtils.updateTag(itemstack, tag -> tag.putInt(TAG_KEYS, 2));
         return itemstack;
     }
 
     @Override
     public void inventoryTick(@Nonnull ItemStack stack, @Nonnull Level level, @Nonnull Entity entity, int num,
             boolean boo) {
-        if (stack.getTag() == null)
-            stack.getOrCreateTag().putInt(TAG_KEYS, 1);
+        CompoundTag tag = com.lazrproductions.cuffed.utils.ItemTagUtils.getTag(stack);
+        if (tag == null || !tag.contains(TAG_KEYS))
+            com.lazrproductions.cuffed.utils.ItemTagUtils.updateTag(stack, t -> t.putInt(TAG_KEYS, 1));
         super.inventoryTick(stack, level, entity, num, boo);
     }
 }

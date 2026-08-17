@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import com.mojang.serialization.MapCodec;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -51,6 +52,13 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 @SuppressWarnings("deprecation")
 public class BunkBlock extends HorizontalDirectionalBlock implements EntityBlock {
+    public static final MapCodec<BunkBlock> CODEC = simpleCodec(BunkBlock::new);
+
+    @Override
+    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+        return CODEC;
+    }
+
     public static final EnumProperty<BedPart> PART = BlockStateProperties.BED_PART;
     public static final BooleanProperty OCCUPIED = BlockStateProperties.OCCUPIED;
     protected static final int HEIGHT = 9;
@@ -83,8 +91,18 @@ public class BunkBlock extends HorizontalDirectionalBlock implements EntityBlock
         return blockstate.getBlock() instanceof BunkBlock ? blockstate.getValue(FACING) : null;
     }
 
-    public InteractionResult use(@Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos,
-            @Nonnull Player interactor, @Nonnull InteractionHand hand, @Nonnull BlockHitResult hitResult) {
+    @Override
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        InteractionResult res = interact(state, level, pos, player, hand, hitResult);
+        return res.consumesAction() ? net.minecraft.world.ItemInteractionResult.sidedSuccess(level.isClientSide()) : net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        return interact(state, level, pos, player, InteractionHand.MAIN_HAND, hitResult);
+    }
+
+    private InteractionResult interact(BlockState state, Level level, BlockPos pos, Player interactor, InteractionHand hand, BlockHitResult hitResult) {
         if (level.isClientSide) {
             return InteractionResult.CONSUME;
         } else {
@@ -127,7 +145,7 @@ public class BunkBlock extends HorizontalDirectionalBlock implements EntityBlock
 
     @Override
     public boolean isBed(BlockState state, BlockGetter level, BlockPos pos,
-            @org.jetbrains.annotations.Nullable Entity player) {
+            @org.jetbrains.annotations.Nullable LivingEntity sleeper) {
         return true;
     }
 
@@ -173,7 +191,8 @@ public class BunkBlock extends HorizontalDirectionalBlock implements EntityBlock
         return p_49534_ == BedPart.FOOT ? p_49535_ : p_49535_.getOpposite();
     }
 
-    public void playerWillDestroy(@Nonnull Level level, @Nonnull BlockPos pos, @Nonnull BlockState state,
+    @Override
+    public BlockState playerWillDestroy(@Nonnull Level level, @Nonnull BlockPos pos, @Nonnull BlockState state,
             @Nonnull Player player) {
         if (!level.isClientSide && player.isCreative()) {
             BedPart bedpart = state.getValue(PART);
@@ -187,7 +206,7 @@ public class BunkBlock extends HorizontalDirectionalBlock implements EntityBlock
             }
         }
 
-        super.playerWillDestroy(level, pos, state, player);
+        return super.playerWillDestroy(level, pos, state, player);
     }
 
     @Nullable

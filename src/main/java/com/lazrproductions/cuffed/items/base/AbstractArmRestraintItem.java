@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.item.Item;
 
 public class AbstractArmRestraintItem extends AbstractRestraintItem {
 
@@ -19,7 +20,7 @@ public class AbstractArmRestraintItem extends AbstractRestraintItem {
     }
 
     @Override
-    public void appendHoverText(@Nonnull ItemStack stack, @Nullable Level level, @Nonnull List<Component> components,
+    public void appendHoverText(@Nonnull ItemStack stack, @Nonnull Item.TooltipContext level, @Nonnull List<Component> components,
             @Nonnull TooltipFlag tooltipFlag) {
         components.add(Component.translatable("info.cuffed.restraint_type.arm").withStyle(ChatFormatting.GRAY));
 

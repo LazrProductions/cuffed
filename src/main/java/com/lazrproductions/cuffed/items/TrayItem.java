@@ -6,6 +6,7 @@ import javax.annotation.Nonnull;
 
 import com.lazrproductions.cuffed.init.ModItems;
 import com.lazrproductions.cuffed.inventory.tooltip.TrayTooltip;
+import com.lazrproductions.cuffed.utils.ItemTagUtils;
 
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -97,14 +98,12 @@ public class TrayItem extends BlockItem {
 
     private static int add(@Nonnull ItemStack stack, @Nonnull ItemStack stackToAdd) {
         if (!stackToAdd.isEmpty() && canFitInTray(stack, stackToAdd)) {
-            CompoundTag tag = stack.getOrCreateTag();
+            CompoundTag tag = ItemTagUtils.getOrCreateTag(stack);
             if (!tag.contains(TAG_ITEMS)) {
                 tag.put(TAG_ITEMS, saveItemToTagList(NonNullList.withSize(MAX_WEIGHT, ItemStack.EMPTY)));
             }
 
-
             ListTag listtag = tag.getList(TAG_ITEMS, 10);
-
 
             int slotToAddTo = -1;
             if(itemIsFood(stackToAdd))
@@ -120,9 +119,9 @@ public class TrayItem extends BlockItem {
             if(slotToAddTo > -1) {
                 if(listtag.getCompound(slotToAddTo).isEmpty()) {
                     ItemStack itemToAddCopy = stackToAdd.copyWithCount(1);
-                    CompoundTag itemToAddData = new CompoundTag();
-                    itemToAddCopy.save(itemToAddData);
+                    CompoundTag itemToAddData = ItemTagUtils.saveItem(itemToAddCopy, null);
                     listtag.set(slotToAddTo, (Tag) itemToAddData);
+                    ItemTagUtils.setTag(stack, tag);
                     return 1;
                 }
             }
@@ -132,15 +131,16 @@ public class TrayItem extends BlockItem {
     }
 
     private static Optional<ItemStack> removeOne(ItemStack stack) {
-        CompoundTag compoundtag = stack.getOrCreateTag();
+        CompoundTag compoundtag = ItemTagUtils.getOrCreateTag(stack);
         if (compoundtag.contains(TAG_ITEMS)) {
             int toRemove = getNextStackIndex(stack);
             if(toRemove > -1) {
                 ListTag listtag = compoundtag.getList(TAG_ITEMS, 10);
             
                 CompoundTag compoundtag1 = listtag.getCompound(toRemove);
-                ItemStack itemstack = ItemStack.of(compoundtag1);
+                ItemStack itemstack = ItemTagUtils.loadItem(compoundtag1, null);
                 listtag.set(toRemove, new CompoundTag());
+                ItemTagUtils.setTag(stack, compoundtag);
 
                 return Optional.of(itemstack);
             }
@@ -150,20 +150,21 @@ public class TrayItem extends BlockItem {
     }
 
     private static boolean dropContents(ItemStack stack, Player player) {
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = ItemTagUtils.getOrCreateTag(stack);
         if (tag.contains(TAG_ITEMS)) {
             if (player instanceof ServerPlayer) {
                 ListTag listtag = tag.getList(TAG_ITEMS, 10);
 
                 for (int i = 0; i < listtag.size(); ++i) {
                     CompoundTag compoundtag1 = listtag.getCompound(i);
-                    ItemStack itemstack = ItemStack.of(compoundtag1);
+                    ItemStack itemstack = ItemTagUtils.loadItem(compoundtag1, null);
                     player.drop(itemstack, true);
                 }
 
                 for (int i = 0; i < listtag.size(); i++)
                     listtag.set(i, new CompoundTag());
                 
+                ItemTagUtils.setTag(stack, tag);
                 return true;
             }
             
@@ -196,7 +197,7 @@ public class TrayItem extends BlockItem {
 
 
     public static NonNullList<ItemStack> getContents(@Nonnull ItemStack stack) {
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = ItemTagUtils.getOrCreateTag(stack);
         var list = NonNullList.withSize(MAX_WEIGHT, ItemStack.EMPTY);
         
         if(tag.contains(TAG_ITEMS)) {
@@ -209,22 +210,22 @@ public class TrayItem extends BlockItem {
             CompoundTag knife = listtag.getCompound(3);
 
             if (!food.isEmpty())
-                list.set(0, ItemStack.of(food));
+                list.set(0, ItemTagUtils.loadItem(food, null));
             else
                 list.set(0, ItemStack.EMPTY);
 
             if (!fork.isEmpty())
-                list.set(1, ItemStack.of(fork));
+                list.set(1, ItemTagUtils.loadItem(fork, null));
             else
                 list.set(1, ItemStack.EMPTY);
 
             if (!spoon.isEmpty())
-                list.set(2, ItemStack.of(spoon));
+                list.set(2, ItemTagUtils.loadItem(spoon, null));
             else
                 list.set(2, ItemStack.EMPTY);
 
             if (!knife.isEmpty())
-                list.set(3, ItemStack.of(knife));
+                list.set(3, ItemTagUtils.loadItem(knife, null));
             else
                 list.set(3, ItemStack.EMPTY);
         }
@@ -239,22 +240,22 @@ public class TrayItem extends BlockItem {
         CompoundTag knife = listtag.getCompound(3);
 
         if (!food.isEmpty())
-            list.set(0, ItemStack.of(food));
+            list.set(0, ItemTagUtils.loadItem(food, null));
         else
             list.set(0, ItemStack.EMPTY);
 
         if (!fork.isEmpty())
-            list.set(1, ItemStack.of(fork));
+            list.set(1, ItemTagUtils.loadItem(fork, null));
         else
             list.set(1, ItemStack.EMPTY);
 
         if (!spoon.isEmpty())
-            list.set(2, ItemStack.of(spoon));
+            list.set(2, ItemTagUtils.loadItem(spoon, null));
         else
             list.set(2, ItemStack.EMPTY);
 
         if (!knife.isEmpty())
-            list.set(3, ItemStack.of(knife));
+            list.set(3, ItemTagUtils.loadItem(knife, null));
         else
             list.set(3, ItemStack.EMPTY);
         
@@ -291,30 +292,10 @@ public class TrayItem extends BlockItem {
         ItemStack spoon = items.get(2);
         ItemStack knife = items.get(3);
 
-        if(!food.isEmpty()) {
-            CompoundTag tag = new CompoundTag();
-            listtag.add(food.save(tag));
-        } else {
-            listtag.add(new CompoundTag());
-        }
-        if(!fork.isEmpty()) {
-            CompoundTag tag = new CompoundTag();
-            listtag.add(fork.save(tag));
-        } else {
-            listtag.add(new CompoundTag());
-        }
-        if(!spoon.isEmpty()) {
-            CompoundTag tag = new CompoundTag();
-            listtag.add(spoon.save(tag));
-        } else {
-            listtag.add(new CompoundTag());
-        }
-        if(!knife.isEmpty()) {
-            CompoundTag tag = new CompoundTag();
-            listtag.add(knife.save(tag));
-        } else {
-            listtag.add(new CompoundTag());
-        }
+        listtag.add(ItemTagUtils.saveItem(food, null));
+        listtag.add(ItemTagUtils.saveItem(fork, null));
+        listtag.add(ItemTagUtils.saveItem(spoon, null));
+        listtag.add(ItemTagUtils.saveItem(knife, null));
 
         return listtag;
     }
@@ -324,8 +305,9 @@ public class TrayItem extends BlockItem {
 
     public static ItemStack createTrayFrom(NonNullList<ItemStack> stacks) {
         ItemStack stack = ModItems.TRAY.get().getDefaultInstance();
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = ItemTagUtils.getOrCreateTag(stack);
         tag.put(TAG_ITEMS, saveItemToTagList(stacks));
+        ItemTagUtils.setTag(stack, tag);
         return stack;
     }
 
@@ -340,7 +322,7 @@ public class TrayItem extends BlockItem {
         boolean trayHasFork = trayHasFork(tray);
         boolean trayHasKnife = trayHasKnife(tray);
 
-        boolean isFood = stack.isEdible();
+        boolean isFood = stack.has(net.minecraft.core.component.DataComponents.FOOD);
         if (isFood)
             return !trayHasFood;
         else if (stack.is(ModItems.SPOON.get()))
@@ -350,39 +332,39 @@ public class TrayItem extends BlockItem {
         else if (stack.is(ModItems.KNIFE.get()))
             return !trayHasKnife;
         return false;
-    }
-    public static boolean trayHasFoodItem(@Nonnull ItemStack stack) {
-        var stacks = getContents(stack);
-        for (ItemStack itemStack : stacks) {
-            if (itemStack.isEdible())
-                return true;
-        }
-        return false;
-    }
-    public static boolean trayHasSpoon(@Nonnull ItemStack stack) {
-        var stacks = getContents(stack);
-        for (ItemStack itemStack : stacks)
-            if (itemStack.is(ModItems.SPOON.get()))
-                return true;
-        return false;
-    }
-    public static boolean trayHasFork(@Nonnull ItemStack stack) {
-        var stacks = getContents(stack);
-        for (ItemStack itemStack : stacks)
-            if (itemStack.is(ModItems.FORK.get()))
-                return true;
-        return false;
-    }
-    public static boolean trayHasKnife(@Nonnull ItemStack stack) {
-        var stacks = getContents(stack);
-        for (ItemStack itemStack : stacks)
-            if (itemStack.is(ModItems.KNIFE.get()))
-                return true;
-        return false;
-    }
-    public static boolean itemIsFood(@Nonnull ItemStack stack) {
-        return stack.isEdible();
-    }
+     }
+     public static boolean trayHasFoodItem(@Nonnull ItemStack stack) {
+         var stacks = getContents(stack);
+         for (ItemStack itemStack : stacks) {
+             if (itemStack.has(net.minecraft.core.component.DataComponents.FOOD))
+                 return true;
+         }
+         return false;
+     }
+     public static boolean trayHasSpoon(@Nonnull ItemStack stack) {
+         var stacks = getContents(stack);
+         for (ItemStack itemStack : stacks)
+             if (itemStack.is(ModItems.SPOON.get()))
+                 return true;
+         return false;
+     }
+     public static boolean trayHasFork(@Nonnull ItemStack stack) {
+         var stacks = getContents(stack);
+         for (ItemStack itemStack : stacks)
+             if (itemStack.is(ModItems.FORK.get()))
+                 return true;
+         return false;
+     }
+     public static boolean trayHasKnife(@Nonnull ItemStack stack) {
+         var stacks = getContents(stack);
+         for (ItemStack itemStack : stacks)
+             if (itemStack.is(ModItems.KNIFE.get()))
+                 return true;
+         return false;
+     }
+     public static boolean itemIsFood(@Nonnull ItemStack stack) {
+         return stack.has(net.minecraft.core.component.DataComponents.FOOD);
+     }
     public static boolean itemIsSpoon(@Nonnull ItemStack stack) {
         return stack.is(ModItems.SPOON.get());
     }

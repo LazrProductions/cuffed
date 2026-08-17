@@ -131,27 +131,25 @@ public class ToiletBlockEntity extends BlockEntity {
 
 
     @Override
-    protected void saveAdditional(@Nonnull CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(@Nonnull CompoundTag tag, @Nonnull net.minecraft.core.HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
 
         ListTag list = new ListTag();
         items.forEach((c) -> {
-            CompoundTag t = new CompoundTag();
-            c.save(t); 
-            list.add(t);
+            list.add(com.lazrproductions.cuffed.utils.ItemTagUtils.saveItem(c, provider));
         });
         tag.put(TrayItem.TAG_ITEMS, list);
     }
 
     @Override
-    public void load(@Nonnull CompoundTag tag) {
-        super.load(tag);
+    protected void loadAdditional(@Nonnull CompoundTag tag, @Nonnull net.minecraft.core.HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
         if(tag.contains(TrayItem.TAG_ITEMS)) {
             ListTag list = tag.getList(TrayItem.TAG_ITEMS, 10);
             items = NonNullList.withSize(list.size(), ItemStack.EMPTY);
             for (int i = 0; i < list.size(); i++) {
-                items.set(i, ItemStack.of(list.getCompound(i)));
+                items.set(i, com.lazrproductions.cuffed.utils.ItemTagUtils.loadItem(list.getCompound(i), provider));
             }            
         }
     }
@@ -176,12 +174,12 @@ public class ToiletBlockEntity extends BlockEntity {
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
+    public CompoundTag getUpdateTag(@Nonnull net.minecraft.core.HolderLookup.Provider provider) {
+        return saveWithoutMetadata(provider);
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        super.onDataPacket(net, pkt);
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, @Nonnull net.minecraft.core.HolderLookup.Provider provider) {
+        super.onDataPacket(net, pkt, provider);
     }
 }

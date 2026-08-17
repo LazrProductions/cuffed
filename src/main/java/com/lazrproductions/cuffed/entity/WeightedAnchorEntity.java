@@ -40,11 +40,11 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidType;
 
 public class WeightedAnchorEntity extends LivingEntity {
 
-    private static final EntityDataAccessor<Boolean> DATA_ENCHANTED = SynchedEntityData.defineId(Player.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DATA_ENCHANTED = SynchedEntityData.defineId(WeightedAnchorEntity.class, EntityDataSerializers.BOOLEAN);
 
 
     public WeightedAnchorEntity(EntityType<? extends LivingEntity> type, Level level) {
@@ -58,27 +58,27 @@ public class WeightedAnchorEntity extends LivingEntity {
     public static WeightedAnchorEntity createFromItem(@Nonnull Level level, @Nonnull ItemStack stack, @Nonnull BlockPos pos) {
         WeightedAnchorEntity entity = new WeightedAnchorEntity(level, pos);
 
-        entity.setEnchantments(stack.getEnchantmentTags());
+        entity.setEnchantments(stack.getOrDefault(net.minecraft.core.component.DataComponents.ENCHANTMENTS, net.minecraft.world.item.enchantment.ItemEnchantments.EMPTY));
 
         return entity;
     }
 
     public ItemStack getDroppedItem() {
         ItemStack stack = new ItemStack(ModItems.WEIGHTED_ANCHOR_ITEM.get(), 1);
-        EnchantmentHelper.setEnchantments(EnchantmentHelper.deserializeEnchantments(getEnchantments()), stack);
+        stack.set(net.minecraft.core.component.DataComponents.ENCHANTMENTS, getEnchantments());
         return stack;
     }
 
     @Override
-    protected void defineSynchedData() {
-        entityData.define(DATA_ENCHANTED, false);
-        super.defineSynchedData();
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_ENCHANTED, false);
     }
     @Override
     public void tick() {
         if(!level().isClientSide()) {
             entityData.set(DATA_ENCHANTED, getEnchantments().size() > 0);
-            if(this.isInWaterOrBubble() && getEnchantmentLevel(ModEnchantments.BUOYANT.get()) >= 1)
+            if(this.isInWaterOrBubble() && getEnchantmentLevel(ModEnchantments.BUOYANT) >= 1)
                 this.addDeltaMovement(new Vec3(0f, 0.023f, 0f));
          }
   
@@ -187,56 +187,55 @@ public class WeightedAnchorEntity extends LivingEntity {
 
     @Override
     public void addAdditionalSaveData(@Nonnull CompoundTag tag) {
-        tag.put("Enchantments", enchantments);
+        tag.put("Enchantments", net.minecraft.world.item.enchantment.ItemEnchantments.CODEC.encodeStart(this.registryAccess().createSerializationContext(net.minecraft.nbt.NbtOps.INSTANCE), this.enchantments).getOrThrow());
         super.addAdditionalSaveData(tag);
     }
     @Override
     public void readAdditionalSaveData(@Nonnull CompoundTag tag) {
-        if(tag.contains("Enchantments"))
-           enchantments = tag.getList("Enchantments", 10);
-        else
-           enchantments = new ListTag();
+        if(tag.contains("Enchantments")) {
+            this.enchantments = net.minecraft.world.item.enchantment.ItemEnchantments.CODEC.parse(this.registryAccess().createSerializationContext(net.minecraft.nbt.NbtOps.INSTANCE), tag.get("Enchantments")).getOrThrow();
+        } else {
+            this.enchantments = net.minecraft.world.item.enchantment.ItemEnchantments.EMPTY;
+        }
         super.readAdditionalSaveData(tag);
-
     }
 
 
     //#region Enchantment Management
 
-    ListTag enchantments = new ListTag();
+    net.minecraft.world.item.enchantment.ItemEnchantments enchantments = net.minecraft.world.item.enchantment.ItemEnchantments.EMPTY;
 
-    public ListTag getEnchantments() {
+    public net.minecraft.world.item.enchantment.ItemEnchantments getEnchantments() {
         return enchantments;
     }
-    public void setEnchantments(ListTag tag) {
+    public void setEnchantments(net.minecraft.world.item.enchantment.ItemEnchantments tag) {
         enchantments = tag;
     }
 
-    public boolean hasEnchantment(Enchantment enchantment) {
-        ResourceLocation resourcelocation = EnchantmentHelper.getEnchantmentId(enchantment);
-        for (int i = 0; i < enchantments.size(); ++i) {
-            CompoundTag compoundtag = enchantments.getCompound(i);
-            ResourceLocation resourcelocation1 = EnchantmentHelper.getEnchantmentId(compoundtag);
-            if (resourcelocation1 != null && resourcelocation1.equals(resourcelocation)) {
-                return true;
-            }
-        }
-        return false;
+    public boolean hasEnchantment(net.minecraft.core.Holder<Enchantment> enchantment) {
+        return this.getEnchantmentLevel(enchantment) > 0;
     }
-    public int getEnchantmentLevel(Enchantment enchantment) {
-        ResourceLocation resourcelocation = EnchantmentHelper.getEnchantmentId(enchantment);
-        for (int i = 0; i < enchantments.size(); ++i) {
-            CompoundTag compoundtag = enchantments.getCompound(i);
-            ResourceLocation resourcelocation1 = EnchantmentHelper.getEnchantmentId(compoundtag);
-            if (resourcelocation1 != null && resourcelocation1.equals(resourcelocation)) {
-                return EnchantmentHelper.getEnchantmentLevel(compoundtag);
-            }
+
+    public boolean hasEnchantment(net.minecraft.resources.ResourceKey<Enchantment> enchantmentKey) {
+        return this.getEnchantmentLevel(enchantmentKey) > 0;
+    }
+
+    public int getEnchantmentLevel(net.minecraft.core.Holder<Enchantment> enchantment) {
+        return this.enchantments.getLevel(enchantment);
+    }
+
+    public int getEnchantmentLevel(net.minecraft.resources.ResourceKey<Enchantment> enchantmentKey) {
+        var opt = this.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getHolder(enchantmentKey);
+        if (opt.isPresent()) {
+            return this.getEnchantmentLevel(opt.get());
         }
         return 0;
     }
-    public void enchant(Enchantment enchantment, int value) {
-        ResourceLocation l = EnchantmentHelper.getEnchantmentId(enchantment);
-        enchantments.add(EnchantmentHelper.storeEnchantment(l, value));        
+
+    public void enchant(net.minecraft.core.Holder<Enchantment> enchantment, int value) {
+        net.minecraft.world.item.enchantment.ItemEnchantments.Mutable mutable = new net.minecraft.world.item.enchantment.ItemEnchantments.Mutable(this.enchantments);
+        mutable.set(enchantment, value);
+        this.enchantments = mutable.toImmutable();
     }
 
     public boolean getIsEnchanted() {

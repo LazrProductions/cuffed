@@ -48,8 +48,42 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.minecraft.core.HolderLookup;
 
-public class RestrainableCapability implements IRestrainableCapability {
+public class RestrainableCapability implements IRestrainableCapability, INBTSerializable<CompoundTag> {
+
+    @Override
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        CompoundTag nbt = new CompoundTag();
+        if (headRestraint != null)
+            nbt.put("HeadRestraint", headRestraint.serializeNBT(provider));
+        if (armRestraint != null)
+            nbt.put("ArmRestraint", armRestraint.serializeNBT(provider));
+        if (legRestraint != null)
+            nbt.put("LegRestraint", legRestraint.serializeNBT(provider));
+        return nbt;
+    }
+
+    @Override
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+        if (nbt.contains("HeadRestraint"))
+            headRestraint = (AbstractHeadRestraint) RestraintAPI.getRestraintFromTag(provider, nbt.getCompound("HeadRestraint"));
+        else
+            headRestraint = null;
+
+        if (nbt.contains("ArmRestraint"))
+            armRestraint = (AbstractArmRestraint) RestraintAPI.getRestraintFromTag(provider, nbt.getCompound("ArmRestraint"));
+        else
+            armRestraint = null;
+
+        if (nbt.contains("LegRestraint"))
+            legRestraint = (AbstractLegRestraint) RestraintAPI.getRestraintFromTag(provider, nbt.getCompound("LegRestraint"));
+        else
+            legRestraint = null;
+
+        markedForSync = true;
+    }
 
     public AbstractArmRestraint armRestraint = null;
     public AbstractLegRestraint legRestraint = null;
@@ -77,21 +111,21 @@ public class RestrainableCapability implements IRestrainableCapability {
         int encoded = encodeRestraintDisabilities();
 
         if (isRestrained()) {
-            if (!player.hasEffect(ModEffects.RESTRAINED_EFFECT.get())) {
+            if (!player.hasEffect(ModEffects.RESTRAINED_EFFECT)) {
                 // Add new effect
-                RestrainedEffectInstance inst = new RestrainedEffectInstance(-1, encoded);
+                net.minecraft.world.effect.MobEffectInstance inst = new net.minecraft.world.effect.MobEffectInstance(ModEffects.RESTRAINED_EFFECT, -1, encoded);
                 player.addEffect(inst);
             } else {
                 // Remove and replace existing effect
-                if (player.getEffect(ModEffects.RESTRAINED_EFFECT.get()) instanceof RestrainedEffectInstance e
-                        && e.getAmplifier() != encoded) {
-                    player.removeEffect(ModEffects.RESTRAINED_EFFECT.get());
-                    RestrainedEffectInstance inst = new RestrainedEffectInstance(-1, encoded);
+                net.minecraft.world.effect.MobEffectInstance e = player.getEffect(ModEffects.RESTRAINED_EFFECT);
+                if (e != null && e.getAmplifier() != encoded) {
+                    player.removeEffect(ModEffects.RESTRAINED_EFFECT);
+                    net.minecraft.world.effect.MobEffectInstance inst = new net.minecraft.world.effect.MobEffectInstance(ModEffects.RESTRAINED_EFFECT, -1, encoded);
                     player.addEffect(inst);
                 }
             }
-        } else if (player.hasEffect(ModEffects.RESTRAINED_EFFECT.get()))
-            player.removeEffect(ModEffects.RESTRAINED_EFFECT.get());
+        } else if (player.hasEffect(ModEffects.RESTRAINED_EFFECT))
+            player.removeEffect(ModEffects.RESTRAINED_EFFECT);
 
         // ---
 
@@ -139,37 +173,7 @@ public class RestrainableCapability implements IRestrainableCapability {
     public int age = 0;
 
     public void copyFrom(CompoundTag tag, ServerLevel level) {
-        deserializeNBT(tag);
-    }
-
-    public CompoundTag serializeNBT() {
-        CompoundTag nbt = new CompoundTag();
-        if (headRestraint != null)
-            nbt.put("HeadRestraint", headRestraint.serializeNBT());
-        if (armRestraint != null)
-            nbt.put("ArmRestraint", armRestraint.serializeNBT());
-        if (legRestraint != null)
-            nbt.put("LegRestraint", legRestraint.serializeNBT());
-        return nbt;
-    }
-
-    public void deserializeNBT(CompoundTag nbt) {
-        if (nbt.contains("HeadRestraint"))
-            headRestraint = (AbstractHeadRestraint) RestraintAPI.getRestraintFromTag(nbt.getCompound("HeadRestraint"));
-        else
-            headRestraint = null;
-
-        if (nbt.contains("ArmRestraint"))
-            armRestraint = (AbstractArmRestraint) RestraintAPI.getRestraintFromTag(nbt.getCompound("ArmRestraint"));
-        else
-            armRestraint = null;
-
-        if (nbt.contains("LegRestraint"))
-            legRestraint = (AbstractLegRestraint) RestraintAPI.getRestraintFromTag(nbt.getCompound("LegRestraint"));
-        else
-            legRestraint = null;
-
-        markedForSync = true;
+        deserializeNBT(level.registryAccess(), tag);
     }
 
     public boolean onInteractedByOther(ServerPlayer player, ServerPlayer other, double interactionHeight, ItemStack stack,
@@ -605,7 +609,7 @@ public class RestrainableCapability implements IRestrainableCapability {
             oldRestraint = headRestraint;
 
         if (oldRestraint != null) {
-            ItemStack stack = oldRestraint.saveToItemStack();
+            ItemStack stack = oldRestraint.saveToItemStack(player.registryAccess());
             if (releaser == null || !releaser.addItem(stack)) {
                 ItemEntity e = new ItemEntity(player.level(), player.getX(), player.getY() + 0.6D, player.getZ(),
                         stack);
@@ -742,8 +746,14 @@ public class RestrainableCapability implements IRestrainableCapability {
     // #region Events
 
     public void onLoginServer(ServerPlayer player) {
-        if (player.hasEffect(ModEffects.RESTRAINED_EFFECT.get()))
-            player.removeEffect(ModEffects.RESTRAINED_EFFECT.get());
+        if (player.hasEffect(ModEffects.RESTRAINED_EFFECT))
+            player.removeEffect(ModEffects.RESTRAINED_EFFECT);
+
+        if (isRestrained()) {
+            int encoded = encodeRestraintDisabilities();
+            net.minecraft.world.effect.MobEffectInstance inst = new net.minecraft.world.effect.MobEffectInstance(ModEffects.RESTRAINED_EFFECT, -1, encoded);
+            player.addEffect(inst);
+        }
     }
 
     public void onLoginClient(Player player) {
@@ -756,12 +766,15 @@ public class RestrainableCapability implements IRestrainableCapability {
     }
 
     public void onDeathServer(ServerPlayer player) {
+        var enchantmentRegistry = player.level().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
+        var bindingCurseHolder = enchantmentRegistry.getHolderOrThrow(net.minecraft.world.item.enchantment.Enchantments.BINDING_CURSE);
+
         if (headRestraint != null) {
             headRestraint.onDeathServer(player);
 
             boolean shouldUnequip = true;
             if (headRestraint instanceof IEnchantableRestraint e)
-                if(e.hasEnchantment(Enchantments.BINDING_CURSE))
+                if(e.hasEnchantment(bindingCurseHolder))
                     shouldUnequip = false;
             if(shouldUnequip)
                 TryUnequipRestraint(player, null, RestraintType.Head);
@@ -771,7 +784,7 @@ public class RestrainableCapability implements IRestrainableCapability {
 
             boolean shouldUnequip = true;
             if (armRestraint instanceof IEnchantableRestraint e)
-                if(e.hasEnchantment(Enchantments.BINDING_CURSE))
+                if(e.hasEnchantment(bindingCurseHolder))
                     shouldUnequip = false;
             if(shouldUnequip)
                 TryUnequipRestraint(player, null, RestraintType.Arm);
@@ -781,7 +794,7 @@ public class RestrainableCapability implements IRestrainableCapability {
             
             boolean shouldUnequip = true;
             if (legRestraint instanceof IEnchantableRestraint e)
-                if(e.hasEnchantment(Enchantments.BINDING_CURSE))
+                if(e.hasEnchantment(bindingCurseHolder))
                     shouldUnequip = false;
             if(shouldUnequip)
                 TryUnequipRestraint(player, null, RestraintType.Leg);

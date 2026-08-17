@@ -27,8 +27,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public class DuckTapeHeadRestraint extends AbstractHeadRestraint {
 
@@ -68,10 +68,10 @@ public class DuckTapeHeadRestraint extends AbstractHeadRestraint {
     }
 
     public SoundEvent getEquipSound() {
-        return SoundEvents.ARMOR_EQUIP_LEATHER;
+        return SoundEvents.ARMOR_EQUIP_LEATHER.value();
     }
     public SoundEvent getUnequipSound() {
-        return SoundEvents.ARMOR_EQUIP_LEATHER;
+        return SoundEvents.ARMOR_EQUIP_LEATHER.value();
     }
 
     public boolean AllowBreakingBlocks() {

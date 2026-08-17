@@ -33,8 +33,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FastColor.ARGB32;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.util.Mth;
 
 @OnlyIn(Dist.CLIENT)
@@ -98,7 +98,7 @@ public class InformationBookletScreen extends GenericScreen {
         
         var page = pages.get(currentPage);
 
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, this.mouseX, this.mouseY, partialTick);
 
         pages.get(currentPage).renderPage(minecraft, graphics, partialTick, mouseX, mouseY, (lastMouseInput.getAction() == 1 && lastMouseInput.getInput() == 0));
 

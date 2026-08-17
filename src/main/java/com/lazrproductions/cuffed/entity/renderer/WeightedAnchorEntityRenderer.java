@@ -16,8 +16,8 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class WeightedAnchorEntityRenderer extends EntityRenderer<WeightedAnchorEntity> {
@@ -51,7 +51,7 @@ public class WeightedAnchorEntityRenderer extends EntityRenderer<WeightedAnchorE
         this.model.setupAnim(entity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
 
         VertexConsumer vertexconsumer = buffer.getBuffer(this.model.renderType(TEXTURE_LOCATION));
-        this.model.renderToBuffer(stack, vertexconsumer, light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        this.model.renderToBuffer(stack, vertexconsumer, light, OverlayTexture.NO_OVERLAY, -1);
 
         
         if(entity.getIsEnchanted())
@@ -61,9 +61,9 @@ public class WeightedAnchorEntityRenderer extends EntityRenderer<WeightedAnchorE
 
     }
 
-    private void renderGlint(PoseStack stack, MultiBufferSource buffer, int partialTick,
+    private void renderGlint(PoseStack stack, MultiBufferSource buffer, int light,
             net.minecraft.client.model.Model model) {
-        model.renderToBuffer(stack, buffer.getBuffer(RenderType.entityGlintDirect()), partialTick, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        model.renderToBuffer(stack, buffer.getBuffer(RenderType.entityGlintDirect()), light, OverlayTexture.NO_OVERLAY, -1);
     }
 
     @Override

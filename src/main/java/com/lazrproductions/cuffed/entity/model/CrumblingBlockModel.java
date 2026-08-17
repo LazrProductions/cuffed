@@ -41,7 +41,7 @@ public class CrumblingBlockModel<T extends CrumblingBlockEntity> extends EntityM
 	}
 
 	@Override
-	public void renderToBuffer(@Nonnull PoseStack poseStack, @Nonnull VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-		base.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+	public void renderToBuffer(@Nonnull PoseStack poseStack, @Nonnull VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
+		base.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
 	}
 }

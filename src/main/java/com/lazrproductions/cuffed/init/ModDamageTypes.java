@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import com.lazrproductions.cuffed.CuffedMod;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
@@ -24,7 +24,7 @@ public class ModDamageTypes {
        return new DamageSource(entity.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(HANG), entity, other == null ? entity : other);
     }
 
-    public static void bootstrap(BootstapContext<DamageType> context) {
+    public static void bootstrap(BootstrapContext<DamageType> context) {
         context.register(HANG, new DamageType("hang", 0.1F));
     }
 }

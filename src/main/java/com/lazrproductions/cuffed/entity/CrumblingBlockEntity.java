@@ -82,8 +82,8 @@ public class CrumblingBlockEntity extends Entity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(DATA_CRUMBLE_PROGRESS, 1);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(DATA_CRUMBLE_PROGRESS, 1);
     }
 
 

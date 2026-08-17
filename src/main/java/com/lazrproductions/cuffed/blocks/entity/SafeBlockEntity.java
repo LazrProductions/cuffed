@@ -1,6 +1,7 @@
 package com.lazrproductions.cuffed.blocks.entity;
 
 import java.util.UUID;
+import javax.annotation.Nullable;
 
 import com.lazrproductions.cuffed.blocks.SafeBlock;
 import com.lazrproductions.cuffed.init.ModBlockEntities;
@@ -65,25 +66,35 @@ public class SafeBlockEntity extends RandomizableContainerBlockEntity {
         hasBeenBound = false;
     }
 
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    private Component customName;
+
+    @Override
+    protected void saveAdditional(CompoundTag tag, net.minecraft.core.HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
         if (!this.trySaveLootTable(tag)) {
-            ContainerHelper.saveAllItems(tag, this.items);
+            ContainerHelper.saveAllItems(tag, this.items, provider);
         }
         tag.putUUID("LockId", lockId);
         tag.putBoolean("Locked", locked);
         tag.putBoolean("HasBeenBound", hasBeenBound);
+        if (this.customName != null) {
+            tag.putString("CustomName", Component.Serializer.toJson(this.customName, provider));
+        }
     }
 
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    @Override
+    protected void loadAdditional(CompoundTag tag, net.minecraft.core.HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
         this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
         if (!this.tryLoadLootTable(tag)) {
-            ContainerHelper.loadAllItems(tag, this.items);
+            ContainerHelper.loadAllItems(tag, this.items, provider);
         }
         lockId = tag.getUUID("LockId");
         locked = tag.getBoolean("Locked");
         hasBeenBound = tag.getBoolean("HasBeenBound");
+        if (tag.contains("CustomName", 8)) {
+            this.customName = Component.Serializer.fromJson(tag.getString("CustomName"), provider);
+        }
     }
 
     public int getContainerSize() {
@@ -100,6 +111,21 @@ public class SafeBlockEntity extends RandomizableContainerBlockEntity {
 
     protected Component getDefaultName() {
         return Component.translatable("block.cuffed.safe");
+    }
+
+    @Override
+    public Component getName() {
+        return this.customName != null ? this.customName : this.getDefaultName();
+    }
+
+    @Override
+    @Nullable
+    public Component getCustomName() {
+        return this.customName;
+    }
+
+    public void setCustomName(Component name) {
+        this.customName = name;
     }
 
     protected AbstractContainerMenu createMenu(int menuId, Inventory inventory) {

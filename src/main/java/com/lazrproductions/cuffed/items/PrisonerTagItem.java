@@ -27,7 +27,7 @@ public class PrisonerTagItem extends Item {
 
             other.awardStat(ModStatistics.TIMES_NICKNAMED.get(), 1);
 
-            if (stack.hasCustomHoverName())
+            if (stack.has(net.minecraft.core.component.DataComponents.CUSTOM_NAME))
                nicknamable.setNickname(stack.getHoverName());
             else
                nicknamable.setNickname(null);

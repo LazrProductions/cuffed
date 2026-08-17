@@ -63,7 +63,7 @@ public class GuillotineBlockEntity extends BlockEntity {
 
             if(CuffedMod.SERVER_CONFIG.GUILLOTINE_DROPS_HEAD.get()) {
                 ItemStack stack = new ItemStack(Items.PLAYER_HEAD, 1);
-                stack.getOrCreateTag().putString("SkullOwner", player.getGameProfile().getName());
+                com.lazrproductions.cuffed.utils.ItemTagUtils.updateTag(stack, t -> t.putString("SkullOwner", player.getGameProfile().getName()));
                 ItemEntity entity = new ItemEntity(l, player.position().x(), player.position().y(), player.position().z(), stack);
                 l.addFreshEntity(entity);
             }
@@ -82,18 +82,17 @@ public class GuillotineBlockEntity extends BlockEntity {
         }
     }
 
-    
     @Override
-    protected void saveAdditional(@Nonnull CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(@Nonnull CompoundTag tag, @Nonnull net.minecraft.core.HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
 
         tag.putBoolean(TAG_IS_DOWN, isDown);
         tag.putBoolean(TAG_IS_BLOODY, isBloody);
     }
 
     @Override
-    public void load(@Nonnull CompoundTag tag) {
-        super.load(tag);
+    protected void loadAdditional(@Nonnull CompoundTag tag, @Nonnull net.minecraft.core.HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
         isDown = tag.getBoolean(TAG_IS_DOWN);
         isBloody = tag.getBoolean(TAG_IS_BLOODY);
@@ -106,11 +105,11 @@ public class GuillotineBlockEntity extends BlockEntity {
         return ClientboundBlockEntityDataPacket.create(this);
     }
     @Override
-    public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
+    public CompoundTag getUpdateTag(@Nonnull net.minecraft.core.HolderLookup.Provider provider) {
+        return saveWithoutMetadata(provider);
     }
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        super.onDataPacket(net, pkt);
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, @Nonnull net.minecraft.core.HolderLookup.Provider provider) {
+        super.onDataPacket(net, pkt, provider);
     }
 }

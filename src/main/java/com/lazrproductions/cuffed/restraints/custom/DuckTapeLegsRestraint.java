@@ -38,8 +38,8 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public class DuckTapeLegsRestraint extends AbstractLegRestraint implements IBreakableRestraint {
 
@@ -78,10 +78,10 @@ public class DuckTapeLegsRestraint extends AbstractLegRestraint implements IBrea
     }
 
     public SoundEvent getEquipSound() {
-        return SoundEvents.ARMOR_EQUIP_LEATHER;
+        return SoundEvents.ARMOR_EQUIP_LEATHER.value();
     }
     public SoundEvent getUnequipSound() {
-        return SoundEvents.ARMOR_EQUIP_LEATHER;
+        return SoundEvents.ARMOR_EQUIP_LEATHER.value();
     }
 
     public boolean AllowBreakingBlocks() {
@@ -307,7 +307,7 @@ public class DuckTapeLegsRestraint extends AbstractLegRestraint implements IBrea
         ModStatistics.awardRestraintBroken(player, this);
 
         if (dropItemOnBroken()) {
-           ItemStack stack = this.saveToItemStack();
+           ItemStack stack = this.saveToItemStack(player.level().registryAccess());
            stack.setDamageValue(stack.getMaxDamage() - 1); // instead of 0 durability
            ItemEntity e = new ItemEntity(player.level(), player.getX(), player.getY() + 0.6D, player.getZ(), stack);
            e.setDefaultPickUpDelay();

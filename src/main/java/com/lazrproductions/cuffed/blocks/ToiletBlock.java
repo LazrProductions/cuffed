@@ -35,6 +35,12 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class ToiletBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+    public static final com.mojang.serialization.MapCodec<ToiletBlock> CODEC = simpleCodec(ToiletBlock::new);
+
+    @Override
+    protected com.mojang.serialization.MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
@@ -84,9 +90,17 @@ public class ToiletBlock extends BaseEntityBlock implements SimpleWaterloggedBlo
     }
 
     @Override
-    public InteractionResult use(@Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos,
-            @Nonnull Player interacting,
-            @Nonnull InteractionHand hand, @Nonnull BlockHitResult hitResult) {
+    protected net.minecraft.world.ItemInteractionResult useItemOn(net.minecraft.world.item.ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        InteractionResult res = interact(state, level, pos, player, hand, hitResult);
+        return res.consumesAction() ? net.minecraft.world.ItemInteractionResult.sidedSuccess(level.isClientSide()) : net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        return interact(state, level, pos, player, InteractionHand.MAIN_HAND, hitResult);
+    }
+
+    private InteractionResult interact(BlockState state, Level level, BlockPos pos, Player interacting, InteractionHand hand, BlockHitResult hitResult) {
         if(!interacting.isCrouching()) {
             if (level.getBlockEntity(pos) instanceof ToiletBlockEntity entity) {
                 return entity.use(state, level, pos, interacting, hand, hitResult);

@@ -2,6 +2,7 @@ package com.lazrproductions.cuffed.blocks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import com.mojang.serialization.MapCodec;
 
 import com.lazrproductions.cuffed.blocks.entity.GuillotineBlockEntity;
 import com.lazrproductions.cuffed.init.ModBlockEntities;
@@ -36,6 +37,12 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class GuillotineBlock extends BaseEntityBlock {
+    public static final MapCodec<GuillotineBlock> CODEC = simpleCodec(GuillotineBlock::new);
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
@@ -121,9 +128,18 @@ public class GuillotineBlock extends BaseEntityBlock {
 
 
     @Override
-    public InteractionResult use(@Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos, @Nonnull Player player,
-            @Nonnull InteractionHand hand, @Nonnull BlockHitResult hitResult) {
-        if(hand == InteractionHand.MAIN_HAND)
+    protected net.minecraft.world.ItemInteractionResult useItemOn(net.minecraft.world.item.ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        InteractionResult res = interact(state, level, pos, player, hand, hitResult);
+        return res.consumesAction() ? net.minecraft.world.ItemInteractionResult.sidedSuccess(level.isClientSide()) : net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        return interact(state, level, pos, player, InteractionHand.MAIN_HAND, hitResult);
+    }
+
+    private InteractionResult interact(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if(hand == InteractionHand.MAIN_HAND) {
             if(!level.isClientSide()) {
                 BlockEntity entity = level.getBlockEntity(pos);
                 if(entity instanceof GuillotineBlockEntity bl) {
@@ -131,7 +147,9 @@ public class GuillotineBlock extends BaseEntityBlock {
                     return InteractionResult.SUCCESS;
                 }
             }
-        return InteractionResult.sidedSuccess(level.isClientSide());
+            return InteractionResult.sidedSuccess(level.isClientSide());
+        }
+        return InteractionResult.FAIL;
     }
 
     @Override

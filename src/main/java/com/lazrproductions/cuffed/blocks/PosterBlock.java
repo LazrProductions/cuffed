@@ -2,6 +2,7 @@ package com.lazrproductions.cuffed.blocks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import com.mojang.serialization.MapCodec;
 
 import com.lazrproductions.cuffed.blocks.base.PosterType;
 import com.lazrproductions.cuffed.init.ModBlockProperties;
@@ -33,6 +34,13 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class PosterBlock extends Block {
+    public static final MapCodec<PosterBlock> CODEC = simpleCodec(PosterBlock::new);
+
+    @Override
+    protected MapCodec<? extends Block> codec() {
+        return CODEC;
+    }
+
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
     public static final EnumProperty<PosterType> POSTER_TYPE = ModBlockProperties.POSTER_TYPE;
@@ -137,14 +145,14 @@ public class PosterBlock extends Block {
     }
 
     @Override
-    public void playerWillDestroy(@Nonnull Level level, @Nonnull BlockPos pos, @Nonnull BlockState state,
+    public BlockState playerWillDestroy(@Nonnull Level level, @Nonnull BlockPos pos, @Nonnull BlockState state,
             @Nonnull Player player) {
         if (!level.isClientSide) {
             if (player.isCreative())
                 preventCreativeDropFromBottomPart(level, pos, state, player);
         }
 
-        super.playerWillDestroy(level, pos, state, player);
+        return super.playerWillDestroy(level, pos, state, player);
     }
 
     @Override
@@ -170,8 +178,7 @@ public class PosterBlock extends Block {
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos,
-            Player player) {
+    public ItemStack getCloneItemStack(net.minecraft.world.level.LevelReader level, BlockPos pos, BlockState state) {
         return PosterBlockItem.newItemFromType(state.getValue(POSTER_TYPE));
     }
 }

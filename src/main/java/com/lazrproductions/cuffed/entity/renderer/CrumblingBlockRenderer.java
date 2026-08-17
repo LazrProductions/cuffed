@@ -13,8 +13,8 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class CrumblingBlockRenderer extends EntityRenderer<CrumblingBlockEntity> {
@@ -41,7 +41,7 @@ public class CrumblingBlockRenderer extends EntityRenderer<CrumblingBlockEntity>
             int bakedLight) {
         super.render(entity, p_114486_, deltaTick, stack, buffer, bakedLight);
         model.renderToBuffer(stack, buffer.getBuffer(RenderType.entityTranslucent(getTextureLocation(entity))), 15,
-                getOverlayCoords(entity, 0), 1.0f, 1.0f, 1.0f, 1.0f);
+                getOverlayCoords(entity, 0), -1);
     }
 
     @Override

@@ -4,12 +4,12 @@ import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.client.gui.screen.GenericScreen;
 
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 
-@Mod.EventBusSubscriber(modid = CuffedMod.MODID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = CuffedMod.MODID, value = Dist.CLIENT)
 public class ModClientBusEvents {
     @SubscribeEvent
     public static void onKeyInput(InputEvent.Key event) {

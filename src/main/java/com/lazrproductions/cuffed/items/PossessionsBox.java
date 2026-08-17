@@ -11,6 +11,7 @@ import com.lazrproductions.cuffed.init.ModMenuTypes;
 import com.lazrproductions.cuffed.inventory.FriskingContainer;
 import com.lazrproductions.cuffed.inventory.FriskingMenu;
 import com.lazrproductions.cuffed.inventory.tooltip.PossessionsBoxTooltip;
+import com.lazrproductions.cuffed.utils.ItemTagUtils;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.NonNullList;
@@ -77,7 +78,7 @@ public class PossessionsBox extends Item {
 
    public static ItemStack add(ItemStack stack, ItemStack stackToAdd) {
       if (!stackToAdd.isEmpty()) {
-         CompoundTag compoundtag = stack.getOrCreateTag();
+         CompoundTag compoundtag = ItemTagUtils.getOrCreateTag(stack);
          if (!compoundtag.contains(TAG_ITEMS)) {
             compoundtag.put(TAG_ITEMS, new ListTag());
          }
@@ -89,9 +90,9 @@ public class PossessionsBox extends Item {
             ListTag listtag = compoundtag.getList(TAG_ITEMS, 10);
 
             ItemStack itemstack1 = stackToAdd.copyWithCount(k);
-            CompoundTag compoundtag2 = new CompoundTag();
-            itemstack1.save(compoundtag2);
+            CompoundTag compoundtag2 = ItemTagUtils.saveItem(itemstack1, null);
             listtag.add(0, (Tag) compoundtag2);
+            ItemTagUtils.setTag(stack, compoundtag);
             return stackToAdd;
          }
       } else {
@@ -100,7 +101,7 @@ public class PossessionsBox extends Item {
    }
 
    private static Optional<ItemStack> removeOne(ItemStack stack) {
-      CompoundTag compoundtag = stack.getOrCreateTag();
+      CompoundTag compoundtag = ItemTagUtils.getOrCreateTag(stack);
       if (!compoundtag.contains(TAG_ITEMS)) {
          return Optional.empty();
       } else {
@@ -109,19 +110,21 @@ public class PossessionsBox extends Item {
             return Optional.empty();
          } else {
             CompoundTag compoundtag1 = listtag.getCompound(0);
-            ItemStack itemstack = ItemStack.of(compoundtag1);
+            ItemStack itemstack = ItemTagUtils.loadItem(compoundtag1, null);
             listtag.remove(0);
             if (listtag.isEmpty()) {
-               stack.removeTagKey(TAG_ITEMS);
+               compoundtag.remove(TAG_ITEMS);
+            } else {
+               compoundtag.put(TAG_ITEMS, listtag);
             }
-
+            ItemTagUtils.setTag(stack, compoundtag);
             return Optional.of(itemstack);
          }
       }
    }
 
    private static boolean dropContents(ItemStack stack, Player player) {
-      CompoundTag compoundtag = stack.getOrCreateTag();
+      CompoundTag compoundtag = ItemTagUtils.getOrCreateTag(stack);
       if (player.isCrouching()) {
          if (!compoundtag.contains(TAG_ITEMS)) {
             return false;
@@ -131,12 +134,13 @@ public class PossessionsBox extends Item {
 
                for (int i = 0; i < listtag.size(); ++i) {
                   CompoundTag compoundtag1 = listtag.getCompound(i);
-                  ItemStack itemstack = ItemStack.of(compoundtag1);
+                  ItemStack itemstack = ItemTagUtils.loadItem(compoundtag1, null);
                   player.drop(itemstack, true);
                }
             }
 
-            stack.removeTagKey(TAG_ITEMS);
+            compoundtag.remove(TAG_ITEMS);
+            ItemTagUtils.setTag(stack, compoundtag);
             return true;
          }
       } else {
@@ -145,18 +149,18 @@ public class PossessionsBox extends Item {
    }
 
    public static Stream<ItemStack> getContents(ItemStack p_150783_) {
-      CompoundTag compoundtag = p_150783_.getTag();
+      CompoundTag compoundtag = ItemTagUtils.getTag(p_150783_);
       if (compoundtag == null) {
          return Stream.empty();
       } else {
          ListTag listtag = compoundtag.getList(TAG_ITEMS, 10);
-         return listtag.stream().map(CompoundTag.class::cast).map(ItemStack::of);
+         return listtag.stream().map(CompoundTag.class::cast).map(tag -> ItemTagUtils.loadItem(tag, null));
       }
    }
 
    @Override
    public Component getName(@Nonnull ItemStack stack) {
-      CompoundTag compoundtag = stack.getOrCreateTag();
+      CompoundTag compoundtag = ItemTagUtils.getOrCreateTag(stack);
       if (compoundtag.contains(TAG_ITEMS)) {
          ListTag listtag = compoundtag.getList(TAG_ITEMS, 10);
          if (listtag.size() > 0)
@@ -177,9 +181,9 @@ public class PossessionsBox extends Item {
    }
 
    @Override
-   public void appendHoverText(@Nonnull ItemStack stack, @Nullable Level p_150750_, @Nonnull List<Component> component,
+   public void appendHoverText(@Nonnull ItemStack stack, @Nonnull TooltipContext context, @Nonnull List<Component> component,
          @Nonnull TooltipFlag p_150752_) {
-      CompoundTag compoundtag = stack.getOrCreateTag();
+      CompoundTag compoundtag = ItemTagUtils.getOrCreateTag(stack);
       if (!compoundtag.contains(TAG_ITEMS)) {
          component.add(Component.translatable("item.cuffed.possessions_box.lore.empty").withStyle(ChatFormatting.GRAY));
       } else {
@@ -187,12 +191,11 @@ public class PossessionsBox extends Item {
          component.add(Component.translatable("item.cuffed.possessions_box.lore.full", listtag.size())
                .withStyle(ChatFormatting.GRAY));
       }
-
    }
 
    @Override
    public void onDestroyed(@Nonnull ItemEntity p_150728_) {
-      ItemUtils.onContainerDestroyed(p_150728_, getContents(p_150728_.getItem()));
+      ItemUtils.onContainerDestroyed(p_150728_, getContents(p_150728_.getItem()).toList());
    }
 
    private void playRemoveOneSound(Entity entity) {

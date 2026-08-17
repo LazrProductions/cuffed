@@ -33,9 +33,10 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public abstract class AbstractRestraint {
 
@@ -51,10 +52,10 @@ public abstract class AbstractRestraint {
         //this.onEquippedServer(player, captor);
 
         if(this instanceof IEnchantableRestraint enchantable)
-            enchantable.setEnchantments(stack.getEnchantmentTags());
+            enchantable.setEnchantments(stack.getEnchantments());
         
         itemData = new CompoundTag();
-        stack.save(itemData);
+        stack.save(player.registryAccess(), itemData);
         
         this.captor = captor.getUUID();    
     } 
@@ -142,20 +143,21 @@ public abstract class AbstractRestraint {
         ModStatistics.awardTimeSpentRestrained(player, this);
 
         if(this instanceof IEnchantableRestraint e) {
-            if(e.getEnchantmentLevel(ModEnchantments.FAMINE.get()) >= 1)
+            net.minecraft.core.RegistryAccess regAccess = player.registryAccess();
+            if(getEnchantLevelSafely(e, ModEnchantments.FAMINE, regAccess) >= 1)
                 if(!player.hasEffect(MobEffects.HUNGER))
                     player.addEffect(new MobEffectInstance(MobEffects.HUNGER, 100, 1));
 
-            if(e.getEnchantmentLevel(ModEnchantments.SHROUD.get()) >= 1)
+            if(getEnchantLevelSafely(e, ModEnchantments.SHROUD, regAccess) >= 1)
                 if(!player.hasEffect(MobEffects.BLINDNESS))
                     player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, 1));
                     
-            if(e.getEnchantmentLevel(ModEnchantments.EXHAUST.get()) >= 1) {
+            if(getEnchantLevelSafely(e, ModEnchantments.EXHAUST, regAccess) >= 1) {
                 if(!player.hasEffect(MobEffects.DIG_SLOWDOWN)) player.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 100, 1));
                 if(!player.hasEffect(MobEffects.WEAKNESS)) player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 1));
             }     
 
-            if(e.getEnchantmentLevel(ModEnchantments.SILENCE.get()) >= 1) {
+            if(getEnchantLevelSafely(e, ModEnchantments.SILENCE, regAccess) >= 1) {
                 double drainPercentage = 0.005D; // 0.5% per tick, so drains 10% per second TODO: make this a config option
                 if(CuffedMod.ArsNouveauInstalled) ArsNouveauCompat.DrainMana(player, drainPercentage);
                 if(CuffedMod.IronsSpellsnSpellbooksInstalled) IronsSpellsnSpellbooksCompat.DrainMana(player, drainPercentage);
@@ -254,34 +256,43 @@ public abstract class AbstractRestraint {
 
     //#region Server-Side Handles
 
-    public CompoundTag serializeNBT() {
+    public CompoundTag serializeNBT(net.minecraft.core.HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
         tag.putString("Id", getId().toString());
         tag.putString("Type", getType().toString());
-        if(this instanceof IEnchantableRestraint ench)
-            tag.put("Enchantments", ench.getEnchantments());
+        if(this instanceof IEnchantableRestraint ench) {
+            net.minecraft.world.item.enchantment.ItemEnchantments.CODEC.encodeStart(provider.createSerializationContext(net.minecraft.nbt.NbtOps.INSTANCE), ench.getEnchantments())
+                .resultOrPartial(CuffedMod.LOGGER::error)
+                .ifPresent(t -> tag.put("Enchantments", t));
+        }
 
         tag.putUUID("Captor", captor);
         tag.put("ItemData", itemData);
         return tag;
     }
-    public void deserializeNBT(CompoundTag nbt) {
+    public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag nbt) {
         if(this instanceof IEnchantableRestraint ench) {
-            ListTag t = nbt.getList("Enchantments", 10);
-            ench.setEnchantments(t);
+            if (nbt.contains("Enchantments")) {
+                net.minecraft.world.item.enchantment.ItemEnchantments.CODEC.parse(provider.createSerializationContext(net.minecraft.nbt.NbtOps.INSTANCE), nbt.get("Enchantments"))
+                    .resultOrPartial(CuffedMod.LOGGER::error)
+                    .ifPresent(ench::setEnchantments);
+            } else {
+                ench.setEnchantments(net.minecraft.world.item.enchantment.ItemEnchantments.EMPTY);
+            }
         }
         this.captor = nbt.getUUID("Captor");
         this.itemData = nbt.getCompound("ItemData");
     }
 
     /** Save this restraint to an item stack */
-    public ItemStack saveToItemStack() {
-        ItemStack stack = ItemStack.of(itemData);
+    public ItemStack saveToItemStack(net.minecraft.core.HolderLookup.Provider provider) {
+        ItemStack stack = ItemStack.parse(provider, itemData).orElse(ItemStack.EMPTY);
         stack.setCount(1);
         if(this instanceof IBreakableRestraint breakable)
             stack.setDamageValue(breakable.getMaxDurability() - breakable.getDurability());
-        if(this instanceof IEnchantableRestraint enchantable)
-            EnchantmentHelper.setEnchantments(EnchantmentHelper.deserializeEnchantments(enchantable.getEnchantments()), stack);
+        if(this instanceof IEnchantableRestraint enchantable) {
+            stack.set(net.minecraft.core.component.DataComponents.ENCHANTMENTS, enchantable.getEnchantments());
+        }
         return stack;
     }
 
@@ -315,6 +326,12 @@ public abstract class AbstractRestraint {
             if(this instanceof IBreakableRestraint breakable)
                 breakable.onBrokenClient(player);
         }
+    }
+    private int getEnchantLevelSafely(IEnchantableRestraint e, net.minecraft.resources.ResourceKey<Enchantment> key, net.minecraft.core.RegistryAccess registryAccess) {
+        return registryAccess.registryOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT)
+                .getHolder(key)
+                .map(e::getEnchantmentLevel)
+                .orElse(0);
     }
     //#endregion
 }

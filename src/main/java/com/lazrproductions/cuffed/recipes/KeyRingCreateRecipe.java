@@ -8,74 +8,65 @@ import com.lazrproductions.cuffed.init.ModItems;
 import com.lazrproductions.cuffed.init.ModRecipes;
 import com.lazrproductions.cuffed.items.KeyItem;
 import com.lazrproductions.cuffed.items.KeyRingItem;
+import com.lazrproductions.cuffed.utils.ItemTagUtils;
 
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.CraftingContainer;
-import net.minecraft.world.item.Item;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 
 public class KeyRingCreateRecipe extends CustomRecipe {
-    public KeyRingCreateRecipe(ResourceLocation idIn, CraftingBookCategory category) {
-        super(idIn, category);
+    public KeyRingCreateRecipe(CraftingBookCategory category) {
+        super(category);
     }
 
     @Override
-    public boolean matches(@Nonnull CraftingContainer inv, @Nonnull Level level) {
+    public boolean matches(@Nonnull CraftingInput input, @Nonnull Level level) {
         ArrayList<ItemStack> keyStack = new ArrayList<ItemStack>(0);
 
-        for (int i = 0; i < inv.getContainerSize(); i++) {
-            if (!inv.getItem(i).isEmpty())
-                if (inv.getItem(i).is(ModItems.KEY.get())) {
-                    ItemStack stack = inv.getItem(i);
-                    Item item = stack.getItem();
-                    if (item == ModItems.KEY.get()) {
-                        keyStack.add(stack);
-                    }
-
-                } else
+        for (int i = 0; i < input.size(); i++) {
+            ItemStack stack = input.getItem(i);
+            if (!stack.isEmpty()) {
+                if (stack.is(ModItems.KEY.get())) {
+                    keyStack.add(stack);
+                } else {
                     return false;
-
+                }
+            }
         }
 
         return keyStack.size() > 0;
     }
 
-    @SuppressWarnings("null")
     @Override
-    public ItemStack assemble(@Nonnull CraftingContainer inv, @Nonnull RegistryAccess access) {
-
+    public ItemStack assemble(@Nonnull CraftingInput input, @Nonnull HolderLookup.Provider provider) {
         ArrayList<ItemStack> keyStacks = new ArrayList<ItemStack>(0);
 
-        if (matches(inv, null)) {
-            for (int i = 0; i < inv.getContainerSize(); i++) {
-                ItemStack stack = inv.getItem(i);
-                Item item = stack.getItem();
-
-                if (item == ModItems.KEY.get()) {
-                    keyStacks.add(stack);
+        if (matches(input, null)) {
+            for (int i = 0; i < input.size(); i++) {
+                ItemStack stack = input.getItem(i);
+                if (!stack.isEmpty()) {
+                    if (stack.is(ModItems.KEY.get())) {
+                        keyStacks.add(stack);
+                    }
                 }
             }
 
-
             ItemStack newStack = new ItemStack(ModItems.KEY_RING.get());
             newStack.setCount(1);
-            //int keys = 2;
                 
             for (ItemStack stack : keyStacks) {
-                if(stack.getOrCreateTag().contains(KeyItem.TAG_ID)) {
+                if(ItemTagUtils.getOrCreateTag(stack).contains(KeyItem.TAG_ID)) {
                     KeyRingItem.addKey(newStack, stack);
                 }
             }
                         
-            newStack.getOrCreateTag().putInt("Keys", keyStacks.size());
+            ItemTagUtils.updateTag(newStack, tag -> tag.putInt("Keys", keyStacks.size()));
 
             return newStack;
-            
         }
 
         return ItemStack.EMPTY;
@@ -88,7 +79,6 @@ public class KeyRingCreateRecipe extends CustomRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipes.KEY_RING_ADD.get();
+        return ModRecipes.KEY_RING_CREATE.get();
     }
-
 }

@@ -23,7 +23,7 @@ public class BandageItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(@Nonnull Level level, @Nonnull Player player, @Nonnull InteractionHand hand) {
         if(player.isCrouching()) {
-            if(player.hasEffect(ModEffects.WOUNDED_EFFECT.get())) {
+            if(player.hasEffect(ModEffects.WOUNDED_EFFECT)) {
                 WoundedEffect.treatEntity(player);
                 player.getItemInHand(hand).shrink(1);
                 return InteractionResultHolder.consume(player.getItemInHand(hand));
@@ -36,7 +36,7 @@ public class BandageItem extends Item {
     public InteractionResult interactLivingEntity(@Nonnull ItemStack stack, @Nonnull Player player,
             @Nonnull LivingEntity entity,
             @Nonnull InteractionHand hand) {
-        if(entity.hasEffect(ModEffects.WOUNDED_EFFECT.get())) {
+        if(entity.hasEffect(ModEffects.WOUNDED_EFFECT)) {
             WoundedEffect.treatEntity(entity);
             stack.shrink(1);
             return InteractionResult.SUCCESS;

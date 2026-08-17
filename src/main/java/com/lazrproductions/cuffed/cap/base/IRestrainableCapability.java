@@ -30,8 +30,8 @@ public interface IRestrainableCapability {
      */
     public void copyFrom(CompoundTag tag, ServerLevel level);
 
-    public CompoundTag serializeNBT();
-    public void deserializeNBT(CompoundTag nbt);
+    public CompoundTag serializeNBT(net.minecraft.core.HolderLookup.Provider provider);
+    public void deserializeNBT(net.minecraft.core.HolderLookup.Provider provider, CompoundTag nbt);
 
     /**
     * Called every tick on the server

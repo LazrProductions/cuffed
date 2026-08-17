@@ -1,86 +1,12 @@
 package com.lazrproductions.cuffed.effect;
 
-import java.util.UUID;
+import net.minecraft.resources.ResourceLocation;
 
-import javax.annotation.Nonnull;
+public class RestrainedEffectInstance {
 
-import com.lazrproductions.cuffed.init.ModEffects;
-
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
-import net.minecraftforge.common.ForgeMod;
-
-public class RestrainedEffectInstance extends MobEffectInstance {
-
-    public static final UUID NEGATIVE_MINE_SPEED_UUID = UUID.fromString("bc5de830-355c-419e-9b16-a54b74e8ebe4");
-    public static final UUID NEGATIVE_MOVE_SPEED_UUID = UUID.fromString("a42a112a-a81f-43be-8e00-a35c1e646494");
-    public static final UUID NEGATIVE_SWIM_SPEED_UUID = UUID.fromString("7ccc7ac4-bc59-4467-ad64-fca99c9e0413");
-
-    public boolean noMining;
-    public boolean noItemUse;
-    public boolean noMovement;
-    public boolean noJumping;
-
-    public RestrainedEffectInstance(int duration, int restraintType) {
-        super(ModEffects.RESTRAINED_EFFECT.get(), duration, restraintType);
-        
-        boolean[] decodedValues = decodeRestraintProperties(restraintType);
-        this.noMining = decodedValues[0];
-        this.noItemUse = decodedValues[1];
-        this.noMovement = decodedValues[2];
-        this.noJumping = decodedValues[3];
-    }
-
-    private boolean hasRemainingDuration() {
-        return this.isInfiniteDuration() || this.getDuration() > 0;
-    }
-
-    @Override
-    public void applyEffect(@Nonnull LivingEntity entity) {
-        if (this.hasRemainingDuration()) {
-            super.applyEffect(entity);
-
-            AttributeInstance attackSpeed = entity.getAttribute(Attributes.ATTACK_SPEED);
-            AttributeInstance moveSpeed = entity.getAttribute(Attributes.MOVEMENT_SPEED);
-            AttributeInstance swimSpeed = entity.getAttribute(ForgeMod.SWIM_SPEED.get());
-
-            if(noMining&&!entity.getAttributes().hasModifier(Attributes.ATTACK_SPEED, NEGATIVE_MINE_SPEED_UUID) && attackSpeed != null)
-                attackSpeed.addTransientModifier(new AttributeModifier(NEGATIVE_MINE_SPEED_UUID, "restrainMineSpeed", -9.0, Operation.MULTIPLY_TOTAL));
-
-            if(noMovement&&!entity.getAttributes().hasModifier(Attributes.MOVEMENT_SPEED, NEGATIVE_MOVE_SPEED_UUID) && moveSpeed != null)
-                moveSpeed.addTransientModifier(new AttributeModifier(NEGATIVE_MOVE_SPEED_UUID, "restrainMovementSpeed", -9.0, Operation.MULTIPLY_TOTAL));
-                
-            if(noMovement&&!entity.getAttributes().hasModifier(ForgeMod.SWIM_SPEED.get(), NEGATIVE_SWIM_SPEED_UUID) && swimSpeed != null)
-            swimSpeed.addTransientModifier(new AttributeModifier(NEGATIVE_SWIM_SPEED_UUID, "restrainSwimSpeed", -9.0, Operation.MULTIPLY_TOTAL));
-        } else {
-            AttributeInstance attackSpeed = entity.getAttribute(Attributes.ATTACK_SPEED);
-            AttributeInstance moveSpeed = entity.getAttribute(Attributes.MOVEMENT_SPEED);
-            AttributeInstance swimSpeed = entity.getAttribute(ForgeMod.SWIM_SPEED.get());
-
-            if(noMining&&!entity.getAttributes().hasModifier(Attributes.ATTACK_SPEED, NEGATIVE_MINE_SPEED_UUID) && attackSpeed != null)
-                attackSpeed.addTransientModifier(new AttributeModifier(NEGATIVE_MINE_SPEED_UUID, "restrainMineSpeed", -9.0, Operation.MULTIPLY_TOTAL));
-
-            if(noMovement&&!entity.getAttributes().hasModifier(Attributes.ATTACK_SPEED, NEGATIVE_MOVE_SPEED_UUID) && moveSpeed != null)
-                moveSpeed.addTransientModifier(new AttributeModifier(NEGATIVE_MOVE_SPEED_UUID, "restrainMovementSpeed", -9.0, Operation.MULTIPLY_TOTAL));
-                
-            if(noMovement&&!entity.getAttributes().hasModifier(ForgeMod.SWIM_SPEED.get(), NEGATIVE_SWIM_SPEED_UUID) && swimSpeed != null)
-                swimSpeed.addTransientModifier(new AttributeModifier(NEGATIVE_SWIM_SPEED_UUID, "restrainSwimSpeed", -9.0, Operation.MULTIPLY_TOTAL));
-        }
-    }
-
-    @Override
-    public String getDescriptionId() {
-        return "effect.cuffed.restrained";
-    }
-
-    @Override
-    public boolean isVisible() {
-        return false;
-    }
+    public static final ResourceLocation NEGATIVE_MINE_SPEED_ID = ResourceLocation.fromNamespaceAndPath("cuffed", "restrain_mine_speed");
+    public static final ResourceLocation NEGATIVE_MOVE_SPEED_ID = ResourceLocation.fromNamespaceAndPath("cuffed", "restrain_movement_speed");
+    public static final ResourceLocation NEGATIVE_SWIM_SPEED_ID = ResourceLocation.fromNamespaceAndPath("cuffed", "restrain_swim_speed");
 
     public static int encodeRestraintProperties(boolean noMining, boolean noItemUse, boolean noMovement, boolean noJumping) {
         int encodedValue = 0;

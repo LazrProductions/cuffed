@@ -37,13 +37,6 @@ public class WeightedAnchorItem extends Item {
 
     
     @Override
-    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-        if (enchantment == ModEnchantments.BUOYANT.get())
-            return true;
-        return super.canApplyAtEnchantingTable(stack, enchantment);
-    }
-
-    @Override
     public boolean isEnchantable(@Nonnull ItemStack stack) {
         return true;
     }

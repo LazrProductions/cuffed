@@ -60,10 +60,9 @@ public class FuzzyHandcuffsModel<T extends LivingEntity> extends HumanoidModel<T
 	}
 
 	@Override
-	public void renderToBuffer(@Nonnull PoseStack stack, @Nonnull VertexConsumer buffer, int packedLight, int blockLight,
-			float partialTick, float r, float g, float b) {		
-		_root.render(stack, buffer, packedLight, blockLight);
+	public void renderToBuffer(@Nonnull PoseStack stack, @Nonnull VertexConsumer buffer, int packedLight, int packedOverlay, int color) {		
+		_root.render(stack, buffer, packedLight, packedOverlay, color);
 
-		super.renderToBuffer(stack, buffer, packedLight, blockLight, partialTick, r, g, b);
+		super.renderToBuffer(stack, buffer, packedLight, packedOverlay, color);
 	}
 }

@@ -15,8 +15,8 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class PadlockEntityRenderer extends EntityRenderer<PadlockEntity> {
@@ -55,8 +55,7 @@ public class PadlockEntityRenderer extends EntityRenderer<PadlockEntity> {
         VertexConsumer vertexconsumer = buffer.getBuffer(this.model.renderType(TEXTURE_LOCATION));
         if(entity.isReinforced())
                 vertexconsumer = buffer.getBuffer(this.model.renderType(TEXTURE_REINFORCED_LOCATION));
-        this.model.renderToBuffer(stack, vertexconsumer, light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F,
-                1.0F);
+        this.model.renderToBuffer(stack, vertexconsumer, light, OverlayTexture.NO_OVERLAY, -1);
         stack.popPose();
     }
 

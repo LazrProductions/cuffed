@@ -4,7 +4,7 @@ import com.lazrproductions.lazrslib.common.config.ConfigCategory;
 import com.lazrproductions.lazrslib.common.config.ConfigProperty;
 import com.lazrproductions.lazrslib.common.config.LazrConfig;
 
-import net.minecraftforge.fml.config.ModConfig.Type;
+import net.neoforged.fml.config.ModConfig.Type;
 
 public class CuffedServerConfig extends LazrConfig {
 

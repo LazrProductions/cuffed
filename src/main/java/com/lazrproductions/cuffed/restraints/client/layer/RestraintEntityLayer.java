@@ -117,15 +117,15 @@ public class RestraintEntityLayer<T extends LivingEntity, M extends HumanoidMode
             net.minecraft.client.model.Model model, boolean p_289668_, float p_289678_, float p_289674_,
             float p_289693_, ResourceLocation resource) {
         VertexConsumer vertexconsumer = net.minecraft.client.renderer.entity.ItemRenderer.getArmorFoilBuffer(buffer,
-                RenderType.armorCutoutNoCull(resource), false, p_289668_);
+                RenderType.armorCutoutNoCull(resource), p_289668_);
 
-        model.renderToBuffer(stack, vertexconsumer, partialTick, OverlayTexture.NO_OVERLAY, p_289678_, p_289674_,
-                p_289693_, 1.0F);
+        int color = net.minecraft.util.FastColor.ARGB32.color(255, (int)(p_289678_ * 255), (int)(p_289674_ * 255), (int)(p_289693_ * 255));
+        model.renderToBuffer(stack, vertexconsumer, partialTick, OverlayTexture.NO_OVERLAY, color);
     }
 
     private void renderGlint(PoseStack stack, MultiBufferSource buffer, int partialTick,
             net.minecraft.client.model.Model model) {
         model.renderToBuffer(stack, buffer.getBuffer(RenderType.armorEntityGlint()), partialTick,
-                OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+                OverlayTexture.NO_OVERLAY, -1);
     }
 }

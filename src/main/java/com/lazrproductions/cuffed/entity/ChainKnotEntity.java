@@ -14,6 +14,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
@@ -40,6 +41,10 @@ public class ChainKnotEntity extends HangingEntity {
 
     public ChainKnotEntity(EntityType<? extends HangingEntity> type, Level level) {
         super(type, level);
+    }
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
     }
 
     public ChainKnotEntity(Level world, BlockPos pos) {
@@ -174,21 +179,6 @@ public class ChainKnotEntity extends HangingEntity {
     }
 
     @Override
-    public int getWidth() {
-        return 9;
-    }
-
-    @Override
-    public int getHeight() {
-        return 9;
-    }
-
-    @Override
-    protected float getEyeHeight(@Nonnull Pose p_31839_, @Nonnull EntityDimensions p_31840_) {
-        return 0.0625F;
-    }
-
-    @Override
     public boolean shouldRenderAtSqrDistance(double distance) {
         return distance < 1024.0D;
     }
@@ -205,18 +195,13 @@ public class ChainKnotEntity extends HangingEntity {
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new ClientboundAddEntityPacket(this, 0, this.getPos());
-    }
-
-    @Override
     public Vec3 getRopeHoldPosition(float partialTick) {
         return this.getPosition(partialTick).add(getLeashOffset(partialTick));
     }
 
     @Override
     public Vec3 getLeashOffset(float partialTick) {
-        return new Vec3(0.0D, (double) getEyeHeight() + (!isOnFence() ? 0.2D : 0D), 0.0D);
+        return new Vec3(0.0D, 0.0625D + (!isOnFence() ? 0.2D : 0D), 0.0D);
     }
 
     @Override
@@ -225,12 +210,16 @@ public class ChainKnotEntity extends HangingEntity {
     }
 
     @Override
-    protected void recalculateBoundingBox() {
-        this.setPosRaw((double) this.pos.getX() + 0.5D, (double) this.pos.getY() + 0.375D,
-                (double) this.pos.getZ() + 0.5D);
-        double d0 = (double) this.getType().getWidth() / 2.0D;
-        double d1 = (double) this.getType().getHeight();
-        this.setBoundingBox(new AABB(this.getX() - d0, this.getY(), this.getZ() - d0, this.getX() + d0,
-                this.getY() + d1, this.getZ() + d0));
+    protected AABB calculateBoundingBox(BlockPos pos, Direction direction) {
+        double d0 = 0.28125D; // 9.0 / 32.0
+        double d1 = 0.5625D; // 9.0 / 16.0
+        return new AABB(
+            (double)pos.getX() + 0.5D - d0,
+            (double)pos.getY() + 0.375D,
+            (double)pos.getZ() + 0.5D - d0,
+            (double)pos.getX() + 0.5D + d0,
+            (double)pos.getY() + 0.375D + d1,
+            (double)pos.getZ() + 0.5D + d0
+        );
     }
 }

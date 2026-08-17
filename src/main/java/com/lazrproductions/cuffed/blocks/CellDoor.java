@@ -49,8 +49,8 @@ public class CellDoor extends DoorBlock implements EntityBlock {
 
     private final BlockSetType type;
 
-    public CellDoor(Properties p, BlockSetType setType) {
-        super(p, setType);
+    public CellDoor(BlockSetType setType, Properties p) {
+        super(setType, p);
         this.type = setType;
         this.registerDefaultState(
                 this.stateDefinition.any()
@@ -137,13 +137,18 @@ public class CellDoor extends DoorBlock implements EntityBlock {
     }
 
     @Override
-    public InteractionResult use(@Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos,
-            @Nonnull Player player,
-            @Nonnull InteractionHand hand, @Nonnull BlockHitResult hitResult) {
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        InteractionResult res = interact(stack, state, level, pos, player, hand, hitResult);
+        return res.consumesAction() ? net.minecraft.world.ItemInteractionResult.sidedSuccess(level.isClientSide()) : net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
 
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        return interact(ItemStack.EMPTY, state, level, pos, player, InteractionHand.MAIN_HAND, hitResult);
+    }
+
+    private InteractionResult interact(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (!level.isClientSide() && hand == InteractionHand.MAIN_HAND) {
-            ItemStack stack = player.getInventory().getSelected();
-
             BlockPos bottomPos = pos;
             if (level.getBlockState(pos.below()).getBlock() instanceof CellDoor)
                 bottomPos = pos.below();

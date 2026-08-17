@@ -1,93 +1,76 @@
 package com.lazrproductions.cuffed.packet;
 
-import java.util.function.Supplier;
-
+import com.lazrproductions.cuffed.CuffedMod;
 import com.lazrproductions.cuffed.api.CuffedAPI;
 import com.lazrproductions.cuffed.cap.base.IRestrainableCapability;
 import com.lazrproductions.cuffed.restraints.base.AbstractRestraint;
 import com.lazrproductions.cuffed.restraints.base.RestraintType;
-import com.lazrproductions.lazrslib.common.network.packet.ParameterizedLazrPacket;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public class RestraintUtilityPacket extends ParameterizedLazrPacket {
+public class RestraintUtilityPacket implements CustomPacketPayload {
+    public static final Type<RestraintUtilityPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, "restraint_utility"));
 
-    int restraintType;
-    int utiltiyCode;
+    public static final StreamCodec<FriendlyByteBuf, RestraintUtilityPacket> STREAM_CODEC = StreamCodec.of(
+        (buf, val) -> {
+            buf.writeInt(val.restraintType);
+            buf.writeInt(val.utiltiyCode);
+            buf.writeInt(val.integerArg);
+            buf.writeBoolean(val.booleanArg);
+            buf.writeDouble(val.doubleArg);
+            buf.writeUtf(val.stringArg);
+        },
+        buf -> new RestraintUtilityPacket(
+            buf.readInt(),
+            buf.readInt(),
+            buf.readInt(),
+            buf.readBoolean(),
+            buf.readDouble(),
+            buf.readUtf()
+        )
+    );
 
-    int integerArg;
-    boolean booleanArg;
-    double doubleArg;
-    String stringArg;
-
-    public RestraintUtilityPacket(FriendlyByteBuf buf) {
-        super(buf);
-    }
+    public final int restraintType;
+    public final int utiltiyCode;
+    public final int integerArg;
+    public final boolean booleanArg;
+    public final double doubleArg;
+    public final String stringArg;
 
     public RestraintUtilityPacket(int restraintType, int utiltiyCode) {
-        super(restraintType, utiltiyCode, 0, false, 0.0D, "");
-        this.restraintType = restraintType;
-        this.utiltiyCode = utiltiyCode;
+        this(restraintType, utiltiyCode, 0, false, 0.0D, "");
     }
 
     public RestraintUtilityPacket(int restraintType, int utiltiyCode, int iArg, boolean bArg, double dArg, String sArg) {
-        super(restraintType, utiltiyCode, iArg, bArg, dArg, sArg);
         this.restraintType = restraintType;
         this.utiltiyCode = utiltiyCode;
-
         this.integerArg = iArg;
         this.booleanArg = bArg;
         this.doubleArg = dArg;
-        this.stringArg = sArg;
+        this.stringArg = sArg != null ? sArg : "";
     }
 
     @Override
-    public void loadValues(Object[] arg0) {
-        restraintType = (int)arg0[0];
-        utiltiyCode = (int)arg0[1];
-
-        integerArg = (int)arg0[2];
-        booleanArg = (Boolean)arg0[3];
-        doubleArg = (Double)arg0[4];
-        stringArg = (String)arg0[5];
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    @Override
-    public void handleClientside(Supplier<NetworkEvent.Context> ctx) {
-        Clientside.handleClientside(ctx, restraintType, utiltiyCode, integerArg, booleanArg, doubleArg, stringArg);
-    }
-
-    @Override
-    public void handleServerside(Supplier<NetworkEvent.Context> ctx) {
-        Serverside.handleServerside(ctx, restraintType, utiltiyCode, integerArg, booleanArg, doubleArg, stringArg);
-    }
-
-    static class Clientside {
-        public static void handleClientside(Supplier<NetworkEvent.Context> ctx, int restraintType, int utiltiyCode, int integerArg, boolean booleanArg, double doubleArg, String stringArg) {
-            Minecraft inst = Minecraft.getInstance();
-            Player arg0 = inst.player;
-            
-            if(arg0 != null) {
+    public void handleServer(IPayloadContext context) {
+        context.enqueueWork(() -> {
+            Player player = context.player();
+            if (player instanceof ServerPlayer arg0) {
                 IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(arg0);
                 AbstractRestraint res = cap.getRestraint(RestraintType.fromInteger(restraintType));
-                if(res != null) res.receiveUtilityPacketClient(arg0, utiltiyCode, integerArg, booleanArg, doubleArg, stringArg);
+                if (res != null) {
+                    res.receiveUtilityPacketServer(arg0, utiltiyCode, integerArg, booleanArg, doubleArg, stringArg);
+                }
             }
-        }
-    }
-
-    static class Serverside {
-        public static void handleServerside(Supplier<NetworkEvent.Context> ctx, int restraintType, int utiltiyCode, int integerArg, boolean booleanArg, double doubleArg, String stringArg) {
-            ServerPlayer arg0 = ctx.get().getSender();
-            
-            if(arg0 != null) {
-                IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(arg0);
-                AbstractRestraint res = cap.getRestraint(RestraintType.fromInteger(restraintType));
-                if(res != null) res.receiveUtilityPacketServer(arg0, utiltiyCode, integerArg, booleanArg, doubleArg, stringArg);
-            }
-        }
+        });
     }
 }

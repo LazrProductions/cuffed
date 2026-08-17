@@ -19,9 +19,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.StatFormatter;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class ModStatistics {
     private static final DeferredRegister<ResourceLocation> REGISTER = DeferredRegister.create(
@@ -30,36 +30,36 @@ public class ModStatistics {
 	private static final List<Runnable> RUN_IN_SETUP = new ArrayList<>();
 
 
-	public static final RegistryObject<ResourceLocation> HANDCUFFS_TIME_RESTRAINED = registerCustomStat("handcuffs_times_restrained", StatFormatter.DEFAULT);
-	public static final RegistryObject<ResourceLocation> HANDCUFFS_BROKEN = registerCustomStat("handcuffs_broken", StatFormatter.DEFAULT);
-	public static final RegistryObject<ResourceLocation> HANDCUFFS_TIME_SPENT_RESTRAINED = registerCustomStat("handcuffs_time_spent_restrained", StatFormatter.TIME);
+	public static final net.neoforged.neoforge.registries.DeferredHolder<ResourceLocation, ResourceLocation> HANDCUFFS_TIME_RESTRAINED = registerCustomStat("handcuffs_times_restrained", StatFormatter.DEFAULT);
+	public static final net.neoforged.neoforge.registries.DeferredHolder<ResourceLocation, ResourceLocation> HANDCUFFS_BROKEN = registerCustomStat("handcuffs_broken", StatFormatter.DEFAULT);
+	public static final net.neoforged.neoforge.registries.DeferredHolder<ResourceLocation, ResourceLocation> HANDCUFFS_TIME_SPENT_RESTRAINED = registerCustomStat("handcuffs_time_spent_restrained", StatFormatter.TIME);
 
-	public static final RegistryObject<ResourceLocation> FUZZY_HANDCUFFS_TIME_RESTRAINED = registerCustomStat("fuzzy_handcuffs_times_restrained", StatFormatter.DEFAULT);
-	public static final RegistryObject<ResourceLocation> FUZZY_HANDCUFFS_BROKEN = registerCustomStat("fuzzy_handcuffs_broken", StatFormatter.DEFAULT);
-	public static final RegistryObject<ResourceLocation> FUZZY_HANDCUFFS_TIME_SPENT_RESTRAINED = registerCustomStat("fuzzy_handcuffs_time_spent_restrained", StatFormatter.TIME);
+	public static final net.neoforged.neoforge.registries.DeferredHolder<ResourceLocation, ResourceLocation> FUZZY_HANDCUFFS_TIME_RESTRAINED = registerCustomStat("fuzzy_handcuffs_times_restrained", StatFormatter.DEFAULT);
+	public static final net.neoforged.neoforge.registries.DeferredHolder<ResourceLocation, ResourceLocation> FUZZY_HANDCUFFS_BROKEN = registerCustomStat("fuzzy_handcuffs_broken", StatFormatter.DEFAULT);
+	public static final net.neoforged.neoforge.registries.DeferredHolder<ResourceLocation, ResourceLocation> FUZZY_HANDCUFFS_TIME_SPENT_RESTRAINED = registerCustomStat("fuzzy_handcuffs_time_spent_restrained", StatFormatter.TIME);
 
-	public static final RegistryObject<ResourceLocation> SHACKLES_TIME_RESTRAINED = registerCustomStat("shackles_times_restrained", StatFormatter.DEFAULT);
-	public static final RegistryObject<ResourceLocation> SHACKLES_BROKEN = registerCustomStat("shackles_broken", StatFormatter.DEFAULT);
-	public static final RegistryObject<ResourceLocation> SHACKLES_TIME_SPENT_RESTRAINED = registerCustomStat("shackles_time_spent_restrained", StatFormatter.TIME);
+	public static final net.neoforged.neoforge.registries.DeferredHolder<ResourceLocation, ResourceLocation> SHACKLES_TIME_RESTRAINED = registerCustomStat("shackles_times_restrained", StatFormatter.DEFAULT);
+	public static final net.neoforged.neoforge.registries.DeferredHolder<ResourceLocation, ResourceLocation> SHACKLES_BROKEN = registerCustomStat("shackles_broken", StatFormatter.DEFAULT);
+	public static final net.neoforged.neoforge.registries.DeferredHolder<ResourceLocation, ResourceLocation> SHACKLES_TIME_SPENT_RESTRAINED = registerCustomStat("shackles_time_spent_restrained", StatFormatter.TIME);
 
 
-	public static final RegistryObject<ResourceLocation> LEGCUFFS_TIME_RESTRAINED = registerCustomStat("legcuffs_times_restrained", StatFormatter.DEFAULT);
-	public static final RegistryObject<ResourceLocation> LEGCUFFS_BROKEN = registerCustomStat("legcuffs_broken", StatFormatter.DEFAULT);
-	public static final RegistryObject<ResourceLocation> LEGCUFFS_TIME_SPENT_RESTRAINED = registerCustomStat("legcuffs_time_spent_restrained", StatFormatter.TIME);
+	public static final net.neoforged.neoforge.registries.DeferredHolder<ResourceLocation, ResourceLocation> LEGCUFFS_TIME_RESTRAINED = registerCustomStat("legcuffs_times_restrained", StatFormatter.DEFAULT);
+	public static final net.neoforged.neoforge.registries.DeferredHolder<ResourceLocation, ResourceLocation> LEGCUFFS_BROKEN = registerCustomStat("legcuffs_broken", StatFormatter.DEFAULT);
+	public static final net.neoforged.neoforge.registries.DeferredHolder<ResourceLocation, ResourceLocation> LEGCUFFS_TIME_SPENT_RESTRAINED = registerCustomStat("legcuffs_time_spent_restrained", StatFormatter.TIME);
 
-	public static final RegistryObject<ResourceLocation> LEG_SHACKLES_TIME_RESTRAINED = registerCustomStat("leg_shackles_times_restrained", StatFormatter.DEFAULT);
-	public static final RegistryObject<ResourceLocation> LEG_SHACKLES_BROKEN = registerCustomStat("leg_shackles_broken", StatFormatter.DEFAULT);
-	public static final RegistryObject<ResourceLocation> LEG_SHACKLES_TIME_SPENT_RESTRAINED = registerCustomStat("leg_shackles_time_spent_restrained", StatFormatter.TIME);
+	public static final net.neoforged.neoforge.registries.DeferredHolder<ResourceLocation, ResourceLocation> LEG_SHACKLES_TIME_RESTRAINED = registerCustomStat("leg_shackles_times_restrained", StatFormatter.DEFAULT);
+	public static final net.neoforged.neoforge.registries.DeferredHolder<ResourceLocation, ResourceLocation> LEG_SHACKLES_BROKEN = registerCustomStat("leg_shackles_broken", StatFormatter.DEFAULT);
+	public static final net.neoforged.neoforge.registries.DeferredHolder<ResourceLocation, ResourceLocation> LEG_SHACKLES_TIME_SPENT_RESTRAINED = registerCustomStat("leg_shackles_time_spent_restrained", StatFormatter.TIME);
 	
 
-	public static final RegistryObject<ResourceLocation> TIMES_NICKNAMED = registerCustomStat("times_nicknamed", StatFormatter.DEFAULT);
+	public static final net.neoforged.neoforge.registries.DeferredHolder<ResourceLocation, ResourceLocation> TIMES_NICKNAMED = registerCustomStat("times_nicknamed", StatFormatter.DEFAULT);
 
 
-	public static final RegistryObject<ResourceLocation> SUCCESSFUL_LOCKPICKS = registerCustomStat("successful_lockpicks", StatFormatter.DEFAULT);
-	public static final RegistryObject<ResourceLocation> LOCKPICKS_BROKEN = registerCustomStat("lockpicks_broken", StatFormatter.DEFAULT);
+	public static final net.neoforged.neoforge.registries.DeferredHolder<ResourceLocation, ResourceLocation> SUCCESSFUL_LOCKPICKS = registerCustomStat("successful_lockpicks", StatFormatter.DEFAULT);
+	public static final net.neoforged.neoforge.registries.DeferredHolder<ResourceLocation, ResourceLocation> LOCKPICKS_BROKEN = registerCustomStat("lockpicks_broken", StatFormatter.DEFAULT);
 
 	
-	public static final RegistryObject<ResourceLocation> OPEN_SAFE = registerCustomStat("open_safe", StatFormatter.DEFAULT);
+	public static final net.neoforged.neoforge.registries.DeferredHolder<ResourceLocation, ResourceLocation> OPEN_SAFE = registerCustomStat("open_safe", StatFormatter.DEFAULT);
 
 
 	public static void register(IEventBus bus)
@@ -72,7 +72,7 @@ public class ModStatistics {
 		RUN_IN_SETUP.forEach(Runnable::run);
 	}
 
-	private static RegistryObject<ResourceLocation> registerCustomStat(String name, StatFormatter formatter)
+	private static net.neoforged.neoforge.registries.DeferredHolder<ResourceLocation, ResourceLocation> registerCustomStat(String name, StatFormatter formatter)
 	{
 		return REGISTER.register(name, () -> {
 			ResourceLocation regName = ResourceLocation.fromNamespaceAndPath(CuffedMod.MODID, name);

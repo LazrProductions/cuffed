@@ -4,6 +4,7 @@ import java.util.Random;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import com.mojang.serialization.MapCodec;
 
 import org.joml.Vector3f;
 
@@ -48,6 +49,12 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class PilloryBlock extends DetentionBlock {
+    public static final MapCodec<PilloryBlock> CODEC = simpleCodec(PilloryBlock::new);
+
+    @Override
+    protected MapCodec<? extends DetentionBlock> codec() {
+        return CODEC;
+    }
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     protected static final BooleanProperty CLOSED = BooleanProperty.create("closed");
@@ -161,14 +168,14 @@ public class PilloryBlock extends DetentionBlock {
     }
 
     @Override
-    public void playerWillDestroy(@Nonnull Level level, @Nonnull BlockPos pos, @Nonnull BlockState state,
+    public BlockState playerWillDestroy(@Nonnull Level level, @Nonnull BlockPos pos, @Nonnull BlockState state,
             @Nonnull Player player) {
         if (!level.isClientSide) {
             if (player.isCreative())
                 preventCreativeDropFromBottomPart(level, pos, state, player);
         }
 
-        super.playerWillDestroy(level, pos, state, player);
+        return super.playerWillDestroy(level, pos, state, player);
     }
 
     @Override
@@ -177,12 +184,18 @@ public class PilloryBlock extends DetentionBlock {
         builder.add(FACING, HALF, CLOSED);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
-    public InteractionResult use(@Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos,
-            @Nonnull Player player,
-            @Nonnull InteractionHand hand, @Nonnull BlockHitResult hit) {
+    protected net.minecraft.world.ItemInteractionResult useItemOn(net.minecraft.world.item.ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        InteractionResult res = interact(state, level, pos, player, hand, hitResult);
+        return res.consumesAction() ? net.minecraft.world.ItemInteractionResult.sidedSuccess(level.isClientSide()) : net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
 
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        return interact(state, level, pos, player, InteractionHand.MAIN_HAND, hitResult);
+    }
+
+    public InteractionResult interact(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         IDetainableEntity en = (IDetainableEntity) player;
         
         if (en.getDetained() > -1)
@@ -191,7 +204,7 @@ public class PilloryBlock extends DetentionBlock {
         if (!player.isCrouching() && state.getValue(HALF) == DoubleBlockHalf.LOWER) {
             if (!level.isClientSide) {
                 BlockState state1 = level.getBlockState(pos.above());
-                state.getBlock().use(state1, level, pos.above(), player, hand, hit);
+                ((PilloryBlock) state.getBlock()).interact(state1, level, pos.above(), player, hand, hit);
                 return InteractionResult.SUCCESS;
             } else
                 return InteractionResult.SUCCESS;
