@@ -212,7 +212,7 @@ public class PossessionsBox extends Item {
 
          @Override
          public AbstractContainerMenu createMenu(int id, @Nonnull Inventory playerInventory, @Nonnull Player p) {
-            return new FriskingMenu(ModMenuTypes.FRISKING_MENU.get(), id, playerInventory, player.getId(), new FriskingContainer(player, boxStack), 5);
+            return new FriskingMenu(ModMenuTypes.FRISKING_MENU.get(), id, playerInventory, player.getId(), new FriskingContainer(player, boxStack, frisker), 5);
          }
       });
    }

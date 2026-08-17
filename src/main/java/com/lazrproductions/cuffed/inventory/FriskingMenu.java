@@ -2,6 +2,8 @@ package com.lazrproductions.cuffed.inventory;
 
 import javax.annotation.Nonnull;
 
+import com.lazrproductions.cuffed.api.CuffedAPI;
+import com.lazrproductions.cuffed.cap.base.IRestrainableCapability;
 import com.lazrproductions.cuffed.init.ModMenuTypes;
 
 import net.minecraft.world.Container;
@@ -15,6 +17,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 public class FriskingMenu extends AbstractContainerMenu {
+    private static final double MAX_FRISKING_DISTANCE = 4.0;
+
     private final Container container;
     private final int containerRows;
     private final int otherPlayerId;
@@ -82,6 +86,16 @@ public class FriskingMenu extends AbstractContainerMenu {
             if(level.getEntity(otherPlayerId) instanceof Player other) {
                 if(other.isRemoved())
                     return false;
+
+                IRestrainableCapability cap = CuffedAPI.Capabilities.getRestrainableCapability(other);
+                if (cap == null || !cap.armsRestrained()) {
+                    return false;
+                }
+
+                double distance = player.position().distanceTo(other.position());
+                if (distance > MAX_FRISKING_DISTANCE) {
+                    return false;
+                }
             } else
                 return false;
         }
